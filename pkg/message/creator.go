@@ -1,6 +1,6 @@
 package message
 
-// NewMessage
+// NewMessage model
 type NewMessage struct {
 	Content string
 }
