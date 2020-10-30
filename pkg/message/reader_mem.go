@@ -7,11 +7,13 @@ import (
 	"github.com/dwethmar/atami/pkg/memstore"
 )
 
-type inMemoryListing struct {
+// MemReader reads messages from memory
+type MemReader struct {
 	store *memstore.Store
 }
 
-func (i inMemoryListing) ReadOne(ID ID) (*Message, error) {
+// ReadOne get one message
+func (i MemReader) ReadOne(ID ID) (*Message, error) {
 	result, ok := i.store.Get(strconv.FormatInt(int64(ID), 10))
 	if ok {
 		message, ok := result.(Message)
@@ -23,7 +25,8 @@ func (i inMemoryListing) ReadOne(ID ID) (*Message, error) {
 	return nil, ErrCouldNotFind
 }
 
-func (i inMemoryListing) ReadAll() ([]*Message, error) {
+// ReadAll get multiple messages
+func (i MemReader) ReadAll() ([]*Message, error) {
 	results := i.store.List()
 	items := make([]*Message, len(results))
 
@@ -38,7 +41,7 @@ func (i inMemoryListing) ReadAll() ([]*Message, error) {
 	return items, nil
 }
 
-// NewInMemoryReader return a new inmemory listin repository
-func NewInMemoryReader(store *memstore.Store) *Reader {
-	return &Reader{inMemoryListing{store}}
+// NewMemReader return a new in memory listin repository
+func NewMemReader(store *memstore.Store) *Reader {
+	return &Reader{MemReader{store}}
 }

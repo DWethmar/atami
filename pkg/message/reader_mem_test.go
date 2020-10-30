@@ -13,11 +13,11 @@ func TestReadOne(t *testing.T) {
 	a := Message{
 		ID:        1,
 		Content:   "sd1",
-		CreatedOn: time.Now(),
+		CreatedAt: time.Now(),
 	}
 	assert.True(t, store.Add("1", a))
 
-	reader := NewInMemoryReader(store)
+	reader := NewMemReader(store)
 	testReadOne(t, *reader, 1, a)
 }
 
@@ -26,18 +26,18 @@ func TestReadAll(t *testing.T) {
 	a := Message{
 		ID:        1,
 		Content:   "sd1",
-		CreatedOn: time.Now(),
+		CreatedAt: time.Now(),
 	}
 	assert.True(t, store.Add("1", a))
 
 	b := Message{
 		ID:        2,
 		Content:   "sd2",
-		CreatedOn: time.Now(),
+		CreatedAt: time.Now(),
 	}
 	assert.True(t, store.Add("2", b))
 
-	reader := NewInMemoryReader(store)
+	reader := NewMemReader(store)
 	testReadAll(t, *reader, 2, []Message{
 		a, b,
 	})

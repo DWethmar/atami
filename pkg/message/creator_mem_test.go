@@ -7,7 +7,7 @@ import (
 )
 
 func TestCreate(t *testing.T) {
-	testCreator(t, NewInMemoryCreator(memstore.NewMemstore()), NewMessage{
+	testCreator(t, NewMemCreator(memstore.NewMemstore()), NewMessage{
 		Content: "wow",
 	})
 }

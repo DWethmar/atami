@@ -1,19 +1,18 @@
-package memory
+package message
 
 import (
 	"strconv"
 	"time"
 
 	"github.com/dwethmar/atami/pkg/memstore"
-	"github.com/dwethmar/atami/pkg/message"
 )
 
-type inMemoryCreator struct {
+type MemoryCreator struct {
 	store *memstore.Store
 	newID ID
 }
 
-func (i inMemoryCreator) Create(newMessage message.New) (Message, error) {
+func (i MemoryCreator) Create(newMessage NewMessage) (*Message, error) {
 	i.newID++
 	message := Message{
 		ID:        i.newID,
@@ -21,14 +20,15 @@ func (i inMemoryCreator) Create(newMessage message.New) (Message, error) {
 		CreatedAt: time.Now(),
 	}
 	i.store.Add(strconv.FormatInt(int64(message.ID), 10), message)
-	return message, nil
+	return &message, nil
 }
 
 // NewInMemoryCreator creates new messages.
-func NewInMemoryCreator(store *memstore.Store) *Creator {
+func NewMemCreator(store *memstore.Store) *Creator {
 	return NewCreator(
-		inMemoryCreator{
+		MemoryCreator{
 			store,
+			0,
 		},
 	)
 }

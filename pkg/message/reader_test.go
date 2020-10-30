@@ -12,7 +12,7 @@ func testReadOne(t *testing.T, reader Reader, ID ID, messages Message) {
 
 	assert.Equal(t, messages.ID, m.ID)
 	assert.Equal(t, messages.Content, m.Content)
-	assert.Equal(t, messages.CreatedOn, m.CreatedOn)
+	assert.Equal(t, messages.CreatedAt, m.CreatedAt)
 }
 
 func testReadAll(t *testing.T, reader Reader, length int, messages []Message) {
