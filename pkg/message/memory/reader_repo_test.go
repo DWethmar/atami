@@ -1,44 +1,45 @@
-package message
+package memory
 
 import (
 	"testing"
 	"time"
 
 	"github.com/dwethmar/atami/pkg/memstore"
+	"github.com/dwethmar/atami/pkg/message"
 	"github.com/stretchr/testify/assert"
 )
 
 func TestReadOne(t *testing.T) {
-	store := memstore.NewMemstore()
-	a := Message{
+	store := memstore.New()
+	a := message.Message{
 		ID:        1,
 		Content:   "sd1",
 		CreatedAt: time.Now(),
 	}
 	assert.True(t, store.Add("1", a))
 
-	reader := NewMemReader(store)
-	testReadOne(t, *reader, 1, a)
+	repo := NewReaderRepository(store)
+	message.TestReadOne(t, repo, 1, a)
 }
 
 func TestReadAll(t *testing.T) {
-	store := memstore.NewMemstore()
-	a := Message{
+	store := memstore.New()
+	a := message.Message{
 		ID:        1,
 		Content:   "sd1",
 		CreatedAt: time.Now(),
 	}
 	assert.True(t, store.Add("1", a))
 
-	b := Message{
+	b := message.Message{
 		ID:        2,
 		Content:   "sd2",
 		CreatedAt: time.Now(),
 	}
 	assert.True(t, store.Add("2", b))
 
-	reader := NewMemReader(store)
-	testReadAll(t, *reader, 2, []Message{
+	repo := NewReaderRepository(store)
+	message.TestReadAll(t, message.NewReader(repo), 2, []message.Message{
 		a, b,
 	})
 }

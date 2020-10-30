@@ -61,8 +61,8 @@ func (h *Store) Delete(ID string) bool {
 	return ok
 }
 
-// NewMemstore returns a new in memory repository.
-func NewMemstore() *Store {
+// New returns a new in memory repository.
+func New() *Store {
 	return &Store{
 		entries: make(map[string]interface{}),
 		order:   make([]string, 0),

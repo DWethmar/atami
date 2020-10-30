@@ -6,7 +6,9 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
-func testReadOne(t *testing.T, reader Reader, ID ID, messages Message) {
+// TestReadOne tests the ReadOne function.
+func TestReadOne(t *testing.T, repo ReaderRepository, ID ID, messages Message) {
+	reader := NewReader(repo)
 	m, err := reader.ReadOne(ID)
 	assert.Nil(t, err)
 
@@ -15,7 +17,9 @@ func testReadOne(t *testing.T, reader Reader, ID ID, messages Message) {
 	assert.Equal(t, messages.CreatedAt, m.CreatedAt)
 }
 
-func testReadAll(t *testing.T, reader Reader, length int, messages []Message) {
+// TestReadAll tests the ReadOne function.
+func TestReadAll(t *testing.T, repo ReaderRepository, length int, messages []Message) {
+	reader := NewReader(repo)
 	list, err := reader.ReadAll()
 
 	assert.Nil(t, err)

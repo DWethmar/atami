@@ -7,7 +7,9 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
-func testCreator(t *testing.T, creator *Creator, newMessage NewMessage) {
+// TestCreator test the creator repo
+func TestCreator(t *testing.T, repo CreatorRepository, newMessage NewMessage) {
+	creator := NewCreator(repo)
 	message, err := creator.Create(newMessage)
 	assert.Nil(t, err)
 	assert.Equal(t, message.ID, ID(1))
