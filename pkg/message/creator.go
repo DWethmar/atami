@@ -1,13 +1,13 @@
 package message
 
 // New model
-type New struct {
+type NewMessage struct {
 	Content string
 }
 
 // CreatorRepository defines a messsage listing repository
 type CreatorRepository interface {
-	Create(newMessage New) (Message, error)
+	Create(newMessage New) (Model, error)
 }
 
 // Creator creates messages.
@@ -16,7 +16,7 @@ type Creator struct {
 }
 
 // Create a new message
-func (m *Creator) Create(newMessage New) (Message, error) {
+func (m *Creator) Create(newMessage New) (Model, error) {
 	return m.createRepo.Create(newMessage)
 }
 
