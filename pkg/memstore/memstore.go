@@ -1,65 +1,71 @@
-package memory
+package memstore
 
 import (
 	"sync"
-
-	"github.com/dwethmar/atami/pkg/types"
 )
 
-// A Memstore manages CRUD operations for entries.
-type Memstore interface {
-	List() []*interface{}
-	Get(ID types.ID) (*interface{}, bool)
-	Add(ID types.ID, value interface{}) bool
-	Delete(ID types.ID) bool
-}
-
-type memstore struct {
-	entries map[types.ID]interface{}
+type Store struct {
+	entries map[string]interface{}
+	order   []string
 	mux     *sync.Mutex
 }
 
 // List returns all entries.
-func (h *memstore) List() []*interface{} {
-	var entries = make([]*interface{}, 0)
-	for _, e := range h.entries {
-		entries = append(entries, &e)
+func (h *Store) List() []interface{} {
+	entries := make([]interface{}, len(h.entries))
+
+	for i, ID := range h.order {
+		entries[i] = h.entries[ID]
 	}
+
 	return entries
 }
 
-// List returns all entries.
-func (h *memstore) Get(ID types.ID) (*interface{}, bool) {
+// Get a single value.
+func (h *Store) Get(ID string) (interface{}, bool) {
 	value, ok := h.entries[ID]
-	return &value, ok
+	return value, ok
 }
 
-// Adds a  new entry
-func (h *memstore) Add(ID types.ID, value interface{}) bool {
+// Add new value
+func (h *Store) Add(ID string, value interface{}) bool {
 	h.mux.Lock()
 	defer h.mux.Unlock()
-	_, ok := h.entries[ID]
-	if !ok {
-		h.entries[ID] = &value
+
+	if _, exists := h.entries[ID]; !exists {
+		h.entries[ID] = value
+		h.order = append(h.order, ID)
 		return true
 	}
+
 	return false
 }
 
-func (h *memstore) Delete(ID types.ID) bool {
+// Delete a value
+func (h *Store) Delete(ID string) bool {
 	h.mux.Lock()
 	defer h.mux.Unlock()
 	_, ok := h.entries[ID]
 	if ok {
 		delete(h.entries, ID)
 	}
+
+	if ok {
+		for i, n := range h.order {
+			if n == ID {
+				h.order = append(h.order[:i], h.order[i+1:]...)
+			}
+		}
+	}
+
 	return ok
 }
 
 // NewMemstore returns a new in memory repository.
-func NewMemstore() Memstore {
-	return &memstore{
-		entries: make(map[types.ID]interface{}),
+func NewMemstore() *Store {
+	return &Store{
+		entries: make(map[string]interface{}),
+		order:   make([]string, 0),
 		mux:     &sync.Mutex{},
 	}
 }

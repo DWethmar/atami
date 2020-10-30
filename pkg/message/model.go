@@ -1,15 +1,15 @@
 package message
 
 import (
-	"github.com/dwethmar/atami/pkg/models"
-	"github.com/dwethmar/atami/pkg/types"
+	"time"
 )
 
-// Message model
-type Message struct {
-	models.Message
-}
+// ID the id type that we use.
+type ID int64
 
-func (m *Message) GetID() types.ID {
-	return m.ID
+// The Message model
+type Message struct {
+	ID        ID
+	Content   string
+	CreatedAt time.Time
 }
