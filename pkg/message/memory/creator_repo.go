@@ -1,34 +1,44 @@
 package memory
 
 import (
-	"strconv"
+	"errors"
 	"time"
 
 	"github.com/dwethmar/atami/pkg/memstore"
 	"github.com/dwethmar/atami/pkg/message"
+	"github.com/segmentio/ksuid"
 )
 
-// CreatorRepository stores new messages
-type CreatorRepository struct {
+// creatorRepository stores new messages
+type creatorRepository struct {
 	store *memstore.Store
 	newID message.ID
 }
 
 // Create new message
-func (i CreatorRepository) Create(newMessage message.NewMessage) (*message.Message, error) {
+func (i creatorRepository) Create(newMessage message.NewMessage) (*message.Message, error) {
 	i.newID++
-	message := &message.Message{
+	uid := message.UID(ksuid.New().String())
+	i.store.Add(string(uid), message.Message{
 		ID:        i.newID,
+		UID:       uid,
 		Content:   newMessage.Content,
 		CreatedAt: time.Now(),
+	})
+
+	if value, ok := i.store.Get(string(uid)); ok {
+		if msg, ok := value.(message.Message); ok {
+			return &msg, nil
+		}
+		return nil, errors.New("Error parsing message")
 	}
-	i.store.Add(strconv.FormatInt(int64(message.ID), 10), message)
-	return message, nil
+
+	return nil, errors.New("Could not find message")
 }
 
 // NewCreatorRepository creates new messages.
-func NewCreatorRepository(store *memstore.Store) *CreatorRepository {
-	return &CreatorRepository{
+func NewCreatorRepository(store *memstore.Store) message.CreatorRepository {
+	return &creatorRepository{
 		store,
 		0,
 	}

@@ -27,6 +27,7 @@ func TestReadAll(t *testing.T, repo ReaderRepository, length int, messages []Mes
 
 	for i, message := range list {
 		assert.Equal(t, messages[i].ID, message.ID)
+		assert.Equal(t, messages[i].UID, message.UID)
 		assert.Equal(t, messages[i].Content, message.Content)
 	}
 }

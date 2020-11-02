@@ -5,6 +5,7 @@ import (
 
 	"github.com/dwethmar/atami/pkg/memstore"
 	"github.com/dwethmar/atami/pkg/message"
+	"github.com/dwethmar/atami/pkg/user"
 )
 
 // readerRepository reads messages from memory
@@ -13,12 +14,12 @@ type readerRepository struct {
 }
 
 // ReadOne get one message
-func (i readerRepository) ReadOne(ID message.ID) (*message.Message, error) {
+func (i readerRepository) ReadOne(ID user.ID) (*user.User, error) {
 	result, ok := i.store.Get(ID.String())
 	if ok {
-		message, ok := result.(message.Message)
+		user, ok := result.(user.User)
 		if ok {
-			return &message, nil
+			return &user, nil
 		}
 		return nil, errors.New("error while parsing result")
 	}
@@ -26,12 +27,12 @@ func (i readerRepository) ReadOne(ID message.ID) (*message.Message, error) {
 }
 
 // ReadAll get multiple messages
-func (i readerRepository) ReadAll() ([]*message.Message, error) {
+func (i readerRepository) ReadAll() ([]*user.User, error) {
 	results := i.store.List()
-	items := make([]*message.Message, len(results))
+	items := make([]*user.User, len(results))
 
 	for i, l := range results {
-		if item, ok := l.(message.Message); ok {
+		if item, ok := l.(user.User); ok {
 			items[i] = &item
 		} else {
 			return nil, errors.New("Error while parsing")
@@ -42,6 +43,6 @@ func (i readerRepository) ReadAll() ([]*message.Message, error) {
 }
 
 // NewReaderRepository return a new in memory listin repository
-func NewReaderRepository(store *memstore.Store) message.ReaderRepository {
+func NewReaderRepository(store *memstore.Store) user.ReaderRepository {
 	return &readerRepository{store}
 }

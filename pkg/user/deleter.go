@@ -1,10 +1,10 @@
-package message
+package user
 
 import "errors"
 
 var (
 	// ErrCouldNotDelete error
-	ErrCouldNotDelete = errors.New("could not delete message")
+	ErrCouldNotDelete = errors.New("could not delete user")
 )
 
 // DeleterRepository deletes messsages

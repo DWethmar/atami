@@ -8,7 +8,7 @@ import (
 )
 
 func TestList(t *testing.T) {
-	store := NewMemstore()
+	store := New()
 
 	for i := 0; i < 100; i++ {
 		ok := store.Add(strconv.Itoa(i+1), "test"+strconv.Itoa(i+1))
@@ -28,7 +28,7 @@ func TestList(t *testing.T) {
 }
 
 func TestGet(t *testing.T) {
-	store := NewMemstore()
+	store := New()
 
 	store.Add("1", "test")
 
@@ -41,7 +41,7 @@ func TestGet(t *testing.T) {
 }
 
 func TestDelete(t *testing.T) {
-	store := NewMemstore()
+	store := New()
 
 	store.Add("1", "test uno")
 	store.Add("2", "test dos")
