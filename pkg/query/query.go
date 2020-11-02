@@ -1,12 +1,25 @@
 package query
 
+var (
+	EQ = "EQ"
+)
+
 type Condition struct {
 	Field    string
 	Operator string
-	value    interface{}
+	Value    interface{}
 }
 
 type Query struct {
-	conditions []*Condition
+	Conditions []*Condition
 	And        bool
+}
+
+type QueryError struct {
+	Query string
+	Err   error
+}
+
+func (e QueryError) Error() string {
+	return e.Query + ": " + e.Err.Error()
 }

@@ -1,8 +1,19 @@
 package user
 
+import "errors"
+
+var (
+	// ErrUnknownOperator error
+	ErrUnknownOperator = errors.New("Unknown operator error")
+	// ErrUnknownField error
+	ErrUnknownField = errors.New("Unknown field error")
+	// ErrInvalidValue error
+	ErrInvalidValue = errors.New("Invalid value error")
+)
+
 // SearchRepository defines a messsage listing repository
 type SearchRepository interface {
-	Search(query Query) ([]*User, error)
+	SearchByEmail(email string) ([]*User, error)
 }
 
 // Searcher searches messages.
@@ -10,9 +21,9 @@ type Searcher struct {
 	searchRepo SearchRepository
 }
 
-// Search return a list of list items based on a query.
-func (m *Searcher) Search(query Query) ([]*User, error) {
-	return m.searchRepo.Search(query)
+// SearchByEmail searches users by email
+func (m *Searcher) SearchByEmail(email string) ([]*User, error) {
+	return m.searchRepo.SearchByEmail(email)
 }
 
 // NewSearcher returns a new searcher

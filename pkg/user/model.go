@@ -40,8 +40,3 @@ func (u *User) SetPassword(plainPwd string, salt string) {
 func (u *User) GetPassword() string {
 	return u.password
 }
-
-// zoink returns the passsword
-func (u *User) zoink() int {
-	return 1
-}

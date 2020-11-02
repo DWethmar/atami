@@ -1,6 +1,8 @@
 package memory
 
 import (
+	"errors"
+
 	"github.com/dwethmar/atami/pkg/memstore"
 	"github.com/dwethmar/atami/pkg/user"
 )
@@ -10,10 +12,21 @@ type searchRepository struct {
 	store *memstore.Store
 }
 
-// ReadOne get one message
-func (i searchRepository) Search(query user.Query) ([]*user.User, error) {
-	s := make([]*user.User, 0)
-	return s, nil
+func (s *searchRepository) SearchByEmail(email string) ([]*user.User, error) {
+	results := s.store.List()
+	items := make([]*user.User, 0)
+
+	for _, l := range results {
+		if item, ok := l.(user.User); ok {
+			if email == item.Email {
+				items = append(items, &item)
+			}
+		} else {
+			return nil, errors.New("Error while parsing")
+		}
+	}
+
+	return items, nil
 }
 
 // NewSearcherRepository return a new in memory listin repository
