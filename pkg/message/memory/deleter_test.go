@@ -19,6 +19,6 @@ func TestDelete(t *testing.T) {
 	}
 	assert.True(t, store.Add(a.ID.String(), a))
 
-	repo := NewReaderRepository(store)
-	message.TestReadOne(t, repo, a.ID, a)
+	deleter := NewDeleter(store)
+	message.TestDelete(t, deleter, a.ID)
 }

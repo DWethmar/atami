@@ -29,7 +29,7 @@ func (s *searchRepository) SearchByEmail(email string) ([]*user.User, error) {
 	return items, nil
 }
 
-// NewSearcherRepository return a new in memory listin repository
-func NewSearcherRepository(store *memstore.Store) user.SearchRepository {
-	return &searchRepository{store}
+// NewSearcher return a new in memory listin repository
+func NewSearcher(store *memstore.Store) *user.Searcher {
+	return user.NewSearcher(&searchRepository{store})
 }

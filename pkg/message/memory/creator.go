@@ -36,10 +36,10 @@ func (i creatorRepository) Create(newMessage message.NewMessage) (*message.Messa
 	return nil, errors.New("Could not find message")
 }
 
-// NewCreatorRepository creates new messages.
-func NewCreatorRepository(store *memstore.Store) message.CreatorRepository {
-	return &creatorRepository{
+// NewCreator creates new messages creator.
+func NewCreator(store *memstore.Store) *message.Creator {
+	return message.NewCreator(&creatorRepository{
 		store,
 		0,
-	}
+	})
 }

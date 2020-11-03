@@ -29,7 +29,7 @@ func TestSearch(t *testing.T) {
 		assert.True(t, store.Add(a.ID.String(), a))
 	}
 
-	repo := NewSearcherRepository(store)
-	user.TestSearchByEmail(t, user.NewSearcher(repo), 1, "hit@testr.nl")
-	user.TestSearchByEmail(t, user.NewSearcher(repo), 0, "miss@testr.nl")
+	searcher := NewSearcher(store)
+	user.TestSearchByEmail(t, searcher, 1, "hit@testr.nl")
+	user.TestSearchByEmail(t, searcher, 0, "miss@testr.nl")
 }

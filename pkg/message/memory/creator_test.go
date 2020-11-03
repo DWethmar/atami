@@ -11,7 +11,5 @@ func TestCreate(t *testing.T) {
 	newMessage := message.NewMessage{
 		Content: "wow",
 	}
-
-	repo := NewCreatorRepository(memstore.New())
-	message.TestCreator(t, repo, newMessage)
+	message.TestCreator(t, NewCreator(memstore.New()), newMessage)
 }

@@ -1,16 +1,14 @@
-package user
+package message
 
 // Service defines interations with users
 type Service interface {
-	SearchByEmail(email string) ([]*User, error)
-	ReadOne(ID ID) (*User, error)
-	ReadAll() ([]*User, error)
+	ReadOne(ID ID) (*Message, error)
+	ReadAll() ([]*Message, error)
 	Delete(ID ID) error
-	Create(newUser NewUser) (*User, error)
+	Create(newMessage NewMessage) (*Message, error)
 }
 
 type service struct {
-	Searcher
 	Reader
 	Deleter
 	Creator
@@ -18,15 +16,13 @@ type service struct {
 
 // NewService creates a new user service
 func NewService(
-	s Searcher,
 	r Reader,
 	d Deleter,
 	c Creator,
 ) Service {
 	return &service{
-		Searcher: s,
-		Reader:   r,
-		Deleter:  d,
-		Creator:  c,
+		Reader:  r,
+		Deleter: d,
+		Creator: c,
 	}
 }

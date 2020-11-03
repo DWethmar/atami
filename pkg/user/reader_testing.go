@@ -7,8 +7,7 @@ import (
 )
 
 // TestReadOne tests the ReadOne function.
-func TestReadOne(t *testing.T, repo ReaderRepository, ID ID, user User) {
-	reader := NewReader(repo)
+func TestReadOne(t *testing.T, reader *Reader, ID ID, user User) {
 	m, err := reader.ReadOne(ID)
 	assert.Nil(t, err)
 
@@ -18,15 +17,13 @@ func TestReadOne(t *testing.T, repo ReaderRepository, ID ID, user User) {
 }
 
 // TestNotFound tests the ReadOne function for a not found error.
-func TestNotFound(t *testing.T, repo ReaderRepository) {
-	reader := NewReader(repo)
+func TestNotFound(t *testing.T, reader *Reader) {
 	_, err := reader.ReadOne(ID(0))
 	assert.Equal(t, ErrCouldNotFind, err)
 }
 
 // TestReadAll tests the ReadOne function.
-func TestReadAll(t *testing.T, repo ReaderRepository, length int, users []User) {
-	reader := NewReader(repo)
+func TestReadAll(t *testing.T, reader *Reader, length int, users []User) {
 	list, err := reader.ReadAll()
 
 	assert.Nil(t, err)

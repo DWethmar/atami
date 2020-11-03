@@ -5,44 +5,50 @@ import (
 	"time"
 
 	"github.com/dwethmar/atami/pkg/memstore"
-	"github.com/dwethmar/atami/pkg/message"
+	"github.com/dwethmar/atami/pkg/user"
 	"github.com/stretchr/testify/assert"
 )
 
 func TestReadOne(t *testing.T) {
 	store := memstore.New()
-	a := message.Message{
+	a := user.User{
 		ID:        1,
 		UID:       "x",
-		Content:   "sd1",
+		Email:     "test@test.nl",
 		CreatedAt: time.Now(),
 	}
 	assert.True(t, store.Add(a.ID.String(), a))
 
-	repo := NewReaderRepository(store)
-	message.TestReadOne(t, repo, a.ID, a)
+	reader := NewReader(store)
+	user.TestReadOne(t, reader, 1, a)
+}
+
+func TestNotFound(t *testing.T) {
+	store := memstore.New()
+	reader := NewReader(store)
+	user.TestNotFound(t, reader)
 }
 
 func TestReadAll(t *testing.T) {
 	store := memstore.New()
-	a := message.Message{
+	a := user.User{
 		ID:        1,
 		UID:       "x",
-		Content:   "sd1",
+		Email:     "test@test.nl",
 		CreatedAt: time.Now(),
 	}
 	assert.True(t, store.Add(a.ID.String(), a))
 
-	b := message.Message{
+	b := user.User{
 		ID:        2,
 		UID:       "y",
-		Content:   "sd2",
+		Email:     "test2@test.nl",
 		CreatedAt: time.Now(),
 	}
 	assert.True(t, store.Add(b.ID.String(), b))
 
-	repo := NewReaderRepository(store)
-	message.TestReadAll(t, message.NewReader(repo), 2, []message.Message{
+	reader := NewReader(store)
+	user.TestReadAll(t, reader, 2, []user.User{
 		a,
 		b,
 	})

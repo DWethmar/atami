@@ -7,8 +7,8 @@ import (
 )
 
 // TestSearchByEmail tests the search function.
-func TestSearchByEmail(t *testing.T, repo SearchRepository, length int, email string) {
-	r, err := repo.SearchByEmail(email)
+func TestSearchByEmail(t *testing.T, searcher *Searcher, length int, email string) {
+	r, err := searcher.SearchByEmail(email)
 
 	assert.Nil(t, err)
 	assert.Equal(t, length, len(r))

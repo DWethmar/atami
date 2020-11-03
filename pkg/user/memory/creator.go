@@ -54,8 +54,8 @@ func (i creatorRepository) Create(newUser user.NewUser) (*user.User, error) {
 		Email:     newUser.Email,
 		CreatedAt: time.Now(),
 		UpdatedAt: time.Now(),
+		Password:  newUser.Password,
 	}
-	usr.SetPassword(newUser.Password, usr.CreatedAt.Format(layoutISO))
 	i.store.Add(string(usr.UID), usr)
 
 	if value, ok := i.store.Get(string(usr.UID)); ok {
@@ -68,10 +68,12 @@ func (i creatorRepository) Create(newUser user.NewUser) (*user.User, error) {
 	return nil, errors.New("Error while finding user in memory")
 }
 
-// NewCreatorRepository creates new messages.
-func NewCreatorRepository(store *memstore.Store) *creatorRepository {
-	return &creatorRepository{
-		store,
-		0,
-	}
+// NewCreator creates new messages.
+func NewCreator(store *memstore.Store) *user.Creator {
+	return user.NewCreator(
+		&creatorRepository{
+			store,
+			0,
+		},
+	)
 }
