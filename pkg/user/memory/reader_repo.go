@@ -4,7 +4,6 @@ import (
 	"errors"
 
 	"github.com/dwethmar/atami/pkg/memstore"
-	"github.com/dwethmar/atami/pkg/message"
 	"github.com/dwethmar/atami/pkg/user"
 )
 
@@ -23,7 +22,7 @@ func (i readerRepository) ReadOne(ID user.ID) (*user.User, error) {
 		}
 		return nil, errors.New("error while parsing result")
 	}
-	return nil, message.ErrCouldNotFind
+	return nil, user.ErrCouldNotFind
 }
 
 // ReadAll get multiple messages

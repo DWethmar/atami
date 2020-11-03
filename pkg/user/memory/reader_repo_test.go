@@ -23,6 +23,12 @@ func TestReadOne(t *testing.T) {
 	user.TestReadOne(t, repo, 1, a)
 }
 
+func TestNotFound(t *testing.T) {
+	store := memstore.New()
+	repo := NewReaderRepository(store)
+	user.TestNotFound(t, repo)
+}
+
 func TestReadAll(t *testing.T) {
 	store := memstore.New()
 	a := user.User{

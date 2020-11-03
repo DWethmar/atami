@@ -17,6 +17,13 @@ func TestReadOne(t *testing.T, repo ReaderRepository, ID ID, user User) {
 	assert.Equal(t, user.CreatedAt, m.CreatedAt)
 }
 
+// TestNotFound tests the ReadOne function for a not found error.
+func TestNotFound(t *testing.T, repo ReaderRepository) {
+	reader := NewReader(repo)
+	_, err := reader.ReadOne(ID(0))
+	assert.Equal(t, ErrCouldNotFind, err)
+}
+
 // TestReadAll tests the ReadOne function.
 func TestReadAll(t *testing.T, repo ReaderRepository, length int, users []User) {
 	reader := NewReader(repo)
