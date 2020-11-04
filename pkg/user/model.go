@@ -45,7 +45,7 @@ func (u User) GetUsername() string {
 
 // GetEmail return the email
 func (u User) GetEmail() string {
-	return u.Username
+	return u.Email
 }
 
 // NewUser struct declaration

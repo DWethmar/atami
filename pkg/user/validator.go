@@ -3,9 +3,30 @@ package user
 import (
 	"errors"
 	"fmt"
+	"regexp"
 	"strings"
 
 	"github.com/dwethmar/atami/pkg/validate"
+)
+
+var (
+	// UsernameMinimunLength the minimun length of the username
+	UsernameMinimunLength = 3
+	// UsernameMaximumLength the minimun length of the username
+	UsernameMaximumLength = 15
+	// ErrUsernameContainsInvalidChars error used when there are invalid chars in the username.
+	ErrUsernameContainsInvalidChars = errors.New("username can only contain alphanumeric characters (letters A-Z, numbers 0-9) with the exception of underscores")
+	// ErrUsernameRequired error used when there is no username
+	ErrUsernameRequired = errors.New("username is required")
+	// ErrUsernameToShort error used when the username is to short
+	ErrUsernameToShort = fmt.Errorf("username is shorter then %d characters", UsernameMinimunLength)
+	// ErrUsernameToLong error used when the username is to long
+	ErrUsernameToLong = fmt.Errorf("username is longer then %d characters", UsernameMaximumLength)
+
+	// ErrEmailRequired error used when there is no email
+	ErrEmailRequired = errors.New("email is required")
+	// ErrEmailInvalid error is the email is not valid
+	ErrEmailInvalid = errors.New("email is invalid")
 )
 
 // Validator struct definition
@@ -33,7 +54,7 @@ func (err errValidate) Error() string {
 func (v Validator) ValidateUser(user User) error {
 	err := errValidate{}
 
-	if e := v.validateName(user); e != nil {
+	if e := v.validateUsername(user); e != nil {
 		err.Errors = append(err.Errors, e)
 	}
 
@@ -52,7 +73,7 @@ func (v Validator) ValidateUser(user User) error {
 func (v Validator) ValidateNewUser(newUser NewUser) error {
 	err := errValidate{}
 
-	if e := v.validateName(newUser); e != nil {
+	if e := v.validateUsername(newUser); e != nil {
 		err.Errors = append(err.Errors, e)
 	}
 
@@ -67,30 +88,42 @@ func (v Validator) ValidateNewUser(newUser NewUser) error {
 	return err
 }
 
-func (v Validator) validateName(user hasUsername) error {
-	len := len(user.GetUsername())
+func (v Validator) validateUsername(user hasUsername) error {
 	var err error
+	len := len(user.GetUsername())
 	switch {
 	case len == 0:
-		err = errors.New("username is empty")
-	case len < 3:
-		err = fmt.Errorf("username is shorter then %d characters", 3)
-	case len > 12:
-		err = fmt.Errorf("username is larger then %d characters", 12)
+		err = ErrUsernameRequired
+	case len < UsernameMinimunLength:
+		err = ErrUsernameToShort
+	case len > UsernameMaximumLength:
+		err = ErrUsernameToLong
 	}
 
-	if err == nil {
-		return nil
+	if err != nil {
+		return err
+	}
+
+	if r, err := regexp.Compile("^[A-Za-z0-9][A-Za-z0-9_]{1,15}$"); err == nil {
+		if !r.MatchString(user.GetUsername()) {
+			return ErrUsernameContainsInvalidChars
+		}
+	} else {
+		return err
 	}
 
 	return err
 }
 
 func (v Validator) validateEmail(user hasEmail) error {
-	if v.emailValidator.Validate(user.GetEmail()) {
-		return nil
+	if user.GetEmail() == "" {
+		return ErrEmailRequired
 	}
-	return errors.New("Invalid email")
+
+	if err := v.emailValidator.Validate(user.GetEmail()); err != nil {
+		return ErrEmailInvalid
+	}
+	return nil
 }
 
 // NewValidator creates a new validator

@@ -1,5 +1,7 @@
 package validate
 
+import "errors"
+
 // EmailValidator struct
 type EmailValidator struct {
 	minimumLength int
@@ -7,8 +9,11 @@ type EmailValidator struct {
 }
 
 // Validate validates a email
-func (v EmailValidator) Validate(email string) bool {
-	return len(email) > v.minimumLength && len(email) < v.maximumLength
+func (v EmailValidator) Validate(email string) error {
+	if len(email) < v.minimumLength || len(email) > v.maximumLength {
+		return errors.New("Invalid email")
+	}
+	return nil
 }
 
 // NewEmailValidator creates new NewEmailValidator
