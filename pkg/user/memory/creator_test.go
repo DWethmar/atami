@@ -8,7 +8,9 @@ import (
 	"github.com/dwethmar/atami/pkg/validate"
 )
 
-var validator = user.NewValidator(validate.NewEmailValidator())
+var emailValidator = validate.NewEmailValidator()
+var usernameValidator = validate.NewUsernameValidator()
+var validator = user.NewValidator(usernameValidator, emailValidator)
 
 func TestCreate(t *testing.T) {
 	creator := NewCreator(validator, memstore.New())

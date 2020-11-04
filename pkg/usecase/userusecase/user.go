@@ -28,10 +28,11 @@ func (u *Usecase) List() ([]*model.User, error) {
 
 // Register registers user
 func (u *Usecase) Register(username string, email string, password string) (*model.User, error) {
-
-	duplicate, err := u.service.FindByEmail(email)
-	if err != user.ErrCouldNotFind || duplicate != nil {
-		return nil, err
+	_, err := u.service.FindByEmail(email)
+	if err != nil {
+		if err != user.ErrCouldNotFind {
+			return nil, err
+		}
 	}
 
 	user, err := u.service.Create(user.NewUser{

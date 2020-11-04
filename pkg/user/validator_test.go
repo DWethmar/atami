@@ -17,45 +17,39 @@ var validUser = User{
 	UpdatedAt: time.Now(),
 }
 
+var emailValidator = validate.NewEmailValidator()
+var usernameValidator = validate.NewUsernameValidator()
+var validator = NewValidator(usernameValidator, emailValidator)
+
 // TestValidUser tests the validate function.
 func TestValidUser(t *testing.T) {
-	emailValidator := validate.NewEmailValidator()
-	validator := NewValidator(emailValidator)
+	validator := NewValidator(usernameValidator, emailValidator)
 
 	assert.NoError(t, validator.ValidateUser(validUser))
 }
 
 func TestInvalidUsername(t *testing.T) {
-	emailValidator := validate.NewEmailValidator()
-	validator := NewValidator(emailValidator)
-
 	wrongEmail := validUser
 	wrongEmail.Username = "!@#$%^&*(Iasd"
-	assert.EqualError(t, validator.ValidateUser(wrongEmail), ErrUsernameContainsInvalidChars.Error())
+	assert.EqualError(t, validator.ValidateUser(wrongEmail), validate.ErrUsernameContainsInvalidChars.Error())
 
 	toLongUsername := validUser
 	toLongUsername.Username = "abcdefghijklmnopqrstuvwxyz"
-	assert.EqualError(t, validator.ValidateUser(toLongUsername), ErrUsernameToLong.Error())
+	assert.EqualError(t, validator.ValidateUser(toLongUsername), validate.ErrUsernameToLong.Error())
 
 	toShortUsername := validUser
 	toShortUsername.Username = "a"
-	assert.EqualError(t, validator.ValidateUser(toShortUsername), ErrUsernameToShort.Error())
+	assert.EqualError(t, validator.ValidateUser(toShortUsername), validate.ErrUsernameToShort.Error())
 }
 
 func TestInvalidEmail(t *testing.T) {
-	emailValidator := validate.NewEmailValidator()
-	validator := NewValidator(emailValidator)
-
 	wrongEmail := validUser
 	wrongEmail.Email = ""
 
-	assert.EqualError(t, validator.ValidateUser(wrongEmail), ErrEmailRequired.Error())
+	assert.EqualError(t, validator.ValidateUser(wrongEmail), validate.ErrEmailRequired.Error())
 }
 
 func TestValidNewUser(t *testing.T) {
-	emailValidator := validate.NewEmailValidator()
-	validator := NewValidator(emailValidator)
-
 	assert.NoError(t, validator.ValidateNewUser(NewUser{
 		Username: "username",
 		Email:    "test@test.nl",
@@ -63,9 +57,6 @@ func TestValidNewUser(t *testing.T) {
 }
 
 func TestInvalidNewUser(t *testing.T) {
-	emailValidator := validate.NewEmailValidator()
-	validator := NewValidator(emailValidator)
-
 	assert.Error(t, validator.ValidateNewUser(NewUser{
 		Username: "a",
 		Email:    "b",

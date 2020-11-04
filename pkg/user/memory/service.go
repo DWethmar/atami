@@ -14,7 +14,10 @@ type service struct {
 
 // NewService creates a new user service
 func NewService(store *memstore.Store) user.Service {
-	validator := user.NewValidator(validate.NewEmailValidator())
+	var validator = user.NewValidator(
+		validate.NewUsernameValidator(),
+		validate.NewEmailValidator(),
+	)
 
 	f := NewFinder(store)
 	d := NewDeleter(store)
