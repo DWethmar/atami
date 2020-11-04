@@ -23,6 +23,6 @@ func (UID UID) String() string {
 type Message struct {
 	ID        ID
 	UID       UID
-	Content   string
+	Text      string
 	CreatedAt time.Time
 }

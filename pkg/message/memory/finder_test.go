@@ -14,18 +14,18 @@ func TestReadOne(t *testing.T) {
 	a := message.Message{
 		ID:        1,
 		UID:       "x",
-		Content:   "sd1",
+		Text:      "sd1",
 		CreatedAt: time.Now(),
 	}
 	assert.True(t, store.Add(a.ID.String(), a))
 
-	reader := NewReader(store)
+	reader := NewFinder(store)
 	message.TestReadOne(t, reader, a.ID, a)
 }
 
 func TestNotFound(t *testing.T) {
 	store := memstore.New()
-	reader := NewReader(store)
+	reader := NewFinder(store)
 	message.TestNotFound(t, reader)
 }
 
@@ -34,7 +34,7 @@ func TestReadAll(t *testing.T) {
 	a := message.Message{
 		ID:        1,
 		UID:       "x",
-		Content:   "sd1",
+		Text:      "sd1",
 		CreatedAt: time.Now(),
 	}
 	assert.True(t, store.Add(a.ID.String(), a))
@@ -42,12 +42,12 @@ func TestReadAll(t *testing.T) {
 	b := message.Message{
 		ID:        2,
 		UID:       "y",
-		Content:   "sd2",
+		Text:      "sd2",
 		CreatedAt: time.Now(),
 	}
 	assert.True(t, store.Add(b.ID.String(), b))
 
-	reader := NewReader(store)
+	reader := NewFinder(store)
 	message.TestReadAll(t, reader, 2, []message.Message{
 		a,
 		b,

@@ -6,6 +6,7 @@ import (
 
 	"github.com/dwethmar/atami/pkg/memstore"
 	"github.com/dwethmar/atami/pkg/user"
+	"github.com/dwethmar/atami/pkg/validate"
 	"github.com/segmentio/ksuid"
 )
 
@@ -75,5 +76,6 @@ func NewCreator(store *memstore.Store) *user.Creator {
 			store,
 			0,
 		},
+		*user.NewValidator(validate.NewEmailValidator()),
 	)
 }

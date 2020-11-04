@@ -2,31 +2,28 @@ package user
 
 // Service defines interations with users
 type Service interface {
-	SearchByEmail(email string) ([]*User, error)
-	ReadOne(ID ID) (*User, error)
-	ReadAll() ([]*User, error)
+	FindAll() ([]*User, error)
+	FindByID(ID ID) (*User, error)
+	FindByEmail(email string) (*User, error)
 	Delete(ID ID) error
 	Create(newUser NewUser) (*User, error)
 }
 
 type service struct {
-	Searcher
-	Reader
+	Finder
 	Deleter
 	Creator
 }
 
 // NewService creates a new user service
 func NewService(
-	s Searcher,
-	r Reader,
+	f Finder,
 	d Deleter,
 	c Creator,
 ) Service {
 	return &service{
-		Searcher: s,
-		Reader:   r,
-		Deleter:  d,
-		Creator:  c,
+		Finder:  f,
+		Deleter: d,
+		Creator: c,
 	}
 }

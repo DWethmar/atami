@@ -11,13 +11,6 @@ var (
 	ErrPwdNotSet = errors.New("password not set")
 )
 
-// NewUser struct declaration
-type NewUser struct {
-	Username string
-	Email    string
-	Password string
-}
-
 // CreatorRepository defines a messsage listing repository
 type CreatorRepository interface {
 	Create(newMessage NewUser) (*User, error)
@@ -25,15 +18,19 @@ type CreatorRepository interface {
 
 // Creator creates messages.
 type Creator struct {
+	validator  Validator
 	createRepo CreatorRepository
 }
 
 // Create a new message
 func (m *Creator) Create(newUser NewUser) (*User, error) {
+	if err := m.validator.ValidateNewUser(newUser); err != nil {
+		return nil, err
+	}
 	return m.createRepo.Create(newUser)
 }
 
 // NewCreator returns a new Listing
-func NewCreator(r CreatorRepository) *Creator {
-	return &Creator{r}
+func NewCreator(r CreatorRepository, v Validator) *Creator {
+	return &Creator{v, r}
 }

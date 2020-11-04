@@ -8,16 +8,15 @@ import (
 )
 
 // readerRepository reads messages from memory
-type readerRepository struct {
+type findRepository struct {
 	store *memstore.Store
 }
 
-// ReadOne get one message
-func (i readerRepository) ReadOne(ID message.ID) (*message.Message, error) {
+// FindByID get one message
+func (i findRepository) FindByID(ID message.ID) (*message.Message, error) {
 	result, ok := i.store.Get(ID.String())
 	if ok {
-		message, ok := result.(message.Message)
-		if ok {
+		if message, ok := result.(message.Message); ok {
 			return &message, nil
 		}
 		return nil, errors.New("error while parsing result")
@@ -25,8 +24,8 @@ func (i readerRepository) ReadOne(ID message.ID) (*message.Message, error) {
 	return nil, message.ErrCouldNotFind
 }
 
-// ReadAll get multiple messages
-func (i readerRepository) ReadAll() ([]*message.Message, error) {
+// FindAll get multiple messages
+func (i findRepository) FindAll() ([]*message.Message, error) {
 	results := i.store.List()
 	items := make([]*message.Message, len(results))
 
@@ -41,7 +40,7 @@ func (i readerRepository) ReadAll() ([]*message.Message, error) {
 	return items, nil
 }
 
-// NewReader return a new in memory listin reader
-func NewReader(store *memstore.Store) *message.Reader {
-	return message.NewReader(&readerRepository{store})
+// NewFinder return a new in memory listin reader
+func NewFinder(store *memstore.Store) *message.Finder {
+	return message.NewFinder(&findRepository{store})
 }

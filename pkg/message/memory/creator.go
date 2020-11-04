@@ -22,7 +22,7 @@ func (i creatorRepository) Create(newMessage message.NewMessage) (*message.Messa
 	i.store.Add(string(uid), message.Message{
 		ID:        i.newID,
 		UID:       uid,
-		Content:   newMessage.Content,
+		Text:      newMessage.Content,
 		CreatedAt: time.Now(),
 	})
 

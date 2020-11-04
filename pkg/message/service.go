@@ -2,26 +2,26 @@ package message
 
 // Service defines interations with users
 type Service interface {
-	ReadOne(ID ID) (*Message, error)
-	ReadAll() ([]*Message, error)
+	FindByID(ID ID) (*Message, error)
+	FindAll() ([]*Message, error)
 	Delete(ID ID) error
 	Create(newMessage NewMessage) (*Message, error)
 }
 
 type service struct {
-	Reader
+	Finder
 	Deleter
 	Creator
 }
 
 // NewService creates a new user service
 func NewService(
-	r Reader,
+	r Finder,
 	d Deleter,
 	c Creator,
 ) Service {
 	return &service{
-		Reader:  r,
+		Finder:  r,
 		Deleter: d,
 		Creator: c,
 	}

@@ -13,7 +13,7 @@ func TestCreator(t *testing.T, creator *Creator, newMessage NewMessage) {
 
 	assert.Nil(t, err)
 	assert.Equal(t, message.ID, ID(1))
-	assert.Equal(t, message.Content, newMessage.Content)
+	assert.Equal(t, message.Text, newMessage.Content)
 	time.Sleep(1)
 	assert.True(t, time.Now().After(message.CreatedAt))
 }

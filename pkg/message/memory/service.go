@@ -6,19 +6,19 @@ import (
 )
 
 type service struct {
-	message.Reader
+	message.Finder
 	message.Deleter
 	message.Creator
 }
 
 // NewService creates a new user service
 func NewService(store *memstore.Store) message.Service {
-	r := NewReader(store)
+	r := NewFinder(store)
 	d := NewDeleter(store)
 	c := NewCreator(store)
 
 	return &service{
-		Reader:  *r,
+		Finder:  *r,
 		Deleter: *d,
 		Creator: *c,
 	}

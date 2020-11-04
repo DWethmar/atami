@@ -14,7 +14,7 @@ func TestDelete(t *testing.T) {
 	a := message.Message{
 		ID:        1,
 		UID:       "x",
-		Content:   "sd1",
+		Text:      "sd1",
 		CreatedAt: time.Now(),
 	}
 	assert.True(t, store.Add(a.ID.String(), a))
