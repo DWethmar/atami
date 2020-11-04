@@ -2,6 +2,7 @@ package user
 
 import (
 	"encoding/json"
+	"errors"
 	"fmt"
 	"net/http"
 
@@ -30,12 +31,13 @@ func RegisterUser(usecase *userusecase.Usecase) http.HandlerFunc {
 		err := json.NewDecoder(r.Body).Decode(&newUser)
 		if err != nil {
 			fmt.Printf("Error while decoding entry: %v", err)
-			response.SendBadRequestError(w, r, "Invalid input")
+			response.SendBadRequestError(w, r, errors.New("Invalid input"))
 			return
 		}
 
 		user, err := usecase.Register(newUser.Username, newUser.Email, newUser.Password)
 		if err != nil {
+			fmt.Printf("Error while registering user: %v\n", err)
 			response.SendBadRequestError(w, r, err)
 			return
 		}

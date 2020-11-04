@@ -1,8 +1,6 @@
 package userusecase
 
 import (
-	"errors"
-
 	"github.com/dwethmar/atami/pkg/model"
 	"github.com/dwethmar/atami/pkg/user"
 )
@@ -30,14 +28,10 @@ func (u *Usecase) List() ([]*model.User, error) {
 
 // Register registers user
 func (u *Usecase) Register(username string, email string, password string) (*model.User, error) {
-	if user, err := u.service.FindByEmail(email); user != nil || err != nil {
-		if err != nil {
-			return nil, err
-		}
 
-		if user != nil {
-			return nil, errors.New("email already taken")
-		}
+	duplicate, err := u.service.FindByEmail(email)
+	if err != user.ErrCouldNotFind || duplicate != nil {
+		return nil, err
 	}
 
 	user, err := u.service.Create(user.NewUser{

@@ -3,7 +3,6 @@ package user
 import (
 	"bytes"
 	"encoding/json"
-	"fmt"
 	"net/http"
 	"net/http/httptest"
 	"testing"
@@ -28,8 +27,6 @@ func TestRegisterUser(t *testing.T) {
 	req := httptest.NewRequest("POST", "/", bytes.NewBuffer(body))
 	rr := httptest.NewRecorder()
 	handler.ServeHTTP(rr, req)
-
-	fmt.Println(rr.Body.String(), " <- body")
 
 	assert.Equal(t, http.StatusCreated, rr.Code, "Status code should be equal")
 	assert.Equal(t, "application/json", rr.Header().Get("Content-Type"), "Content-Type code should be equal")

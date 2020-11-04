@@ -18,7 +18,7 @@ type CreatorRepository interface {
 
 // Creator creates messages.
 type Creator struct {
-	validator  Validator
+	validator  *Validator
 	createRepo CreatorRepository
 }
 
@@ -31,6 +31,6 @@ func (m *Creator) Create(newUser NewUser) (*User, error) {
 }
 
 // NewCreator returns a new Listing
-func NewCreator(r CreatorRepository, v Validator) *Creator {
+func NewCreator(r CreatorRepository, v *Validator) *Creator {
 	return &Creator{v, r}
 }

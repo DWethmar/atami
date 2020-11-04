@@ -7,9 +7,10 @@ import (
 
 func toUser(user *user.User) *model.User {
 	return &model.User{
-		ID:       int64(user.ID),
-		UID:      user.UID.String(),
-		Username: user.Username,
+		ID:        int64(user.ID),
+		UID:       user.UID.String(),
+		Username:  user.Username,
+		CreatedAt: user.CreatedAt,
 	}
 }
 

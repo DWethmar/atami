@@ -6,7 +6,6 @@ import (
 
 	"github.com/dwethmar/atami/pkg/memstore"
 	"github.com/dwethmar/atami/pkg/user"
-	"github.com/dwethmar/atami/pkg/validate"
 	"github.com/segmentio/ksuid"
 )
 
@@ -52,6 +51,7 @@ func (i creatorRepository) Create(newUser user.NewUser) (*user.User, error) {
 	usr := user.User{
 		ID:        i.newID,
 		UID:       user.UID(ksuid.New().String()),
+		Username:  newUser.Username,
 		Email:     newUser.Email,
 		CreatedAt: time.Now(),
 		UpdatedAt: time.Now(),
@@ -70,12 +70,12 @@ func (i creatorRepository) Create(newUser user.NewUser) (*user.User, error) {
 }
 
 // NewCreator creates new messages.
-func NewCreator(store *memstore.Store) *user.Creator {
+func NewCreator(validator *user.Validator, store *memstore.Store) *user.Creator {
 	return user.NewCreator(
 		&creatorRepository{
 			store,
 			0,
 		},
-		*user.NewValidator(validate.NewEmailValidator()),
+		validator,
 	)
 }

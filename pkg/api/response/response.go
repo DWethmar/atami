@@ -10,7 +10,8 @@ import (
 
 // ErrorResponds error responds type
 type ErrorResponds struct {
-	Error string `json:"error"`
+	Error   string `json:"error"`
+	Message string `json:"message"`
 }
 
 // SendJSON set json responds.
@@ -35,8 +36,11 @@ func SendServerError(w http.ResponseWriter, r *http.Request) {
 }
 
 // SendBadRequestError set bad request responds
-func SendBadRequestError(w http.ResponseWriter, r *http.Request, v interface{}) {
-	SendJSON(w, r, v, http.StatusBadRequest)
+func SendBadRequestError(w http.ResponseWriter, r *http.Request, err error) {
+	SendJSON(w, r, ErrorResponds{
+		Error:   http.StatusText(http.StatusBadRequest),
+		Message: err.Error(),
+	}, http.StatusBadRequest)
 }
 
 // SendNotFoundError set not found responds

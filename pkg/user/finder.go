@@ -4,7 +4,7 @@ import "errors"
 
 var (
 	// ErrCouldNotFind error
-	ErrCouldNotFind = errors.New("could not find message")
+	ErrCouldNotFind = errors.New("could not find user")
 )
 
 // FindRepository defines a messsage listing repository
