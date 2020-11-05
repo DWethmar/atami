@@ -47,6 +47,6 @@ func RegisterUser(service auth.Service) http.HandlerFunc {
 			return
 		}
 
-		response.SendJSON(w, r, user, http.StatusCreated)
+		response.SendJSON(w, r, toRespond(user), http.StatusCreated)
 	})
 }

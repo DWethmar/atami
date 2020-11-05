@@ -16,11 +16,15 @@ type Responds struct {
 func toResponds(users []*auth.User) []*Responds {
 	r := make([]*Responds, len(users))
 	for i, user := range users {
-		r[i] = &Responds{
-			UID:       user.UID.String(),
-			Username:  user.Username,
-			CreatedAt: user.CreatedAt,
-		}
+		r[i] = toRespond(user)
 	}
 	return r
+}
+
+func toRespond(user *auth.User) *Responds {
+	return &Responds{
+		UID:       user.UID.String(),
+		Username:  user.Username,
+		CreatedAt: user.CreatedAt,
+	}
 }
