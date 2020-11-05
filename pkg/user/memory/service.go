@@ -9,7 +9,7 @@ import (
 type service struct {
 	user.Finder
 	user.Deleter
-	user.Creator
+	user.Registrator
 }
 
 // NewService creates a new user service
@@ -21,11 +21,11 @@ func NewService(store *memstore.Store) user.Service {
 
 	f := NewFinder(store)
 	d := NewDeleter(store)
-	c := NewCreator(validator, store)
+	r := NewRegistrator(f, validator, store)
 
 	return &service{
-		Finder:  *f,
-		Deleter: *d,
-		Creator: *c,
+		Finder:      *f,
+		Deleter:     *d,
+		Registrator: *r,
 	}
 }

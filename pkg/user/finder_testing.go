@@ -41,3 +41,12 @@ func TestFindByEmail(t *testing.T, finder *Finder, email string) {
 		assert.Equal(t, email, result.Email)
 	}
 }
+
+// TestFindByUsername tests the search function.
+func TestFindByUsername(t *testing.T, finder *Finder, username string) {
+	result, err := finder.FindByUsername(username)
+	assert.Nil(t, err)
+	if assert.NotNil(t, result) {
+		assert.Equal(t, username, result.Username)
+	}
+}

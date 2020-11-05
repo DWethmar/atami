@@ -7,7 +7,7 @@ import (
 	"net/http"
 
 	"github.com/dwethmar/atami/pkg/api/response"
-	"github.com/dwethmar/atami/pkg/usecase/userusecase"
+	"github.com/dwethmar/atami/pkg/user"
 )
 
 // NewUser struct definition
@@ -18,7 +18,7 @@ type NewUser struct {
 }
 
 // RegisterUser handler
-func RegisterUser(usecase *userusecase.Usecase) http.HandlerFunc {
+func RegisterUser(service user.Service) http.HandlerFunc {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 
 		if err := r.ParseForm(); err != nil {
@@ -35,7 +35,11 @@ func RegisterUser(usecase *userusecase.Usecase) http.HandlerFunc {
 			return
 		}
 
-		user, err := usecase.Register(newUser.Username, newUser.Email, newUser.Password)
+		user, err := service.Register(user.NewUser{
+			Username: newUser.Username,
+			Email:    newUser.Email,
+			Password: newUser.Password,
+		})
 		if err != nil {
 			fmt.Printf("Error while registering user: %v\n", err)
 			response.SendBadRequestError(w, r, err)

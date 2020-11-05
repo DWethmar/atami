@@ -8,8 +8,6 @@ import (
 	"time"
 
 	"github.com/dwethmar/atami/pkg/memstore"
-	"github.com/dwethmar/atami/pkg/model"
-	"github.com/dwethmar/atami/pkg/usecase/userusecase"
 	"github.com/dwethmar/atami/pkg/user"
 
 	"github.com/stretchr/testify/assert"
@@ -40,7 +38,7 @@ var users = []*user.User{
 	},
 }
 
-var expectedUsers = []*model.User{
+var expectedUsers = []*Responds{
 	{
 		UID:       "1",
 		Username:  "Test1",
@@ -60,13 +58,12 @@ func TestList(t *testing.T) {
 	}
 
 	service := userMem.NewService(store)
-	userUsecase := userusecase.NewUserUsecase(service)
 
 	req, err := http.NewRequest("GET", "/", nil)
 	assert.Nil(t, err)
 
 	rr := httptest.NewRecorder()
-	handler := http.HandlerFunc(ListUsers(userUsecase))
+	handler := http.HandlerFunc(ListUsers(service))
 	handler.ServeHTTP(rr, req)
 
 	assert.Equal(t, http.StatusOK, rr.Code, "Status code should be equal")

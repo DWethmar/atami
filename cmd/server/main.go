@@ -8,7 +8,6 @@ import (
 	"github.com/dwethmar/atami/pkg/api"
 	userApi "github.com/dwethmar/atami/pkg/api/user"
 	"github.com/dwethmar/atami/pkg/memstore"
-	"github.com/dwethmar/atami/pkg/usecase/userusecase"
 	userMemory "github.com/dwethmar/atami/pkg/user/memory"
 )
 
@@ -16,8 +15,8 @@ func main() {
 	fmt.Println("Staring server")
 
 	userStore := memstore.New()
-	userUsecase := userusecase.NewUserUsecase(userMemory.NewService(userStore))
-	userHandler := userApi.NewHandler(userUsecase)
+	userService := userMemory.NewService(userStore)
+	userHandler := userApi.NewHandler(userService)
 
 	api := api.NewAPI(api.NewAPI(userHandler))
 	srv := &http.Server{Addr: ":8080", Handler: api}

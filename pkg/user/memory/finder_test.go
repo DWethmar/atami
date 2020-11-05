@@ -62,6 +62,7 @@ func TestFindByEmail(t *testing.T) {
 		a := user.User{
 			ID:        user.ID(i),
 			UID:       user.UID(fmt.Sprintf("%b", i)),
+			Username:  fmt.Sprintf("username-%d", i),
 			Email:     fmt.Sprintf("test-%d@test.com", i),
 			CreatedAt: time.Now(),
 			UpdatedAt: time.Now(),
@@ -72,4 +73,26 @@ func TestFindByEmail(t *testing.T) {
 
 	finder := NewFinder(store)
 	user.TestFindByEmail(t, finder, "test-44@test.com")
+}
+
+func TestFindByUsername(t *testing.T) {
+	store := memstore.New()
+
+	for i := 1; i < 100; i++ {
+		a := user.User{
+			ID:        user.ID(i),
+			UID:       user.UID(fmt.Sprintf("%b", i)),
+			Username:  fmt.Sprintf("username-%d", i),
+			Email:     fmt.Sprintf("test-%d@test.com", i),
+			CreatedAt: time.Now(),
+			UpdatedAt: time.Now(),
+		}
+
+		// fmt.Printf("Username: %v\n", a.Username)
+
+		assert.True(t, store.Add(a.ID.String(), a))
+	}
+
+	finder := NewFinder(store)
+	user.TestFindByUsername(t, finder, "username-44")
 }

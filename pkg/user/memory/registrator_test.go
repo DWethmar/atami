@@ -13,12 +13,24 @@ var usernameValidator = validate.NewUsernameValidator()
 var validator = user.NewValidator(usernameValidator, emailValidator)
 
 func TestCreate(t *testing.T) {
-	creator := NewCreator(validator, memstore.New())
-	user.TestCreator(t, creator, user.NewUser{
+	s := memstore.New()
+	register := NewRegistrator(NewFinder(s), validator, s)
+	user.TestRegister(t, register, user.NewUser{
 		Username: "username",
 		Email:    "test@test.nl",
 		Password: "test123",
 	})
+}
+
+func TestDuplicateUsername(t *testing.T) {
+	newUser := user.NewUser{
+		Username: "username",
+		Email:    "test@test.nl",
+		Password: "test123",
+	}
+	s := memstore.New()
+	register := NewRegistrator(NewFinder(s), validator, s)
+	user.TestDuplicateUsername(t, register, newUser)
 }
 
 func TestDuplicateEmail(t *testing.T) {
@@ -27,12 +39,14 @@ func TestDuplicateEmail(t *testing.T) {
 		Email:    "test@test.nl",
 		Password: "test123",
 	}
-	creator := NewCreator(validator, memstore.New())
-	user.TestDuplicateEmail(t, creator, newUser)
+	s := memstore.New()
+	register := NewRegistrator(NewFinder(s), validator, s)
+	user.TestDuplicateEmail(t, register, newUser)
 }
 
 // TestEmptyPassword test if the correct error is returned
 func TestEmptyPassword(t *testing.T) {
-	creator := NewCreator(validator, memstore.New())
-	user.TestEmptyPassword(t, creator)
+	s := memstore.New()
+	register := NewRegistrator(NewFinder(s), validator, s)
+	user.TestEmptyPassword(t, register)
 }

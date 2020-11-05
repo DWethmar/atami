@@ -11,6 +11,7 @@ var (
 type FindRepository interface {
 	FindAll() ([]*User, error)
 	FindByEmail(email string) (*User, error)
+	FindByUsername(username string) (*User, error)
 	FindByID(ID ID) (*User, error)
 }
 
@@ -24,14 +25,19 @@ func (m *Finder) FindAll() ([]*User, error) {
 	return m.findRepo.FindAll()
 }
 
-// FindByID return a list of list items.
-func (m *Finder) FindByID(ID ID) (*User, error) {
-	return m.findRepo.FindByID(ID)
-}
-
 // FindByEmail searches users by email
 func (m *Finder) FindByEmail(email string) (*User, error) {
 	return m.findRepo.FindByEmail(email)
+}
+
+// FindByUsername searches users by username
+func (m *Finder) FindByUsername(username string) (*User, error) {
+	return m.findRepo.FindByUsername(username)
+}
+
+// FindByID return a list of list items.
+func (m *Finder) FindByID(ID ID) (*User, error) {
+	return m.findRepo.FindByID(ID)
 }
 
 // NewFinder returns a new searcher

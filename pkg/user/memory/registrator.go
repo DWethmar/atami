@@ -11,23 +11,14 @@ import (
 
 var layoutISO = "2006-01-02"
 
-// creatorRepository stores new messages
-type creatorRepository struct {
+// registerRepository stores new messages
+type registerRepository struct {
 	store *memstore.Store
 	newID user.ID
 }
 
-func checkUniqueEmail(email string, users []*user.User) bool {
-	for _, user := range users {
-		if user.Email == email {
-			return false
-		}
-	}
-	return true
-}
-
 // Create new user
-func (i creatorRepository) Create(newUser user.NewUser) (*user.User, error) {
+func (i registerRepository) Register(newUser user.NewUser) (*user.User, error) {
 	if newUser.Password == "" {
 		return nil, user.ErrPwdNotSet
 	}
@@ -39,12 +30,8 @@ func (i creatorRepository) Create(newUser user.NewUser) (*user.User, error) {
 		if item, ok := l.(user.User); ok {
 			users[i] = &item
 		} else {
-			return nil, errors.New("Error while parsing user")
+			return nil, errCouldNotParse
 		}
-	}
-
-	if unique := checkUniqueEmail(newUser.Email, users); !unique {
-		return nil, user.ErrEmailAlreadyTaken
 	}
 
 	i.newID++
@@ -63,19 +50,24 @@ func (i creatorRepository) Create(newUser user.NewUser) (*user.User, error) {
 		if usrResult, ok := value.(user.User); ok {
 			return &usrResult, nil
 		}
-		return nil, errors.New("Error parsing user")
+		return nil, errCouldNotParse
 	}
 
-	return nil, errors.New("Error while finding user in memory")
+	return nil, errors.New("error while finding user")
 }
 
-// NewCreator creates new messages.
-func NewCreator(validator *user.Validator, store *memstore.Store) *user.Creator {
-	return user.NewCreator(
-		&creatorRepository{
+// NewRegistrator creates new registartor.
+func NewRegistrator(
+	finder *user.Finder,
+	validator *user.Validator,
+	store *memstore.Store,
+) *user.Registrator {
+	return user.NewRegistartor(
+		&registerRepository{
 			store,
 			0,
 		},
+		finder,
 		validator,
 	)
 }

@@ -30,7 +30,7 @@ func (i creatorRepository) Create(newMessage message.NewMessage) (*message.Messa
 		if msg, ok := value.(message.Message); ok {
 			return &msg, nil
 		}
-		return nil, errors.New("Error parsing message")
+		return nil, errCouldNotParse
 	}
 
 	return nil, errors.New("Could not find message")

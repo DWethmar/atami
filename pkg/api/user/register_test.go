@@ -9,7 +9,6 @@ import (
 
 	"github.com/dwethmar/atami/pkg/memstore"
 	"github.com/dwethmar/atami/pkg/model"
-	"github.com/dwethmar/atami/pkg/usecase/userusecase"
 	userMemory "github.com/dwethmar/atami/pkg/user/memory"
 	"github.com/stretchr/testify/assert"
 )
@@ -22,7 +21,7 @@ var newUser = NewUser{
 
 func TestRegisterUser(t *testing.T) {
 	service := userMemory.NewService(memstore.New())
-	handler := http.HandlerFunc(RegisterUser(userusecase.NewUserUsecase(service)))
+	handler := http.HandlerFunc(RegisterUser(service))
 
 	body, _ := json.Marshal(newUser)
 	req := httptest.NewRequest("POST", "/", bytes.NewBuffer(body))
