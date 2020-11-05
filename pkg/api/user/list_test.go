@@ -4,45 +4,59 @@ import (
 	"encoding/json"
 	"net/http"
 	"net/http/httptest"
-	"strconv"
 	"testing"
 	"time"
 
 	"github.com/dwethmar/atami/pkg/memstore"
 	"github.com/dwethmar/atami/pkg/model"
 	"github.com/dwethmar/atami/pkg/usecase/userusecase"
+	"github.com/dwethmar/atami/pkg/user"
 
 	"github.com/stretchr/testify/assert"
 
 	userMem "github.com/dwethmar/atami/pkg/user/memory"
 )
 
-var users = []*model.User{
+var now = time.Now()
+
+var users = []*user.User{
 	{
 		ID:        1,
 		UID:       "1",
 		Username:  "Test1",
-		CreatedAt: time.Now(),
+		Email:     "test1@test.com",
+		CreatedAt: now,
+		UpdatedAt: now,
+		Password:  "",
 	},
 	{
 		ID:        2,
 		UID:       "2",
 		Username:  "Test2",
-		CreatedAt: time.Now(),
+		Email:     "test2@test.com",
+		CreatedAt: now,
+		UpdatedAt: now,
+		Password:  "",
 	},
 }
 
-func TestMapUsers(t *testing.T) {
-	for i, user := range toUsers(users) {
-		assert.Equal(t, users[i].UID, user.UID)
-		assert.Equal(t, users[i].Username, user.Username)
-	}
+var expectedUsers = []*model.User{
+	{
+		UID:       "1",
+		Username:  "Test1",
+		CreatedAt: now,
+	},
+	{
+		UID:       "2",
+		Username:  "Test2",
+		CreatedAt: now,
+	},
 }
 
 func TestList(t *testing.T) {
 	store := memstore.New()
 	for _, user := range users {
-		store.Add(strconv.FormatInt(user.ID, 10), *user)
+		store.Add(user.ID.String(), *user)
 	}
 
 	service := userMem.NewService(store)
@@ -59,6 +73,6 @@ func TestList(t *testing.T) {
 	assert.Equal(t, "application/json", rr.Header().Get("Content-Type"), "Content-Type code should be equal")
 
 	// Check the response body is what we expect.
-	expected, _ := json.Marshal(toUsers(users))
+	expected, _ := json.Marshal(expectedUsers)
 	assert.Equal(t, string(expected), rr.Body.String(), "handler returned unexpected body")
 }

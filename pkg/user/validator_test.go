@@ -29,9 +29,9 @@ func TestValidUser(t *testing.T) {
 }
 
 func TestInvalidUsername(t *testing.T) {
-	wrongEmail := validUser
-	wrongEmail.Username = "!@#$%^&*(Iasd"
-	assert.EqualError(t, validator.ValidateUser(wrongEmail), validate.ErrUsernameContainsInvalidChars.Error())
+	invalidUsername := validUser
+	invalidUsername.Username = "!@#$%^&*(Iasd"
+	assert.EqualError(t, validator.ValidateUser(invalidUsername), validate.ErrUsernameContainsInvalidChars.Error())
 
 	toLongUsername := validUser
 	toLongUsername.Username = "abcdefghijklmnopqrstuvwxyz"

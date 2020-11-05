@@ -21,7 +21,7 @@ func (f findRepository) FindAll() ([]*user.User, error) {
 		if item, ok := result.(user.User); ok {
 			items[i] = &item
 		} else {
-			return nil, errors.New("Error while parsing")
+			return nil, errors.New("Error while parsing user")
 		}
 	}
 
@@ -35,7 +35,7 @@ func (f findRepository) FindByID(ID user.ID) (*user.User, error) {
 		if user, ok := result.(user.User); ok {
 			return &user, nil
 		}
-		return nil, errors.New("error while parsing result")
+		return nil, errors.New("error while parsing user")
 	}
 	return nil, user.ErrCouldNotFind
 }
@@ -50,7 +50,7 @@ func (f *findRepository) FindByEmail(email string) (*user.User, error) {
 				return &item, nil
 			}
 		} else {
-			return nil, errors.New("Error while parsing")
+			return nil, errors.New("Error while parsing user")
 		}
 	}
 

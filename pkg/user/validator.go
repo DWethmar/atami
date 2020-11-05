@@ -67,7 +67,7 @@ func (v Validator) ValidateNewUser(newUser NewUser) error {
 }
 
 func (v Validator) validateUsername(user hasUsername) error {
-	if err := v.emailValidator.Validate(user.GetUsername()); err != nil {
+	if err := v.usernameValidator.Validate(user.GetUsername()); err != nil {
 		return err
 	}
 	return nil
@@ -86,7 +86,7 @@ func NewValidator(
 	emailValidator *validate.EmailValidator,
 ) *Validator {
 	return &Validator{
-		usernameValidator: usernameValidator,
-		emailValidator:    emailValidator,
+		usernameValidator,
+		emailValidator,
 	}
 }
