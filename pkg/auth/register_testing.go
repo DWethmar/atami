@@ -44,6 +44,7 @@ func TestEmptyPassword(t *testing.T, register *Registrator) {
 	_, err := register.Register(NewUser{
 		Username: "wow",
 		Email:    "test@test.nl",
+		Password: "",
 	})
-	assert.Equal(t, ErrPwdNotSet, err)
+	assert.EqualError(t, err, "password is required")
 }

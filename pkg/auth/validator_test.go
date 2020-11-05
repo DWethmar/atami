@@ -19,12 +19,16 @@ var validUser = User{
 
 var emailValidator = validate.NewEmailValidator()
 var usernameValidator = validate.NewUsernameValidator()
-var validator = NewValidator(usernameValidator, emailValidator)
+var passwordValidator = validate.NewPasswordValidator()
+
+var validator = NewValidator(
+	usernameValidator,
+	emailValidator,
+	passwordValidator,
+)
 
 // TestValidUser tests the validate function.
 func TestValidUser(t *testing.T) {
-	validator := NewValidator(usernameValidator, emailValidator)
-
 	assert.NoError(t, validator.ValidateUser(validUser))
 }
 
@@ -53,6 +57,7 @@ func TestValidNewUser(t *testing.T) {
 	assert.NoError(t, validator.ValidateNewUser(NewUser{
 		Username: "username",
 		Email:    "test@test.nl",
+		Password: "Abcdefgh123@@",
 	}))
 }
 

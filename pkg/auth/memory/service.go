@@ -17,6 +17,7 @@ func NewService(store *memstore.Store) auth.Service {
 	var validator = auth.NewValidator(
 		validate.NewUsernameValidator(),
 		validate.NewEmailValidator(),
+		validate.NewPasswordValidator(),
 	)
 
 	f := NewFinder(store)

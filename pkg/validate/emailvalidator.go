@@ -28,5 +28,5 @@ func (v EmailValidator) Validate(email string) error {
 
 // NewEmailValidator creates new NewEmailValidator
 func NewEmailValidator() *EmailValidator {
-	return &EmailValidator{3, 100}
+	return &EmailValidator{5, 100}
 }

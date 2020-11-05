@@ -10,6 +10,7 @@ import (
 type Validator struct {
 	usernameValidator *validate.UsernameValidator
 	emailValidator    *validate.EmailValidator
+	passwordValidator *validate.PasswordValidator
 }
 
 type errValidate struct {
@@ -59,6 +60,10 @@ func (v Validator) ValidateNewUser(newUser NewUser) error {
 		err.Errors = append(err.Errors, e)
 	}
 
+	if e := v.validatePassword(newUser); e != nil {
+		err.Errors = append(err.Errors, e)
+	}
+
 	if err.Valid() {
 		return nil
 	}
@@ -80,13 +85,23 @@ func (v Validator) validateEmail(user hasEmail) error {
 	return nil
 }
 
+func (v Validator) validatePassword(user NewUser) error {
+	if err := v.passwordValidator.Validate(user.Password); err != nil {
+		return err
+	}
+	return nil
+}
+
 // NewValidator creates a new validator
 func NewValidator(
 	usernameValidator *validate.UsernameValidator,
 	emailValidator *validate.EmailValidator,
+	passwordValidator *validate.PasswordValidator,
+
 ) *Validator {
 	return &Validator{
 		usernameValidator,
 		emailValidator,
+		passwordValidator,
 	}
 }
