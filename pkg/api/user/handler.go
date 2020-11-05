@@ -3,12 +3,12 @@ package user
 import (
 	"net/http"
 
-	"github.com/dwethmar/atami/pkg/user"
+	"github.com/dwethmar/atami/pkg/auth"
 	"github.com/go-chi/chi"
 )
 
 // NewHandler returns the api routes handler
-func NewHandler(service user.Service) http.Handler {
+func NewHandler(service auth.Service) http.Handler {
 	r := chi.NewRouter()
 
 	r.Get("/users", ListUsers(service))

@@ -1,20 +1,20 @@
 package memory
 
 import (
+	"github.com/dwethmar/atami/pkg/auth"
 	"github.com/dwethmar/atami/pkg/memstore"
-	"github.com/dwethmar/atami/pkg/user"
 	"github.com/dwethmar/atami/pkg/validate"
 )
 
 type service struct {
-	user.Finder
-	user.Deleter
-	user.Registrator
+	auth.Finder
+	auth.Deleter
+	auth.Registrator
 }
 
 // NewService creates a new user service
-func NewService(store *memstore.Store) user.Service {
-	var validator = user.NewValidator(
+func NewService(store *memstore.Store) auth.Service {
+	var validator = auth.NewValidator(
 		validate.NewUsernameValidator(),
 		validate.NewEmailValidator(),
 	)

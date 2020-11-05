@@ -7,9 +7,8 @@ import (
 	"net/http/httptest"
 	"testing"
 
+	userMemory "github.com/dwethmar/atami/pkg/auth/memory"
 	"github.com/dwethmar/atami/pkg/memstore"
-	"github.com/dwethmar/atami/pkg/model"
-	userMemory "github.com/dwethmar/atami/pkg/user/memory"
 	"github.com/stretchr/testify/assert"
 )
 
@@ -32,7 +31,7 @@ func TestRegisterUser(t *testing.T) {
 	assert.Equal(t, "application/json", rr.Header().Get("Content-Type"), "Content-Type code should be equal")
 
 	// Check the response body is what we expect.
-	addedEntry := model.User{}
+	addedEntry := User{}
 	assert.NoError(t, json.Unmarshal(rr.Body.Bytes(), &addedEntry))
 	assert.Equal(t, "Username", addedEntry.Username)
 }

@@ -5,11 +5,11 @@ import (
 	"net/http"
 
 	"github.com/dwethmar/atami/pkg/api/response"
-	"github.com/dwethmar/atami/pkg/user"
+	"github.com/dwethmar/atami/pkg/auth"
 )
 
 // ListUsers handler
-func ListUsers(service user.Service) http.HandlerFunc {
+func ListUsers(service auth.Service) http.HandlerFunc {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		if users, err := service.FindAll(); err == nil {
 			response.SendJSON(w, r, toResponds(users), 200)

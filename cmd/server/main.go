@@ -7,15 +7,15 @@ import (
 
 	"github.com/dwethmar/atami/pkg/api"
 	userApi "github.com/dwethmar/atami/pkg/api/user"
+	authMemory "github.com/dwethmar/atami/pkg/auth/memory"
 	"github.com/dwethmar/atami/pkg/memstore"
-	userMemory "github.com/dwethmar/atami/pkg/user/memory"
 )
 
 func main() {
 	fmt.Println("Staring server")
 
 	userStore := memstore.New()
-	userService := userMemory.NewService(userStore)
+	userService := authMemory.NewService(userStore)
 	userHandler := userApi.NewHandler(userService)
 
 	api := api.NewAPI(api.NewAPI(userHandler))

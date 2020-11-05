@@ -4,14 +4,14 @@ import (
 	"testing"
 	"time"
 
+	"github.com/dwethmar/atami/pkg/auth"
 	"github.com/dwethmar/atami/pkg/memstore"
-	"github.com/dwethmar/atami/pkg/user"
 	"github.com/stretchr/testify/assert"
 )
 
 func TestDelete(t *testing.T) {
 	store := memstore.New()
-	a := user.User{
+	a := auth.User{
 		ID:        1,
 		UID:       "x",
 		Email:     "test@test.nl",
@@ -20,5 +20,5 @@ func TestDelete(t *testing.T) {
 	assert.True(t, store.Add(a.ID.String(), a))
 
 	deleter := NewDeleter(store)
-	user.TestDelete(t, deleter, a.ID)
+	auth.TestDelete(t, deleter, a.ID)
 }

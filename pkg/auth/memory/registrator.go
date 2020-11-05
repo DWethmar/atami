@@ -4,8 +4,8 @@ import (
 	"errors"
 	"time"
 
+	"github.com/dwethmar/atami/pkg/auth"
 	"github.com/dwethmar/atami/pkg/memstore"
-	"github.com/dwethmar/atami/pkg/user"
 	"github.com/segmentio/ksuid"
 )
 
@@ -14,20 +14,20 @@ var layoutISO = "2006-01-02"
 // registerRepository stores new messages
 type registerRepository struct {
 	store *memstore.Store
-	newID user.ID
+	newID auth.ID
 }
 
 // Create new user
-func (i registerRepository) Register(newUser user.NewUser) (*user.User, error) {
+func (i *registerRepository) Register(newUser auth.NewUser) (*auth.User, error) {
 	if newUser.Password == "" {
-		return nil, user.ErrPwdNotSet
+		return nil, auth.ErrPwdNotSet
 	}
 
 	// Check if unique email
 	results := i.store.List()
-	users := make([]*user.User, len(results))
+	users := make([]*auth.User, len(results))
 	for i, l := range results {
-		if item, ok := l.(user.User); ok {
+		if item, ok := l.(auth.User); ok {
 			users[i] = &item
 		} else {
 			return nil, errCouldNotParse
@@ -35,19 +35,20 @@ func (i registerRepository) Register(newUser user.NewUser) (*user.User, error) {
 	}
 
 	i.newID++
-	usr := user.User{
+	usr := auth.User{
 		ID:        i.newID,
-		UID:       user.UID(ksuid.New().String()),
+		UID:       auth.UID(ksuid.New().String()),
 		Username:  newUser.Username,
 		Email:     newUser.Email,
 		CreatedAt: time.Now(),
 		UpdatedAt: time.Now(),
 		Password:  newUser.Password,
 	}
+
 	i.store.Add(string(usr.UID), usr)
 
 	if value, ok := i.store.Get(string(usr.UID)); ok {
-		if usrResult, ok := value.(user.User); ok {
+		if usrResult, ok := value.(auth.User); ok {
 			return &usrResult, nil
 		}
 		return nil, errCouldNotParse
@@ -58,11 +59,11 @@ func (i registerRepository) Register(newUser user.NewUser) (*user.User, error) {
 
 // NewRegistrator creates new registartor.
 func NewRegistrator(
-	finder *user.Finder,
-	validator *user.Validator,
+	finder *auth.Finder,
+	validator *auth.Validator,
 	store *memstore.Store,
-) *user.Registrator {
-	return user.NewRegistartor(
+) *auth.Registrator {
+	return auth.NewRegistartor(
 		&registerRepository{
 			store,
 			0,

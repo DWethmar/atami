@@ -1,4 +1,4 @@
-package user
+package auth
 
 // Service defines interations with users
 type Service interface {

@@ -3,7 +3,7 @@ package user
 import (
 	"time"
 
-	"github.com/dwethmar/atami/pkg/user"
+	"github.com/dwethmar/atami/pkg/auth"
 )
 
 // Responds struct declaration
@@ -13,7 +13,7 @@ type Responds struct {
 	CreatedAt time.Time
 }
 
-func toResponds(users []*user.User) []*Responds {
+func toResponds(users []*auth.User) []*Responds {
 	r := make([]*Responds, len(users))
 	for i, user := range users {
 		r[i] = &Responds{

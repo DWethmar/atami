@@ -7,17 +7,15 @@ import (
 	"testing"
 	"time"
 
+	"github.com/dwethmar/atami/pkg/auth"
+	userMem "github.com/dwethmar/atami/pkg/auth/memory"
 	"github.com/dwethmar/atami/pkg/memstore"
-	"github.com/dwethmar/atami/pkg/user"
-
 	"github.com/stretchr/testify/assert"
-
-	userMem "github.com/dwethmar/atami/pkg/user/memory"
 )
 
 var now = time.Now()
 
-var users = []*user.User{
+var users = []*auth.User{
 	{
 		ID:        1,
 		UID:       "1",

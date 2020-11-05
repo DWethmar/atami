@@ -7,7 +7,7 @@ import (
 	"net/http"
 
 	"github.com/dwethmar/atami/pkg/api/response"
-	"github.com/dwethmar/atami/pkg/user"
+	"github.com/dwethmar/atami/pkg/auth"
 )
 
 // NewUser struct definition
@@ -18,14 +18,14 @@ type NewUser struct {
 }
 
 // RegisterUser handler
-func RegisterUser(service user.Service) http.HandlerFunc {
+func RegisterUser(service auth.Service) http.HandlerFunc {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 
-		if err := r.ParseForm(); err != nil {
-			fmt.Fprintf(w, "ParseForm() err: %v", err)
-			response.SendServerError(w, r)
-			return
-		}
+		// if err := r.ParseForm(); err != nil {
+		// 	fmt.Fprintf(w, "ParseForm() err: %v", err)
+		// 	response.SendServerError(w, r)
+		// 	return
+		// }
 
 		var newUser = NewUser{}
 		err := json.NewDecoder(r.Body).Decode(&newUser)
@@ -35,11 +35,12 @@ func RegisterUser(service user.Service) http.HandlerFunc {
 			return
 		}
 
-		user, err := service.Register(user.NewUser{
+		user, err := service.Register(auth.NewUser{
 			Username: newUser.Username,
 			Email:    newUser.Email,
 			Password: newUser.Password,
 		})
+
 		if err != nil {
 			fmt.Printf("Error while registering user: %v\n", err)
 			response.SendBadRequestError(w, r, err)
