@@ -23,19 +23,8 @@ func (i *registerRepository) Register(newUser auth.CreateUser) (*auth.User, erro
 		return nil, auth.ErrPwdNotSet
 	}
 
-	// Check if unique email
-	results := i.store.List()
-	users := make([]*auth.User, len(results))
-	for i, l := range results {
-		if item, ok := l.(auth.User); ok {
-			users[i] = &item
-		} else {
-			return nil, errCouldNotParse
-		}
-	}
-
 	i.newID++
-	usr := storedUser{
+	usr := userRecord{
 		ID:        i.newID,
 		UID:       auth.UID(ksuid.New().String()),
 		Username:  newUser.Username,
@@ -46,11 +35,11 @@ func (i *registerRepository) Register(newUser auth.CreateUser) (*auth.User, erro
 		Password:  newUser.HashedPassword,
 	}
 
-	i.store.Add(string(usr.UID), usr)
+	i.store.Add(usr.ID.String(), usr)
 
-	if value, ok := i.store.Get(string(usr.UID)); ok {
-		if usrResult, ok := value.(auth.User); ok {
-			return &usrResult, nil
+	if value, ok := i.store.Get(usr.ID.String()); ok {
+		if record, ok := value.(userRecord); ok {
+			return recordToUser(record), nil
 		}
 		return nil, errCouldNotParse
 	}

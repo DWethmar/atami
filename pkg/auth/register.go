@@ -1,6 +1,8 @@
 package auth
 
-import "errors"
+import (
+	"errors"
+)
 
 var (
 	// ErrUsernameAlreadyTaken error decloration
@@ -41,11 +43,9 @@ func (m *Registrator) Register(newUser RegisterUser) (*User, error) {
 		return nil, err
 	}
 
-	salt := ""
 	createUser := CreateUser{
 		Username:       newUser.Username,
 		Email:          newUser.Email,
-		Salt:           salt,
 		HashedPassword: HashPassword([]byte(newUser.PlainPassword)),
 	}
 

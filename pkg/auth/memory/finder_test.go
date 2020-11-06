@@ -3,96 +3,59 @@ package memory
 import (
 	"fmt"
 	"testing"
-	"time"
 
 	"github.com/dwethmar/atami/pkg/auth"
 	"github.com/dwethmar/atami/pkg/memstore"
-	"github.com/stretchr/testify/assert"
 )
 
-func TestFindAll(t *testing.T) {
+func generateTestUsers(size int) []auth.RegisterUser {
+	users := make([]auth.RegisterUser, size)
+	for i := 0; i < size; i++ {
+		users[i] = auth.RegisterUser{
+			Username:      fmt.Sprintf("username_%d", i+1),
+			Email:         fmt.Sprintf("test-%d@test.com", i+1),
+			PlainPassword: fmt.Sprintf("abcdef1234!@#$ABCD-%d", i+1),
+		}
+	}
+	return users
+}
+
+func setup() (*auth.Finder, []auth.User) {
 	store := memstore.New()
-	a := auth.User{
-		ID:        1,
-		UID:       "x",
-		Email:     "test@test.nl",
-		CreatedAt: time.Now(),
+	service := NewService(store)
+	users := make([]auth.User, 100)
+	for i, testUser := range generateTestUsers(100) {
+		user, err := service.Register(testUser)
+		if err != nil {
+			fmt.Printf("error: %s", err)
+			panic(1)
+		}
+		users[i] = *user
 	}
-	assert.True(t, store.Add(a.ID.String(), a))
+	return NewFinder(store), users
+}
 
-	b := auth.User{
-		ID:        2,
-		UID:       "y",
-		Email:     "test2@test.nl",
-		CreatedAt: time.Now(),
-	}
-	assert.True(t, store.Add(b.ID.String(), b))
-
-	finder := NewFinder(store)
-	auth.TestFindAll(t, finder, 2, []auth.User{
-		a,
-		b,
-	})
+func TestFindAll(t *testing.T) {
+	finder, users := setup()
+	auth.TestFindAll(t, finder, 100, users)
 }
 
 func TestFindByID(t *testing.T) {
-	store := memstore.New()
-	a := auth.User{
-		ID:        1,
-		UID:       "x",
-		Email:     "test@test.nl",
-		CreatedAt: time.Now(),
-	}
-	assert.True(t, store.Add(a.ID.String(), a))
-
-	finder := NewFinder(store)
-	auth.TestFindByID(t, finder, 1)
+	finder, users := setup()
+	auth.TestFindByID(t, finder, users[0].ID)
 }
 
-func TestNotFound(t *testing.T) {
-	store := memstore.New()
-	finder := NewFinder(store)
-	auth.TestNotFound(t, finder)
+func TestUserNotFound(t *testing.T) {
+	finder, _ := setup()
+	auth.TestUserNotFound(t, finder)
 }
 
 func TestFindByEmail(t *testing.T) {
-	store := memstore.New()
-
-	for i := 1; i < 100; i++ {
-		a := auth.User{
-			ID:        auth.ID(i),
-			UID:       auth.UID(fmt.Sprintf("%b", i)),
-			Username:  fmt.Sprintf("username-%d", i),
-			Email:     fmt.Sprintf("test-%d@test.com", i),
-			CreatedAt: time.Now(),
-			UpdatedAt: time.Now(),
-		}
-
-		assert.True(t, store.Add(a.ID.String(), a))
-	}
-
-	finder := NewFinder(store)
+	finder, _ := setup()
 	auth.TestFindByEmail(t, finder, "test-44@test.com")
 }
 
 func TestFindByUsername(t *testing.T) {
-	store := memstore.New()
-
-	for i := 1; i < 100; i++ {
-		a := auth.User{
-			ID:        auth.ID(i),
-			UID:       auth.UID(fmt.Sprintf("%b", i)),
-			Username:  fmt.Sprintf("username-%d", i),
-			Email:     fmt.Sprintf("test-%d@test.com", i),
-			CreatedAt: time.Now(),
-			UpdatedAt: time.Now(),
-		}
-
-		// fmt.Printf("Username: %v\n", a.Username)
-
-		assert.True(t, store.Add(a.ID.String(), a))
-	}
-
-	finder := NewFinder(store)
-	auth.TestFindByUsername(t, finder, "username-44")
+	finder, _ := setup()
+	auth.TestFindByUsername(t, finder, "username_44")
 }

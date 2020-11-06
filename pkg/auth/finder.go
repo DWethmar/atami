@@ -1,6 +1,9 @@
 package auth
 
-import "errors"
+import (
+	"errors"
+	"reflect"
+)
 
 var (
 	// ErrCouldNotFind error
@@ -33,6 +36,11 @@ func (m *Finder) FindByEmail(email string) (*User, error) {
 // FindByUsername searches users by username
 func (m *Finder) FindByUsername(username string) (*User, error) {
 	return m.findRepo.FindByUsername(username)
+}
+
+// RepoType return the repo type
+func (m *Finder) RepoType() reflect.Type {
+	return reflect.TypeOf(m.findRepo)
 }
 
 // FindByID return a list of list items.

@@ -16,8 +16,8 @@ func (f findRepository) FindAll() ([]*auth.User, error) {
 	items := make([]*auth.User, len(results))
 
 	for i, result := range results {
-		if item, ok := result.(auth.User); ok {
-			items[i] = &item
+		if record, ok := result.(userRecord); ok {
+			items[i] = recordToUser(record)
 		} else {
 			return nil, errCouldNotParse
 		}
@@ -29,8 +29,8 @@ func (f findRepository) FindAll() ([]*auth.User, error) {
 // FindByID get one message
 func (f findRepository) FindByID(ID auth.ID) (*auth.User, error) {
 	if result, ok := f.store.Get(ID.String()); ok {
-		if s, ok := result.(userRecord); ok {
-			return recordToUser(s), nil
+		if record, ok := result.(userRecord); ok {
+			return recordToUser(record), nil
 		}
 		return nil, errCouldNotParse
 	}
@@ -40,9 +40,9 @@ func (f findRepository) FindByID(ID auth.ID) (*auth.User, error) {
 // FindByEmail func
 func (f *findRepository) FindByEmail(email string) (*auth.User, error) {
 	for _, result := range f.store.List() {
-		if s, ok := result.(userRecord); ok {
-			if email == s.Email {
-				return recordToUser(s), nil
+		if record, ok := result.(userRecord); ok {
+			if email == record.Email {
+				return recordToUser(record), nil
 			}
 		} else {
 			return nil, errCouldNotParse
@@ -55,9 +55,9 @@ func (f *findRepository) FindByEmail(email string) (*auth.User, error) {
 // FindByEmail func
 func (f *findRepository) FindByUsername(username string) (*auth.User, error) {
 	for _, result := range f.store.List() {
-		if s, ok := result.(userRecord); ok {
-			if username == s.Username {
-				return recordToUser(s), nil
+		if record, ok := result.(userRecord); ok {
+			if username == record.Username {
+				return recordToUser(record), nil
 			}
 		} else {
 			return nil, errCouldNotParse

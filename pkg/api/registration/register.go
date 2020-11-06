@@ -41,7 +41,7 @@ func Register(service auth.Service) http.HandlerFunc {
 			PlainPassword: newUser.Password,
 		})
 
-		if err != nil {
+		if err != nil || user == nil {
 			fmt.Printf("Error while registering user: %v\n", err)
 			response.SendBadRequestError(w, r, err)
 			return

@@ -1,6 +1,7 @@
 package auth
 
 import (
+	"fmt"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
@@ -9,14 +10,14 @@ import (
 // TestFindByID tests the find by id function.
 func TestFindByID(t *testing.T, finder *Finder, ID ID) {
 	m, err := finder.FindByID(ID)
-	assert.Nil(t, err)
+	assert.Nil(t, err, fmt.Sprintf("repo: %s", finder.RepoType()))
 	assert.Equal(t, ID, m.ID)
 }
 
-// TestNotFound tests the ReadOne function for a not found error.
-func TestNotFound(t *testing.T, finder *Finder) {
+// TestUserNotFound tests the ReadOne function for a not found error.
+func TestUserNotFound(t *testing.T, finder *Finder) {
 	_, err := finder.FindByID(ID(0))
-	assert.Equal(t, ErrCouldNotFind, err)
+	assert.Equal(t, ErrCouldNotFind, err, fmt.Sprintf("repo: %s", finder.RepoType()))
 }
 
 // TestFindAll tests the ReadOne function.
@@ -36,7 +37,7 @@ func TestFindAll(t *testing.T, finder *Finder, length int, users []User) {
 // TestFindByEmail tests the search function.
 func TestFindByEmail(t *testing.T, finder *Finder, email string) {
 	result, err := finder.FindByEmail(email)
-	assert.Nil(t, err)
+	assert.Nil(t, err, fmt.Sprintf("Could not find user with email: %s", email))
 	if assert.NotNil(t, result) {
 		assert.Equal(t, email, result.Email)
 	}
@@ -45,7 +46,7 @@ func TestFindByEmail(t *testing.T, finder *Finder, email string) {
 // TestFindByUsername tests the search function.
 func TestFindByUsername(t *testing.T, finder *Finder, username string) {
 	result, err := finder.FindByUsername(username)
-	assert.Nil(t, err)
+	assert.Nil(t, err, fmt.Sprintf("Could not find user with username: %s", username))
 	if assert.NotNil(t, result) {
 		assert.Equal(t, username, result.Username)
 	}

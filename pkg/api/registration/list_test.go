@@ -5,7 +5,6 @@ import (
 	"net/http"
 	"net/http/httptest"
 	"testing"
-	"time"
 
 	"github.com/dwethmar/atami/pkg/auth"
 	userMem "github.com/dwethmar/atami/pkg/auth/memory"
@@ -13,47 +12,27 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
-var now = time.Now()
-
-var users = []*auth.User{
+var users = []*auth.RegisterUser{
 	{
-		ID:        1,
-		UID:       "1",
-		Username:  "Test1",
-		Email:     "test1@test.com",
-		CreatedAt: now,
-		UpdatedAt: now,
+		Username:      "Test1",
+		Email:         "test1@test.com",
+		PlainPassword: "abcd123!@#A",
 	},
 	{
-		ID:        2,
-		UID:       "2",
-		Username:  "Test2",
-		Email:     "test2@test.com",
-		CreatedAt: now,
-		UpdatedAt: now,
-	},
-}
-
-var expectedUsers = []*Responds{
-	{
-		UID:       "1",
-		Username:  "Test1",
-		CreatedAt: now,
-	},
-	{
-		UID:       "2",
-		Username:  "Test2",
-		CreatedAt: now,
+		Username:      "Test2",
+		Email:         "test2@test.com",
+		PlainPassword: "abcd123!@#A",
 	},
 }
 
 func TestList(t *testing.T) {
-	store := memstore.New()
-	for _, user := range users {
-		store.Add(user.ID.String(), *user)
-	}
+	service := userMem.NewService(memstore.New())
 
-	service := userMem.NewService(store)
+	var expectedResponds = make([]*Responds, len(users))
+	for i, user := range users {
+		r, _ := service.Register(*user)
+		expectedResponds[i] = toRespond(r)
+	}
 
 	req, err := http.NewRequest("GET", "/", nil)
 	assert.Nil(t, err)
@@ -66,6 +45,6 @@ func TestList(t *testing.T) {
 	assert.Equal(t, "application/json", rr.Header().Get("Content-Type"), "Content-Type code should be equal")
 
 	// Check the response body is what we expect.
-	expected, _ := json.Marshal(expectedUsers)
+	expected, _ := json.Marshal(expectedResponds)
 	assert.Equal(t, string(expected), rr.Body.String(), "handler returned unexpected body")
 }
