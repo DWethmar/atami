@@ -1,4 +1,4 @@
-package user
+package registration
 
 import (
 	"bytes"
@@ -27,7 +27,7 @@ var invalidUser1 = NewUser{
 
 func TestRegisterUser(t *testing.T) {
 	service := userMemory.NewService(memstore.New())
-	handler := http.HandlerFunc(RegisterUser(service))
+	handler := http.HandlerFunc(Register(service))
 
 	body, _ := json.Marshal(newUser)
 	req := httptest.NewRequest("POST", "/", bytes.NewBuffer(body))
@@ -45,7 +45,7 @@ func TestRegisterUser(t *testing.T) {
 
 func TestRegisterInvalidUser(t *testing.T) {
 	service := userMemory.NewService(memstore.New())
-	handler := http.HandlerFunc(RegisterUser(service))
+	handler := http.HandlerFunc(Register(service))
 
 	requests := []*NewUser{
 		{

@@ -18,8 +18,8 @@ type registerRepository struct {
 }
 
 // Create new user
-func (i *registerRepository) Register(newUser auth.NewUser) (*auth.User, error) {
-	if newUser.Password == "" {
+func (i *registerRepository) Register(newUser auth.CreateUser) (*auth.User, error) {
+	if newUser.HashedPassword == "" {
 		return nil, auth.ErrPwdNotSet
 	}
 
@@ -35,14 +35,15 @@ func (i *registerRepository) Register(newUser auth.NewUser) (*auth.User, error) 
 	}
 
 	i.newID++
-	usr := auth.User{
+	usr := storedUser{
 		ID:        i.newID,
 		UID:       auth.UID(ksuid.New().String()),
 		Username:  newUser.Username,
 		Email:     newUser.Email,
+		Salt:      newUser.Salt,
 		CreatedAt: time.Now(),
 		UpdatedAt: time.Now(),
-		Password:  newUser.Password,
+		Password:  newUser.HashedPassword,
 	}
 
 	i.store.Add(string(usr.UID), usr)

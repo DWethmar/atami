@@ -33,7 +33,6 @@ type User struct {
 	UID       UID
 	Username  string
 	Email     string
-	Password  string
 	CreatedAt time.Time
 	UpdatedAt time.Time
 }
@@ -48,19 +47,27 @@ func (u User) GetEmail() string {
 	return u.Email
 }
 
-// NewUser struct declaration
-type NewUser struct {
-	Username string
-	Email    string
-	Password string
+// RegisterUser struct declaration
+type RegisterUser struct {
+	Username      string
+	Email         string
+	PlainPassword string
+}
+
+// CreateUser struct declaration internal
+type CreateUser struct {
+	Username       string
+	Email          string
+	Salt           string
+	HashedPassword string
 }
 
 // GetUsername return the username
-func (u NewUser) GetUsername() string {
+func (u RegisterUser) GetUsername() string {
 	return u.Username
 }
 
 // GetEmail return the email
-func (u NewUser) GetEmail() string {
+func (u RegisterUser) GetEmail() string {
 	return u.Email
 }

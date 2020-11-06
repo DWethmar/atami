@@ -8,7 +8,7 @@ import (
 )
 
 // TestRegister test the creator repo
-func TestRegister(t *testing.T, register *Registrator, newUser NewUser) {
+func TestRegister(t *testing.T, register *Registrator, newUser RegisterUser) {
 	user, err := register.Register(newUser)
 
 	if assert.NoError(t, err) {
@@ -22,7 +22,7 @@ func TestRegister(t *testing.T, register *Registrator, newUser NewUser) {
 }
 
 // TestDuplicateUsername check if the correct error is returned
-func TestDuplicateUsername(t *testing.T, register *Registrator, newUser NewUser) {
+func TestDuplicateUsername(t *testing.T, register *Registrator, newUser RegisterUser) {
 	_, errOne := register.Register(newUser)
 	assert.NoError(t, errOne)
 
@@ -31,7 +31,7 @@ func TestDuplicateUsername(t *testing.T, register *Registrator, newUser NewUser)
 }
 
 // TestDuplicateEmail check if the correct error is returned
-func TestDuplicateEmail(t *testing.T, register *Registrator, newUser NewUser) {
+func TestDuplicateEmail(t *testing.T, register *Registrator, newUser RegisterUser) {
 	_, errOne := register.Register(newUser)
 	assert.NoError(t, errOne)
 
@@ -41,10 +41,10 @@ func TestDuplicateEmail(t *testing.T, register *Registrator, newUser NewUser) {
 
 // TestEmptyPassword test if the correct error is returned
 func TestEmptyPassword(t *testing.T, register *Registrator) {
-	_, err := register.Register(NewUser{
-		Username: "wow",
-		Email:    "test@test.nl",
-		Password: "",
+	_, err := register.Register(RegisterUser{
+		Username:      "wow",
+		Email:         "test@test.nl",
+		PlainPassword: "",
 	})
 	assert.EqualError(t, err, "password is required")
 }

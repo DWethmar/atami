@@ -6,9 +6,10 @@ import (
 	"net/http"
 
 	"github.com/dwethmar/atami/pkg/api"
-	userApi "github.com/dwethmar/atami/pkg/api/user"
+	"github.com/dwethmar/atami/pkg/api/registration"
 	authMemory "github.com/dwethmar/atami/pkg/auth/memory"
 	"github.com/dwethmar/atami/pkg/memstore"
+	"github.com/go-chi/chi"
 )
 
 func main() {
@@ -16,9 +17,12 @@ func main() {
 
 	userStore := memstore.New()
 	userService := authMemory.NewService(userStore)
-	userHandler := userApi.NewHandler(userService)
+	registartionHandler := registration.NewHandler(userService)
 
-	api := api.NewAPI(api.NewAPI(userHandler))
+	handler := chi.NewRouter()
+	handler.Mount("/auth/register", registartionHandler)
+
+	api := api.NewAPI(api.NewAPI(handler))
 	srv := &http.Server{Addr: ":8080", Handler: api}
 	log.Printf("Serving on :8080")
 	log.Fatal(srv.ListenAndServe())

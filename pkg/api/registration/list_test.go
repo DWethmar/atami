@@ -1,4 +1,4 @@
-package user
+package registration
 
 import (
 	"encoding/json"
@@ -23,7 +23,6 @@ var users = []*auth.User{
 		Email:     "test1@test.com",
 		CreatedAt: now,
 		UpdatedAt: now,
-		Password:  "",
 	},
 	{
 		ID:        2,
@@ -32,7 +31,6 @@ var users = []*auth.User{
 		Email:     "test2@test.com",
 		CreatedAt: now,
 		UpdatedAt: now,
-		Password:  "",
 	},
 }
 

@@ -14,9 +14,9 @@ var (
 	// ErrPasswordRequired error used when there is no username
 	ErrPasswordRequired = errors.New("password is required")
 	// ErrPasswordToShort error used when the username is to short
-	ErrPasswordToShort = fmt.Errorf("password is shorter then %d characters", UsernameMinimunLength)
+	ErrPasswordToShort = fmt.Errorf("password is shorter then %d characters", PasswordMinimunLength)
 	// ErrPasswordToLong error used when the username is to long
-	ErrPasswordToLong = fmt.Errorf("password is longer then %d characters", UsernameMaximumLength)
+	ErrPasswordToLong = fmt.Errorf("password is longer then %d characters", PasswordMaximumLength)
 	// ErrPasswordComplexity error used when the password is too simple
 	ErrPasswordComplexity = errors.New("password is too simple")
 )

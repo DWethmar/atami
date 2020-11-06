@@ -1,4 +1,4 @@
-package user
+package registration
 
 import (
 	"encoding/json"
@@ -17,8 +17,8 @@ type NewUser struct {
 	Password string `json:"password"`
 }
 
-// RegisterUser handler
-func RegisterUser(service auth.Service) http.HandlerFunc {
+// Register handler handles the request to create new user
+func Register(service auth.Service) http.HandlerFunc {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 
 		// if err := r.ParseForm(); err != nil {
@@ -30,15 +30,15 @@ func RegisterUser(service auth.Service) http.HandlerFunc {
 		var newUser = NewUser{}
 		err := json.NewDecoder(r.Body).Decode(&newUser)
 		if err != nil {
-			fmt.Printf("Error while decoding entry: %v", err)
+			fmt.Printf("Error while decoding entry: %v\n", err)
 			response.SendBadRequestError(w, r, errors.New("Invalid input"))
 			return
 		}
 
-		user, err := service.Register(auth.NewUser{
-			Username: newUser.Username,
-			Email:    newUser.Email,
-			Password: newUser.Password,
+		user, err := service.Register(auth.RegisterUser{
+			Username:      newUser.Username,
+			Email:         newUser.Email,
+			PlainPassword: newUser.Password,
 		})
 
 		if err != nil {

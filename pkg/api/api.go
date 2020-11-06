@@ -15,13 +15,16 @@ func (s *API) ServeHTTP(res http.ResponseWriter, req *http.Request) {
 	s.router.ServeHTTP(res, req)
 }
 
+func doNothing(w http.ResponseWriter, r *http.Request) {}
+
 // NewAPI create new API.
-func NewAPI(router http.Handler) *API {
+func NewAPI(handler http.Handler) *API {
 	s := &API{
 		router: chi.NewRouter(),
 	}
 
-	s.router.Mount("/", router)
+	s.router.Get("/favicon.ico", doNothing)
+	s.router.Mount("/", handler)
 
 	return s
 }

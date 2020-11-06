@@ -13,7 +13,7 @@ var (
 
 // RegisterRepository declares a storage repository
 type RegisterRepository interface {
-	Register(newUser NewUser) (*User, error)
+	Register(createUser CreateUser) (*User, error)
 }
 
 // Registrator struct declaration
@@ -24,7 +24,7 @@ type Registrator struct {
 }
 
 // Register registers a new user
-func (m *Registrator) Register(newUser NewUser) (*User, error) {
+func (m *Registrator) Register(newUser RegisterUser) (*User, error) {
 	if usr, err := m.finder.FindByEmail(newUser.Email); usr != nil && err == nil {
 		return nil, ErrEmailAlreadyTaken
 	} else if err != ErrCouldNotFind {
@@ -41,7 +41,15 @@ func (m *Registrator) Register(newUser NewUser) (*User, error) {
 		return nil, err
 	}
 
-	return m.registerRepo.Register(newUser)
+	salt := ""
+	createUser := CreateUser{
+		Username:       newUser.Username,
+		Email:          newUser.Email,
+		Salt:           salt,
+		HashedPassword: HashPassword([]byte(newUser.PlainPassword)),
+	}
+
+	return m.registerRepo.Register(createUser)
 }
 
 // NewRegistartor returns a new searcher

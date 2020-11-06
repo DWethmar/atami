@@ -54,15 +54,15 @@ func TestInvalidEmail(t *testing.T) {
 }
 
 func TestValidNewUser(t *testing.T) {
-	assert.NoError(t, validator.ValidateNewUser(NewUser{
-		Username: "username",
-		Email:    "test@test.nl",
-		Password: "Abcdefgh123@@",
+	assert.NoError(t, validator.ValidateNewUser(RegisterUser{
+		Username:      "username",
+		Email:         "test@test.nl",
+		PlainPassword: "Abcdefgh123@@",
 	}))
 }
 
 func TestInvalidNewUser(t *testing.T) {
-	assert.Error(t, validator.ValidateNewUser(NewUser{
+	assert.Error(t, validator.ValidateNewUser(RegisterUser{
 		Username: "a",
 		Email:    "b",
 	}))

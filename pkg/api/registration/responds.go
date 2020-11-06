@@ -1,4 +1,4 @@
-package user
+package registration
 
 import (
 	"time"
@@ -8,9 +8,9 @@ import (
 
 // Responds struct declaration
 type Responds struct {
-	UID       string
-	Username  string
-	CreatedAt time.Time
+	UID       string    `json:"uid"`
+	Username  string    `json:"username"`
+	CreatedAt time.Time `json:"created_at"`
 }
 
 func toResponds(users []*auth.User) []*Responds {
