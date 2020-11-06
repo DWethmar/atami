@@ -7,7 +7,7 @@ type Service interface {
 	FindByEmail(email string) (*User, error)
 	FindByUsername(username string) (*User, error)
 	Delete(ID ID) error
-	Register(newUser RegisterUser) (*User, error)
+	Register(newUser CreateUser) (*User, error)
 }
 
 type service struct {

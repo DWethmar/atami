@@ -7,7 +7,7 @@ var (
 	ErrCouldNotDelete = errors.New("could not delete user")
 )
 
-// DeleterRepository deletes messsages
+// DeleterRepository deletes user
 type DeleterRepository interface {
 	Delete(ID ID) error
 }

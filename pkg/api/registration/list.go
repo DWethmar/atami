@@ -11,9 +11,6 @@ import (
 // ListUsers handler
 func ListUsers(service auth.Service) http.HandlerFunc {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-
-		fmt.Println(">-------------------------------------->>>")
-
 		if users, err := service.FindAll(); err == nil {
 			response.SendJSON(w, r, toResponds(users), 200)
 		} else {

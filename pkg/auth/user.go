@@ -47,27 +47,38 @@ func (u User) GetEmail() string {
 	return u.Email
 }
 
-// RegisterUser struct declaration
-type RegisterUser struct {
-	Username      string
-	Email         string
-	PlainPassword string
+// CreateUser struct declaration
+type CreateUser struct {
+	Username string
+	Email    string
+	Password string
 }
 
-// CreateUser struct declaration internal
-type CreateUser struct {
+// HashedCreateUser struct declaration internal
+type HashedCreateUser struct {
 	Username       string
 	Email          string
-	Salt           string
 	HashedPassword string
 }
 
 // GetUsername return the username
-func (u RegisterUser) GetUsername() string {
+func (u CreateUser) GetUsername() string {
 	return u.Username
 }
 
 // GetEmail return the email
-func (u RegisterUser) GetEmail() string {
+func (u CreateUser) GetEmail() string {
 	return u.Email
+}
+
+// Credentials is information used to authenticate an user
+type Credentials struct {
+	Email    string
+	Password string
+}
+
+// HashedCredentials is information used to authenticate an user
+type HashedCredentials struct {
+	Email          string
+	HashedPassword string
 }

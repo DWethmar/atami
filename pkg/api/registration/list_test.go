@@ -12,16 +12,16 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
-var users = []*auth.RegisterUser{
+var users = []*auth.CreateUser{
 	{
-		Username:      "Test1",
-		Email:         "test1@test.com",
-		PlainPassword: "abcd123!@#A",
+		Username: "Test1",
+		Email:    "test1@test.com",
+		Password: "abcd123!@#A",
 	},
 	{
-		Username:      "Test2",
-		Email:         "test2@test.com",
-		PlainPassword: "abcd123!@#A",
+		Username: "Test2",
+		Email:    "test2@test.com",
+		Password: "abcd123!@#A",
 	},
 }
 

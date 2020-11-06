@@ -21,18 +21,18 @@ var validator = auth.NewValidator(
 func TestCreate(t *testing.T) {
 	s := memstore.New()
 	register := NewRegistrator(NewFinder(s), validator, s)
-	auth.TestRegister(t, register, auth.RegisterUser{
-		Username:      "username",
-		Email:         "test@test.nl",
-		PlainPassword: "!Test123",
+	auth.TestRegister(t, register, auth.CreateUser{
+		Username: "username",
+		Email:    "test@test.nl",
+		Password: "!Test123",
 	})
 }
 
 func TestDuplicateUsername(t *testing.T) {
-	newUser := auth.RegisterUser{
-		Username:      "username",
-		Email:         "test@test.nl",
-		PlainPassword: "!Test123",
+	newUser := auth.CreateUser{
+		Username: "username",
+		Email:    "test@test.nl",
+		Password: "!Test123",
 	}
 	s := memstore.New()
 	register := NewRegistrator(NewFinder(s), validator, s)
@@ -40,10 +40,10 @@ func TestDuplicateUsername(t *testing.T) {
 }
 
 func TestDuplicateEmail(t *testing.T) {
-	newUser := auth.RegisterUser{
-		Username:      "username",
-		Email:         "test@test.nl",
-		PlainPassword: "!Test123",
+	newUser := auth.CreateUser{
+		Username: "username",
+		Email:    "test@test.nl",
+		Password: "!Test123",
 	}
 	s := memstore.New()
 	register := NewRegistrator(NewFinder(s), validator, s)

@@ -8,13 +8,13 @@ import (
 	"github.com/dwethmar/atami/pkg/memstore"
 )
 
-func generateTestUsers(size int) []auth.RegisterUser {
-	users := make([]auth.RegisterUser, size)
+func generateTestUsers(size int) []auth.CreateUser {
+	users := make([]auth.CreateUser, size)
 	for i := 0; i < size; i++ {
-		users[i] = auth.RegisterUser{
-			Username:      fmt.Sprintf("username_%d", i+1),
-			Email:         fmt.Sprintf("test-%d@test.com", i+1),
-			PlainPassword: fmt.Sprintf("abcdef1234!@#$ABCD-%d", i+1),
+		users[i] = auth.CreateUser{
+			Username: fmt.Sprintf("username_%d", i+1),
+			Email:    fmt.Sprintf("test-%d@test.com", i+1),
+			Password: fmt.Sprintf("abcdef1234!@#$ABCD-%d", i+1),
 		}
 	}
 	return users

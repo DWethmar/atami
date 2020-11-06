@@ -7,7 +7,7 @@ import (
 )
 
 // TestDelete tests the Delete function.
-func TestDelete(t *testing.T, repo DeleterRepository, ID ID) {
-	assert.Nil(t, repo.Delete(ID))
-	assert.Equal(t, ErrCouldNotDelete, repo.Delete(ID))
+func TestDelete(t *testing.T, finder *Deleter, ID ID) {
+	assert.Nil(t, finder.Delete(ID))
+	assert.Equal(t, ErrCouldNotDelete, finder.Delete(ID))
 }

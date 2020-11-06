@@ -49,7 +49,7 @@ func (v Validator) ValidateUser(user User) error {
 }
 
 // ValidateNewUser validates a new user
-func (v Validator) ValidateNewUser(newUser RegisterUser) error {
+func (v Validator) ValidateNewUser(newUser CreateUser) error {
 	err := errValidate{}
 
 	if e := v.validateUsername(newUser); e != nil {
@@ -85,8 +85,8 @@ func (v Validator) validateEmail(user hasEmail) error {
 	return nil
 }
 
-func (v Validator) validatePassword(user RegisterUser) error {
-	if err := v.passwordValidator.Validate(user.PlainPassword); err != nil {
+func (v Validator) validatePassword(user CreateUser) error {
+	if err := v.passwordValidator.Validate(user.Password); err != nil {
 		return err
 	}
 	return nil

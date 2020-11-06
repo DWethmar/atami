@@ -21,12 +21,6 @@ type NewUser struct {
 func Register(service auth.Service) http.HandlerFunc {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 
-		// if err := r.ParseForm(); err != nil {
-		// 	fmt.Fprintf(w, "ParseForm() err: %v", err)
-		// 	response.SendServerError(w, r)
-		// 	return
-		// }
-
 		var newUser = NewUser{}
 		err := json.NewDecoder(r.Body).Decode(&newUser)
 		if err != nil {
@@ -35,10 +29,10 @@ func Register(service auth.Service) http.HandlerFunc {
 			return
 		}
 
-		user, err := service.Register(auth.RegisterUser{
-			Username:      newUser.Username,
-			Email:         newUser.Email,
-			PlainPassword: newUser.Password,
+		user, err := service.Register(auth.CreateUser{
+			Username: newUser.Username,
+			Email:    newUser.Email,
+			Password: newUser.Password,
 		})
 
 		if err != nil || user == nil {

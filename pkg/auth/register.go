@@ -2,6 +2,8 @@ package auth
 
 import (
 	"errors"
+
+	"github.com/dwethmar/atami/pkg/auth/password"
 )
 
 var (
@@ -15,7 +17,7 @@ var (
 
 // RegisterRepository declares a storage repository
 type RegisterRepository interface {
-	Register(createUser CreateUser) (*User, error)
+	Register(createUser HashedCreateUser) (*User, error)
 }
 
 // Registrator struct declaration
@@ -26,7 +28,11 @@ type Registrator struct {
 }
 
 // Register registers a new user
-func (m *Registrator) Register(newUser RegisterUser) (*User, error) {
+func (m *Registrator) Register(newUser CreateUser) (*User, error) {
+	if err := m.validator.ValidateNewUser(newUser); err != nil {
+		return nil, err
+	}
+
 	if usr, err := m.finder.FindByEmail(newUser.Email); usr != nil && err == nil {
 		return nil, ErrEmailAlreadyTaken
 	} else if err != ErrCouldNotFind {
@@ -39,14 +45,10 @@ func (m *Registrator) Register(newUser RegisterUser) (*User, error) {
 		return nil, err
 	}
 
-	if err := m.validator.ValidateNewUser(newUser); err != nil {
-		return nil, err
-	}
-
-	createUser := CreateUser{
+	createUser := HashedCreateUser{
 		Username:       newUser.Username,
 		Email:          newUser.Email,
-		HashedPassword: HashPassword([]byte(newUser.PlainPassword)),
+		HashedPassword: password.HashPassword([]byte(newUser.Password)),
 	}
 
 	return m.registerRepo.Register(createUser)
