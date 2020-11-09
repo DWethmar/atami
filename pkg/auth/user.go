@@ -76,9 +76,3 @@ type Credentials struct {
 	Email    string
 	Password string
 }
-
-// HashedCredentials is information used to authenticate an user
-type HashedCredentials struct {
-	Email          string
-	HashedPassword string
-}

@@ -2,8 +2,6 @@ package auth
 
 import (
 	"errors"
-
-	"github.com/dwethmar/atami/pkg/auth/password"
 )
 
 var (
@@ -23,7 +21,7 @@ type RegisterRepository interface {
 // Registrator struct declaration
 type Registrator struct {
 	validator    *Validator
-	finder       *Finder
+	finder       *Finder // TODO: refactor to repo
 	registerRepo RegisterRepository
 }
 
@@ -48,7 +46,7 @@ func (m *Registrator) Register(newUser CreateUser) (*User, error) {
 	createUser := HashedCreateUser{
 		Username:       newUser.Username,
 		Email:          newUser.Email,
-		HashedPassword: password.HashPassword([]byte(newUser.Password)),
+		HashedPassword: HashPassword([]byte(newUser.Password)),
 	}
 
 	return m.registerRepo.Register(createUser)

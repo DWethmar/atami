@@ -11,7 +11,7 @@ import (
 
 func TestDelete(t *testing.T) {
 	store := memstore.New()
-	a := auth.User{
+	a := userRecord{
 		ID:        1,
 		UID:       "x",
 		Email:     "test@test.nl",

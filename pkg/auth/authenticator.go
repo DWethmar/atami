@@ -1,6 +1,8 @@
 package auth
 
-import "errors"
+import (
+	"errors"
+)
 
 var (
 	// ErrEmailRequired error decloration
@@ -11,12 +13,18 @@ var (
 
 // AuthenticateRepository authenticate user
 type AuthenticateRepository interface {
-	Authenticate(credentials HashedCredentials) (bool, error)
+	Authenticate(credentials Credentials, comparePasswords PasswordComparer) (bool, error)
 }
 
 // Authenticator authenticate with credentials.
 type Authenticator struct {
 	authenticateRepo AuthenticateRepository
+}
+
+type PasswordComparer = func(hashedPassword, password string) bool
+
+func defaultComparePassword(hashedPassword, password string) bool {
+	return ComparePasswords(hashedPassword, []byte(password))
 }
 
 // Authenticate by credentials
@@ -30,10 +38,10 @@ func (m *Authenticator) Authenticate(credentials Credentials) (bool, error) {
 		return false, ErrPasswordRequired
 	}
 
-	return m.authenticateRepo.Authenticate(HashedCredentials{
-		Email:          credentials.Email,
-		HashedPassword: credentials.Password,
-	})
+	return m.authenticateRepo.Authenticate(Credentials{
+		Email:    credentials.Email,
+		Password: credentials.Password,
+	}, defaultComparePassword)
 }
 
 // NewAuthenticator returns a new Authenticator

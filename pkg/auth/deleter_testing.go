@@ -7,7 +7,7 @@ import (
 )
 
 // TestDelete tests the Delete function.
-func TestDelete(t *testing.T, finder *Deleter, ID ID) {
-	assert.Nil(t, finder.Delete(ID))
-	assert.Equal(t, ErrCouldNotDelete, finder.Delete(ID))
+func TestDelete(t *testing.T, deleter *Deleter, ID ID) {
+	assert.Nil(t, deleter.Delete(ID))
+	assert.Equal(t, ErrCouldNotDelete, deleter.Delete(ID))
 }

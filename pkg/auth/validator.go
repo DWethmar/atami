@@ -97,11 +97,19 @@ func NewValidator(
 	usernameValidator *validate.UsernameValidator,
 	emailValidator *validate.EmailValidator,
 	passwordValidator *validate.PasswordValidator,
-
 ) *Validator {
 	return &Validator{
 		usernameValidator,
 		emailValidator,
 		passwordValidator,
 	}
+}
+
+// NewDefaultValidator creates a new validator
+func NewDefaultValidator() *Validator {
+	return NewValidator(
+		validate.NewUsernameValidator(),
+		validate.NewEmailValidator(),
+		validate.NewPasswordValidator(),
+	)
 }

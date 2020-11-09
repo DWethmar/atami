@@ -5,22 +5,11 @@ import (
 
 	"github.com/dwethmar/atami/pkg/auth"
 	"github.com/dwethmar/atami/pkg/memstore"
-	"github.com/dwethmar/atami/pkg/validate"
-)
-
-var emailValidator = validate.NewEmailValidator()
-var usernameValidator = validate.NewUsernameValidator()
-var passwordValidator = validate.NewPasswordValidator()
-
-var validator = auth.NewValidator(
-	usernameValidator,
-	emailValidator,
-	passwordValidator,
 )
 
 func TestCreate(t *testing.T) {
 	s := memstore.New()
-	register := NewRegistrator(NewFinder(s), validator, s)
+	register := NewRegistrator(NewFinder(s), auth.NewDefaultValidator(), s)
 	auth.TestRegister(t, register, auth.CreateUser{
 		Username: "username",
 		Email:    "test@test.nl",
@@ -35,7 +24,7 @@ func TestDuplicateUsername(t *testing.T) {
 		Password: "!Test123",
 	}
 	s := memstore.New()
-	register := NewRegistrator(NewFinder(s), validator, s)
+	register := NewRegistrator(NewFinder(s), auth.NewDefaultValidator(), s)
 	auth.TestDuplicateUsername(t, register, newUser)
 }
 
@@ -46,13 +35,13 @@ func TestDuplicateEmail(t *testing.T) {
 		Password: "!Test123",
 	}
 	s := memstore.New()
-	register := NewRegistrator(NewFinder(s), validator, s)
+	register := NewRegistrator(NewFinder(s), auth.NewDefaultValidator(), s)
 	auth.TestDuplicateEmail(t, register, newUser)
 }
 
 // TestEmptyPassword test if the correct error is returned
 func TestEmptyPassword(t *testing.T) {
 	s := memstore.New()
-	register := NewRegistrator(NewFinder(s), validator, s)
+	register := NewRegistrator(NewFinder(s), auth.NewDefaultValidator(), s)
 	auth.TestEmptyPassword(t, register)
 }
