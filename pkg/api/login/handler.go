@@ -1,4 +1,4 @@
-package registration
+package login
 
 import (
 	"net/http"
@@ -12,11 +12,10 @@ import (
 func NewHandler(service auth.Service) http.Handler {
 	r := chi.NewRouter()
 
-	logger := httplog.NewLogger("registration", httplog.Options{})
+	logger := httplog.NewLogger("login", httplog.Options{})
 	r.Use(httplog.RequestLogger(logger))
 
-	r.Get("/users", ListUsers(service))
-	r.Post("/", Register(service))
+	r.Post("/", Login(service))
 
 	return r
 }

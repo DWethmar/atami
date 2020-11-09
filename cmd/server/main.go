@@ -6,6 +6,9 @@ import (
 	"net/http"
 
 	"github.com/dwethmar/atami/pkg/api"
+	"github.com/dwethmar/atami/pkg/api/login"
+	"github.com/dwethmar/atami/pkg/api/token"
+
 	"github.com/dwethmar/atami/pkg/api/registration"
 	authMemory "github.com/dwethmar/atami/pkg/auth/memory"
 	"github.com/dwethmar/atami/pkg/memstore"
@@ -15,15 +18,19 @@ import (
 func main() {
 	fmt.Println("Staring server")
 
+	if secret, err := token.GetAccessSecret(); secret == "" || err != nil {
+		panic(err)
+	}
+
 	userStore := memstore.New()
 	userService := authMemory.NewService(userStore)
-	registartionHandler := registration.NewHandler(userService)
 
 	handler := chi.NewRouter()
-	handler.Mount("/auth/register", registartionHandler)
+	handler.Mount("/auth/register", registration.NewHandler(userService))
+	handler.Mount("/auth/login", login.NewHandler(userService))
 
 	api := api.NewAPI(api.NewAPI(handler))
-	srv := &http.Server{Addr: ":8080", Handler: api}
-	log.Printf("Serving on :8080")
+	srv := &http.Server{Addr: ":8081", Handler: api}
+	log.Printf("Serving on :8081")
 	log.Fatal(srv.ListenAndServe())
 }

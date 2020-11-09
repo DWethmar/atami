@@ -24,19 +24,26 @@ func Register(service auth.Service) http.HandlerFunc {
 		var newUser = NewUser{}
 		err := json.NewDecoder(r.Body).Decode(&newUser)
 		if err != nil {
-			fmt.Printf("Error while decoding entry: %v\n", err)
+			fmt.Printf("Error decoding entry: %v\n", err)
 			response.SendBadRequestError(w, r, errors.New("Invalid input"))
 			return
 		}
 
-		user, err := service.Register(auth.CreateUser{
+		createUser := auth.CreateUser{
 			Username: newUser.Username,
 			Email:    newUser.Email,
 			Password: newUser.Password,
-		})
+		}
+
+		if err := service.ValidateNewUser(createUser); err != nil {
+			response.SendBadRequestError(w, r, err)
+			return
+		}
+
+		user, err := service.Register(createUser)
 
 		if err != nil || user == nil {
-			fmt.Printf("Error while registering user: %v\n", err)
+			fmt.Printf("Error registering user: %v\n", err)
 			response.SendBadRequestError(w, r, err)
 			return
 		}

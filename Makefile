@@ -17,7 +17,7 @@ server:
 
 serve: 
 	@echo serve server
-	$(GORUN) ./cmd/server/
+	ACCESS_SECRET=abcdefghijlk $(GORUN) ./cmd/server/
 
 test:
 	@echo running tests

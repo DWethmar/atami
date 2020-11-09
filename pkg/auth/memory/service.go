@@ -3,30 +3,30 @@ package memory
 import (
 	"github.com/dwethmar/atami/pkg/auth"
 	"github.com/dwethmar/atami/pkg/memstore"
-	"github.com/dwethmar/atami/pkg/validate"
 )
 
 type service struct {
+	auth.Authenticator
 	auth.Finder
 	auth.Deleter
 	auth.Registrator
+	auth.Validator
 }
 
 // NewService creates a new user service
 func NewService(store *memstore.Store) auth.Service {
-	var validator = auth.NewValidator(
-		validate.NewUsernameValidator(),
-		validate.NewEmailValidator(),
-		validate.NewPasswordValidator(),
-	)
+	var validator = auth.NewDefaultValidator()
 
+	a := NewAuthenticator(store)
 	f := NewFinder(store)
 	d := NewDeleter(store)
 	r := NewRegistrator(f, validator, store)
 
 	return &service{
-		Finder:      *f,
-		Deleter:     *d,
-		Registrator: *r,
+		Authenticator: *a,
+		Finder:        *f,
+		Deleter:       *d,
+		Registrator:   *r,
+		Validator:     *validator,
 	}
 }
