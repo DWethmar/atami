@@ -30,6 +30,7 @@ func TestLogin(t *testing.T) {
 	form := url.Values{}
 	form.Add("email", "test@test.com")
 	form.Add("password", "test123!@#ABC")
+
 	req := httptest.NewRequest("POST", "/auth/login", strings.NewReader(form.Encode()))
 	req.Header.Set("Content-Type", "application/x-www-form-urlencoded")
 
@@ -42,7 +43,6 @@ func TestLogin(t *testing.T) {
 		// Check the response body is what we expect.
 		responds := loginResponds{}
 		assert.NoError(t, json.Unmarshal(rr.Body.Bytes(), &responds))
-		assert.NotEmpty(t, responds.Token)
+		assert.NotEmpty(t, responds.AccessToken)
 	}
-
 }

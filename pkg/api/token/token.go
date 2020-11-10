@@ -8,53 +8,57 @@ import (
 	"github.com/dwethmar/atami/pkg/auth"
 )
 
-// CreateToken creates a new authentication token
-func CreateToken(UID auth.UID, username string) (string, error) {
-	var err error
+// https://www.sohamkamani.com/golang/2019-01-01-jwt-authentication/
 
-	//Creating Access Token
-	secret, err := GetAccessSecret()
-	if err != nil {
-		return "", err
-	}
-
-	atClaims := jwt.MapClaims{}
-	atClaims["username"] = username
-	atClaims["user_uid"] = UID
-	atClaims["exp"] = time.Now().Add(time.Minute * 15).Unix()
-
-	at := jwt.NewWithClaims(jwt.SigningMethodHS256, atClaims)
-	token, err := at.SignedString([]byte(secret))
-
-	if err != nil {
-		return "", err
-	}
-
-	return token, nil
+// Details contains details about a generated token
+type Details struct {
+	AccessToken        string
+	AccessTokenExpires int64
 }
 
-// ValidateToken validate token
-// https://godoc.org/github.com/dgrijalva/jwt-go#example-Parse--Hmac
-func ValidateToken(tokenStr string) (bool, error) {
-	// Parse takes the token string and a function for looking up the key. The latter is especially
-	// useful if you use multiple keys for your application.  The standard is to use 'kid' in the
-	// head of the token to identify which key to use, but the parsed token (head and claims) is provided
-	// to the callback, providing flexibility.
-	token, err := jwt.Parse(tokenStr, func(token *jwt.Token) (interface{}, error) {
-		// Don't forget to validate the alg is what you expect:
+// CreateToken creates a new authentication token
+func CreateToken(UID auth.UID, username string, expiresOn int64) (*Details, error) {
+	td := &Details{}
+
+	td.AccessTokenExpires = expiresOn
+
+	var err error
+	//Creating Access Token
+	claims := jwt.MapClaims{}
+	claims["authorized"] = true
+	claims["uid"] = UID
+	claims["exp"] = td.AccessTokenExpires
+	claims["iat"] = time.Now().Unix()
+
+	at := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)
+
+	accessSecret, err := GetAccessSecret()
+	if err != nil {
+		return nil, err
+	}
+
+	td.AccessToken, err = at.SignedString([]byte(accessSecret))
+	if err != nil {
+		return nil, err
+	}
+
+	return td, nil
+}
+
+// VerifyToken verifies the token
+func VerifyToken(tokenString string) (*jwt.Token, error) {
+	token, err := jwt.Parse(tokenString, func(token *jwt.Token) (interface{}, error) {
+		//Make sure that the token method conform to "SigningMethodHMAC"
 		if _, ok := token.Method.(*jwt.SigningMethodHMAC); !ok {
-			return nil, fmt.Errorf("Unexpected signing method: %v", token.Header["alg"])
+			return nil, fmt.Errorf("unexpected signing method: %v", token.Header["alg"])
 		}
 
-		// hmacSampleSecret is a []byte containing your secret, e.g. []byte("my_secret_key")
 		return GetAccessSecret()
 	})
 
-	if claims, ok := token.Claims.(jwt.MapClaims); ok && token.Valid {
-		fmt.Println(claims["username"], claims["user_uid"])
-	} else {
-		fmt.Println(err)
+	if err != nil {
+		return nil, err
 	}
 
-	return true, nil
+	return token, nil
 }

@@ -4,6 +4,7 @@ import (
 	"errors"
 	"fmt"
 	"net/http"
+	"time"
 
 	"github.com/dwethmar/atami/pkg/api/response"
 	"github.com/dwethmar/atami/pkg/api/token"
@@ -11,7 +12,7 @@ import (
 )
 
 type loginResponds struct {
-	Token string `json:"token"`
+	AccessToken string `json:"access_token"`
 }
 
 // Login handles login requests
@@ -57,15 +58,15 @@ func Login(service auth.Service) http.HandlerFunc {
 			return
 		}
 
-		token, err := token.CreateToken(user.UID, user.Username)
-		if err != nil || token == "" {
+		details, err := token.CreateToken(user.UID, user.Username, time.Now().Add(time.Minute*1).Unix())
+		if err != nil || details.AccessToken == "" {
 			fmt.Printf("Error creating token: %v\n", err)
 			response.SendServerError(w, r)
 			return
 		}
 
 		response.SendJSON(w, r, loginResponds{
-			Token: token,
+			AccessToken: details.AccessToken,
 		}, http.StatusOK)
 	})
 }

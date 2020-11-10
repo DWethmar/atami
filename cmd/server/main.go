@@ -7,6 +7,7 @@ import (
 
 	"github.com/dwethmar/atami/pkg/api"
 	"github.com/dwethmar/atami/pkg/api/login"
+	"github.com/dwethmar/atami/pkg/api/thread"
 	"github.com/dwethmar/atami/pkg/api/token"
 
 	"github.com/dwethmar/atami/pkg/api/registration"
@@ -18,7 +19,7 @@ import (
 func main() {
 	fmt.Println("Staring server")
 
-	if secret, err := token.GetAccessSecret(); secret == "" || err != nil {
+	if secret, err := token.GetAccessSecret(); secret == nil || err != nil {
 		panic(err)
 	}
 
@@ -28,6 +29,8 @@ func main() {
 	handler := chi.NewRouter()
 	handler.Mount("/auth/register", registration.NewHandler(userService))
 	handler.Mount("/auth/login", login.NewHandler(userService))
+
+	handler.Mount("/threads", thread.NewHandler(userService))
 
 	api := api.NewAPI(api.NewAPI(handler))
 	srv := &http.Server{Addr: ":8081", Handler: api}
