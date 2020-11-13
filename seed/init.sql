@@ -15,7 +15,7 @@ VALUES (
     '$2a$04$MO1v6z7S8FNOj3GjY7yIzOMw6sfgMCTdLknXz4jMuFBGJA6CmI9zC',
     '2020-11-13 15:33:00.972651',
     '2020-11-13 15:33:00.972651'
-)
+);
 
 INSERT INTO public.user (
 	uid,
@@ -32,6 +32,6 @@ VALUES (
     '$2a$04$"1kF488tsFU3qQkuXKWwUrPEI79K"',
     '2020-11-13 15:54:03.662978',
     '2020-11-13 15:54:03.662978'
-)
+);
 
 COMMIT;
