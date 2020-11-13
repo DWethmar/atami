@@ -2,7 +2,6 @@ package postgres
 
 import (
 	"database/sql"
-	"fmt"
 
 	"github.com/dwethmar/atami/pkg/auth"
 )
@@ -28,9 +27,6 @@ type authenticatorRepository struct {
 // Authenticate an user
 func (a authenticatorRepository) Authenticate(credentials auth.Credentials, comparePasswords auth.PasswordComparer) (bool, error) {
 	entry := &authUser{}
-
-	fmt.Printf("Yo whats is going on with those emails %v \n", credentials.Email)
-
 	if err := a.db.QueryRow(authUserByEmail, credentials.Email).Scan(
 		&entry.Password,
 		&entry.Email,
@@ -38,9 +34,6 @@ func (a authenticatorRepository) Authenticate(credentials auth.Credentials, comp
 		if err == sql.ErrNoRows {
 			return false, auth.ErrCouldNotFind
 		}
-
-		fmt.Printf(" :( %v", err)
-
 		return false, err
 	}
 
