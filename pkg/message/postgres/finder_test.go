@@ -16,7 +16,7 @@ func generateTestMessages(size int) []message.NewMessage {
 	for i := 0; i < size; i++ {
 		messages[i] = message.NewMessage{
 			Text:      fmt.Sprintf("Lorum ipsum %d", i+1),
-			CreatedBy: model.UserID(i),
+			CreatedBy: model.UserID(1),
 		}
 	}
 	return messages
