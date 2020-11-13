@@ -55,7 +55,7 @@ jobs:
         POSTGRES_PORT: 5432
         POSTGRES_USER: postgres
         POSTGRES_PASSWORD: postgres
-        POSTGRES_DATABASE: go_api
+        POSTGRES_DATABASE: atami
         DB_DRIVER_NAME: postgres
         MIGRATION_FILES: /home/runner/work/go-api/go-api/scripts/migrations/
         TEST_WITH_DB: true
