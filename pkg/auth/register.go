@@ -2,7 +2,6 @@ package auth
 
 import (
 	"errors"
-	"fmt"
 )
 
 var (
@@ -45,7 +44,6 @@ func (m *Registrator) Register(newUser CreateUser) (*User, error) {
 	}
 
 	hashedPassword := HashPassword([]byte(newUser.Password))
-	fmt.Printf("Register: hashed password: %v to %v \n", newUser.Password, hashedPassword)
 
 	createUser := HashedCreateUser{
 		Username:       newUser.Username,
