@@ -39,8 +39,19 @@ func setup(db *sql.DB) (*auth.Finder, []model.User) {
 
 func TestFindAll(t *testing.T) {
 	assert.NoError(t, database.WithTestDB(t, func(db *sql.DB) error {
+		var existingUsers []model.User
+		finder := NewFinder(db)
+		if users, err := finder.FindAll(); err == nil {
+			for _, u := range users {
+				existingUsers = append(existingUsers, *u)
+			}
+		} else {
+			assert.Fail(t, "could not query users")
+		}
+
 		finder, users := setup(db)
-		auth.TestFindAll(t, finder, 100, users)
+		users = append(existingUsers, users...)
+		auth.TestFindAll(t, finder, 100+len(existingUsers), users)
 
 		return nil
 	}))

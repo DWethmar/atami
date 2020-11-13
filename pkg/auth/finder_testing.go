@@ -25,12 +25,12 @@ func TestFindAll(t *testing.T, finder *Finder, length int, users []model.User) {
 	list, err := finder.FindAll()
 
 	assert.Nil(t, err)
-	assert.Equal(t, length, len(list))
-
-	for i, user := range list {
-		assert.Equal(t, users[i].ID, user.ID)
-		assert.Equal(t, users[i].UID, user.UID)
-		assert.Equal(t, users[i].Email, user.Email)
+	if assert.Equal(t, length, len(list)) {
+		for i, user := range list {
+			assert.Equal(t, users[i].ID, user.ID)
+			assert.Equal(t, users[i].UID, user.UID)
+			assert.Equal(t, users[i].Email, user.Email)
+		}
 	}
 }
 
