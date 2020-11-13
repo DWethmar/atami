@@ -2,7 +2,6 @@ package postgres
 
 import (
 	"database/sql"
-	"errors"
 	"fmt"
 	"time"
 
@@ -27,7 +26,6 @@ type creatorRepository struct {
 
 // Create new message
 func (i creatorRepository) Create(newMessage message.NewMessage) (*message.Message, error) {
-	uid := model.MessageUID(ksuid.New().String())
 
 	stmt, err := i.db.Prepare(insertUser)
 	if err != nil {
@@ -35,14 +33,12 @@ func (i creatorRepository) Create(newMessage message.NewMessage) (*message.Messa
 	}
 	defer stmt.Close()
 
-	now := time.Now().UTC()
-
 	var messageID int
 	if stmt.QueryRow(
-		uid,
+		model.MessageUID(ksuid.New().String()),
 		newMessage.Text,
 		newMessage.CreatedBy,
-		now,
+		time.Now().UTC(),
 	).Scan(&messageID); err != nil {
 		return nil, err
 	}
@@ -61,7 +57,7 @@ func (i creatorRepository) Create(newMessage message.NewMessage) (*message.Messa
 		return entry, nil
 	}
 
-	return nil, errors.New("could not create message")
+	return nil, fmt.Errorf("could not create message with id %v", messageID)
 }
 
 // NewCreator creates new messages creator.
