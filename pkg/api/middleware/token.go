@@ -32,11 +32,12 @@ func UserUIDFromContext(ctx context.Context) (auth.UID, error) {
 	return v, nil
 }
 
-// Authenticated handles auth requests
-func Authenticated(next http.Handler) http.Handler {
+// Token handles auth requests
+func Token(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		reqToken := r.Header.Get("Authorization")
 		splitToken := strings.Split(reqToken, "Bearer ")
+
 		if len(splitToken) != 2 {
 			response.SendBadRequestError(w, r, errors.New("Invalid authorization header"))
 			return

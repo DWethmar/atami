@@ -26,6 +26,8 @@ func TestDuplicateUsername(t *testing.T, register *Registrator, newUser CreateUs
 	_, errOne := register.Register(newUser)
 	assert.NoError(t, errOne)
 
+	newUser.Email = "new_" + newUser.Email
+
 	_, errTwo := register.Register(newUser)
 	assert.Equal(t, ErrUsernameAlreadyTaken, errTwo)
 }
@@ -34,6 +36,8 @@ func TestDuplicateUsername(t *testing.T, register *Registrator, newUser CreateUs
 func TestDuplicateEmail(t *testing.T, register *Registrator, newUser CreateUser) {
 	_, errOne := register.Register(newUser)
 	assert.NoError(t, errOne)
+
+	newUser.Username = "new_" + newUser.Username
 
 	_, errTwo := register.Register(newUser)
 	assert.Equal(t, ErrEmailAlreadyTaken, errTwo)

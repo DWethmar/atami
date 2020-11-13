@@ -12,7 +12,6 @@ type authenticatorRepository struct {
 
 // Authenticate an user
 func (a authenticatorRepository) Authenticate(credentials auth.Credentials, comparePasswords auth.PasswordComparer) (bool, error) {
-
 	var rUser *userRecord
 
 	for _, result := range a.store.List() {

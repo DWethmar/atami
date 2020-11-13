@@ -22,3 +22,7 @@ serve:
 test:
 	@echo running tests
 	$(GOTEST) ./...
+
+test-with-db:
+	@echo running tests with database
+	./run-tests-with-db.sh

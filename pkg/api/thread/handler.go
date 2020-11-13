@@ -15,7 +15,7 @@ func NewHandler(service auth.Service) http.Handler {
 
 	logger := httplog.NewLogger("thread", httplog.Options{})
 	r.Use(httplog.RequestLogger(logger))
-	r.Use(middleware.Authenticated)
+	r.Use(middleware.Token)
 
 	r.Get("/", Thread(service))
 

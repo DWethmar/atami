@@ -21,6 +21,7 @@ type Authenticator struct {
 	authenticateRepo AuthenticateRepository
 }
 
+// PasswordComparer compares a hash against a password
 type PasswordComparer = func(hashedPassword, password string) bool
 
 func defaultComparePassword(hashedPassword, password string) bool {

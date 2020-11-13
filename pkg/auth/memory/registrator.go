@@ -43,7 +43,7 @@ func (i *registerRepository) Register(newUser auth.HashedCreateUser) (*auth.User
 		return nil, errCouldNotParse
 	}
 
-	return nil, errors.New("error while finding user")
+	return nil, errors.New("could not register user")
 }
 
 // NewRegistrator creates new registartor.

@@ -2,13 +2,14 @@ package auth
 
 import (
 	"errors"
+	"fmt"
 )
 
 var (
 	// ErrUsernameAlreadyTaken error decloration
 	ErrUsernameAlreadyTaken = errors.New("username is unavailable")
 	// ErrEmailAlreadyTaken error decloration
-	ErrEmailAlreadyTaken = errors.New("username is unavailable")
+	ErrEmailAlreadyTaken = errors.New("email is unavailable")
 	// ErrPwdNotSet error decloration
 	ErrPwdNotSet = errors.New("password not set")
 )
@@ -33,20 +34,23 @@ func (m *Registrator) Register(newUser CreateUser) (*User, error) {
 
 	if usr, err := m.finder.FindByEmail(newUser.Email); usr != nil && err == nil {
 		return nil, ErrEmailAlreadyTaken
-	} else if err != ErrCouldNotFind {
+	} else if err != nil && err != ErrCouldNotFind {
 		return nil, err
 	}
 
 	if usr, err := m.finder.FindByUsername(newUser.Username); usr != nil && err == nil {
 		return nil, ErrUsernameAlreadyTaken
-	} else if err != ErrCouldNotFind {
+	} else if err != nil && err != ErrCouldNotFind {
 		return nil, err
 	}
+
+	hashedPassword := HashPassword([]byte(newUser.Password))
+	fmt.Printf("Register: hashed password: %v to %v \n", newUser.Password, hashedPassword)
 
 	createUser := HashedCreateUser{
 		Username:       newUser.Username,
 		Email:          newUser.Email,
-		HashedPassword: HashPassword([]byte(newUser.Password)),
+		HashedPassword: hashedPassword,
 	}
 
 	return m.registerRepo.Register(createUser)
