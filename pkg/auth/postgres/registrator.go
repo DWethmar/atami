@@ -3,17 +3,16 @@ package postgres
 import (
 	"database/sql"
 	"errors"
-	"log"
+	"fmt"
 	"time"
 
 	"github.com/dwethmar/atami/pkg/auth"
+	"github.com/dwethmar/atami/pkg/model"
 	"github.com/segmentio/ksuid"
 )
 
-var layoutISO = "2006-01-02"
-
-var insertUser = `
-INSERT INTO public.user (
+var insertUser = fmt.Sprintf(`
+INSERT INTO %s (
 	uid,
 	username, 
 	email,
@@ -21,7 +20,7 @@ INSERT INTO public.user (
 	created_on, 
 	updated_on
 )
-VALUES ($1, $2, $3, $4, $5, $6) RETURNING id`
+VALUES ($1, $2, $3, $4, $5, $6) RETURNING id`, tableName)
 
 // registerRepository stores new messages
 type registerRepository struct {
@@ -34,11 +33,11 @@ func (i *registerRepository) Register(newUser auth.HashedCreateUser) (*auth.User
 		return nil, auth.ErrPwdNotSet
 	}
 
-	uid := auth.UID(ksuid.New().String())
+	uid := model.UserUID(ksuid.New().String())
 
 	stmt, err := i.db.Prepare(insertUser)
 	if err != nil {
-		log.Fatal(err)
+		return nil, err
 	}
 	defer stmt.Close()
 

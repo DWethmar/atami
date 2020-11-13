@@ -4,25 +4,14 @@ import (
 	"database/sql"
 	"errors"
 	"testing"
-	"time"
 
 	"github.com/dwethmar/atami/pkg/auth"
 	"github.com/dwethmar/atami/pkg/database"
-	"github.com/dwethmar/atami/pkg/memstore"
 	"github.com/stretchr/testify/assert"
 )
 
 func TestDelete(t *testing.T) {
 	assert.NoError(t, database.WithTestDB(t, func(db *sql.DB) error {
-		store := memstore.New()
-		a := userRecord{
-			ID:        1,
-			UID:       "x",
-			Email:     "test@test.nl",
-			CreatedAt: time.Now(),
-		}
-		assert.True(t, store.Add(a.ID.String(), a))
-
 		registrator := NewRegistrator(
 			NewFinder(db),
 			auth.NewDefaultValidator(),
@@ -44,8 +33,7 @@ func TestDelete(t *testing.T) {
 		}
 
 		deleter := NewDeleter(db)
-		auth.TestDelete(t, deleter, a.ID)
+		auth.TestDelete(t, deleter, user.ID)
 		return nil
 	}))
-
 }

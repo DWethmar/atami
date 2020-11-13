@@ -1,6 +1,10 @@
 package auth
 
-import "errors"
+import (
+	"errors"
+
+	"github.com/dwethmar/atami/pkg/model"
+)
 
 var (
 	// ErrCouldNotDelete error
@@ -9,7 +13,7 @@ var (
 
 // DeleterRepository deletes user
 type DeleterRepository interface {
-	Delete(ID ID) error
+	Delete(ID model.UserID) error
 }
 
 // Deleter deletes messages.
@@ -18,7 +22,7 @@ type Deleter struct {
 }
 
 // Delete a message
-func (m *Deleter) Delete(ID ID) error {
+func (m *Deleter) Delete(ID model.UserID) error {
 	return m.deleteRepo.Delete(ID)
 }
 

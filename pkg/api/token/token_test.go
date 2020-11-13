@@ -6,14 +6,14 @@ import (
 	"testing"
 	"time"
 
-	"github.com/dwethmar/atami/pkg/auth"
+	"github.com/dwethmar/atami/pkg/model"
 	"github.com/stretchr/testify/assert"
 )
 
 func TestToken(t *testing.T) {
 	os.Setenv("ACCESS_SECRET", "test123")
 
-	details, err := CreateToken(auth.UID("abc123"), "username", time.Now().Add(time.Hour*10).Unix())
+	details, err := CreateToken(model.UserUID("abc123"), "username", time.Now().Add(time.Hour*10).Unix())
 	assert.NoError(t, err)
 
 	if token, err := VerifyToken(details.AccessToken); err != nil || !token.Valid {
@@ -24,7 +24,7 @@ func TestToken(t *testing.T) {
 func TestInvalidToken(t *testing.T) {
 	os.Setenv("ACCESS_SECRET", "test123")
 
-	details, err := CreateToken(auth.UID("abc123"), "username", 1605036741)
+	details, err := CreateToken(model.UserUID("abc123"), "username", 1605036741)
 	assert.NoError(t, err)
 
 	if _, err := VerifyToken(details.AccessToken); err == nil {

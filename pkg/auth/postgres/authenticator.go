@@ -2,6 +2,7 @@ package postgres
 
 import (
 	"database/sql"
+	"fmt"
 
 	"github.com/dwethmar/atami/pkg/auth"
 )
@@ -11,13 +12,13 @@ type authUser struct {
 	Password string
 }
 
-var authUserByEmail = `
+var authUserByEmail = fmt.Sprintf(`
 SELECT
 	password,
 	email
-FROM public.user
+FROM %s
 WHERE email = $1
-LIMIT 1`
+LIMIT 1`, tableName)
 
 // AuthenticatorRepository authenticates users by credentials.
 type authenticatorRepository struct {

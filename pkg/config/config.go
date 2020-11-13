@@ -17,6 +17,7 @@ type Config struct {
 	DBMigrationVersion uint
 	AccessSecret       string
 	TestWithDB         bool
+	TestSeedSQLFile    string
 }
 
 // Valid checks if the config has valid values.
@@ -80,6 +81,7 @@ func Load() Config {
 		testWithDB = success && v == "true"
 	}
 
+	testSeedFile := os.Getenv("TEST_SEED_FILE")
 	dbMigrationVersion := uint(1)
 	accessSecret := os.Getenv("ACCESS_SECRET")
 
@@ -94,5 +96,6 @@ func Load() Config {
 		DBMigrationVersion: dbMigrationVersion,
 		AccessSecret:       accessSecret,
 		TestWithDB:         testWithDB,
+		TestSeedSQLFile:    testSeedFile,
 	}
 }

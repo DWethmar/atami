@@ -3,7 +3,7 @@ package registration
 import (
 	"time"
 
-	"github.com/dwethmar/atami/pkg/auth"
+	"github.com/dwethmar/atami/pkg/model"
 )
 
 // Responds struct declaration
@@ -13,7 +13,7 @@ type Responds struct {
 	CreatedAt time.Time `json:"created_at"`
 }
 
-func toResponds(users []*auth.User) []*Responds {
+func toResponds(users []*model.User) []*Responds {
 	r := make([]*Responds, len(users))
 	for i, user := range users {
 		r[i] = toRespond(user)
@@ -21,7 +21,7 @@ func toResponds(users []*auth.User) []*Responds {
 	return r
 }
 
-func toRespond(user *auth.User) *Responds {
+func toRespond(user *model.User) *Responds {
 	return &Responds{
 		UID:       user.UID.String(),
 		Username:  user.Username,

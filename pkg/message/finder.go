@@ -1,6 +1,10 @@
 package message
 
-import "errors"
+import (
+	"errors"
+
+	"github.com/dwethmar/atami/pkg/model"
+)
 
 var (
 	// ErrCouldNotFind error
@@ -9,7 +13,7 @@ var (
 
 // FindRepository defines a messsage listing repository
 type FindRepository interface {
-	FindByID(ID ID) (*Message, error)
+	FindByID(ID model.MessageID) (*Message, error)
 	FindAll() ([]*Message, error)
 }
 
@@ -19,13 +23,27 @@ type Finder struct {
 }
 
 // FindByID return a list of list items.
-func (m *Finder) FindByID(ID ID) (*Message, error) {
-	return m.readerRepo.FindByID(ID)
+func (m *Finder) FindByID(ID model.MessageID) (*model.Message, error) {
+	message, err := m.readerRepo.FindByID(ID)
+	if err != nil {
+		return nil, err
+	}
+	return toMessage(message), nil
 }
 
 // FindAll return a list of list items.
-func (m *Finder) FindAll() ([]*Message, error) {
-	return m.readerRepo.FindAll()
+func (m *Finder) FindAll() ([]*model.Message, error) {
+	results, err := m.readerRepo.FindAll()
+	if err != nil {
+		return nil, err
+	}
+
+	messages := make([]*model.Message, len(results))
+	for i, result := range results {
+		messages[i] = toMessage(result)
+	}
+
+	return messages, nil
 }
 
 // NewFinder returns a new Listing

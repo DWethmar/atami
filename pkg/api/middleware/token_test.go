@@ -4,12 +4,12 @@ import (
 	"net/http/httptest"
 	"testing"
 
-	"github.com/dwethmar/atami/pkg/auth"
+	"github.com/dwethmar/atami/pkg/model"
 	"github.com/stretchr/testify/assert"
 )
 
 func TestAuthenticated(t *testing.T) {
-	UID := auth.UID("abc")
+	UID := model.UserUID("abc")
 
 	req := httptest.NewRequest("POST", "/", nil)
 	ctx := req.Context()

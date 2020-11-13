@@ -1,23 +1,10 @@
 package auth
 
 import (
-	"strconv"
 	"time"
+
+	"github.com/dwethmar/atami/pkg/model"
 )
-
-// ID type the id type used for users
-type ID int64
-
-func (ID ID) String() string {
-	return strconv.FormatInt(int64(ID), 10)
-}
-
-// UID type the unique identifier for users.
-type UID string
-
-func (UID UID) String() string {
-	return string(UID)
-}
 
 type hasUsername interface {
 	GetUsername() string
@@ -29,8 +16,8 @@ type hasEmail interface {
 
 // User struct declaration
 type User struct {
-	ID        ID
-	UID       UID
+	ID        model.UserID
+	UID       model.UserUID
 	Username  string
 	Email     string
 	CreatedAt time.Time
@@ -75,4 +62,15 @@ func (u CreateUser) GetEmail() string {
 type Credentials struct {
 	Email    string
 	Password string
+}
+
+func toUser(user *User) *model.User {
+	return &model.User{
+		ID:        user.ID,
+		UID:       user.UID,
+		Username:  user.Username,
+		Email:     user.Email,
+		CreatedAt: user.CreatedAt,
+		UpdatedAt: user.UpdatedAt,
+	}
 }

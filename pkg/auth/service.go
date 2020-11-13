@@ -1,14 +1,16 @@
 package auth
 
+import "github.com/dwethmar/atami/pkg/model"
+
 // Service defines interations with users
 type Service interface {
 	Authenticate(credentials Credentials) (bool, error)
-	FindAll() ([]*User, error)
-	FindByID(ID ID) (*User, error)
-	FindByEmail(email string) (*User, error)
-	FindByUsername(username string) (*User, error)
-	Delete(ID ID) error
-	Register(newUser CreateUser) (*User, error)
+	FindAll() ([]*model.User, error)
+	FindByID(ID model.UserID) (*model.User, error)
+	FindByEmail(email string) (*model.User, error)
+	FindByUsername(username string) (*model.User, error)
+	Delete(ID model.UserID) error
+	Register(newUser CreateUser) (*model.User, error)
 	ValidateUser(user User) error
 	ValidateNewUser(newUser CreateUser) error
 }

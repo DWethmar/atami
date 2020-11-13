@@ -1,6 +1,10 @@
 package message
 
-import "errors"
+import (
+	"errors"
+
+	"github.com/dwethmar/atami/pkg/model"
+)
 
 var (
 	// ErrCouldNotDelete error
@@ -9,7 +13,7 @@ var (
 
 // DeleterRepository deletes messsages
 type DeleterRepository interface {
-	Delete(ID ID) error
+	Delete(ID model.MessageID) error
 }
 
 // Deleter deletes messages.
@@ -18,7 +22,7 @@ type Deleter struct {
 }
 
 // Delete a message
-func (m *Deleter) Delete(ID ID) error {
+func (m *Deleter) Delete(ID model.MessageID) error {
 	return m.deleteRepo.Delete(ID)
 }
 

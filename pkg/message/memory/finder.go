@@ -3,6 +3,7 @@ package memory
 import (
 	"github.com/dwethmar/atami/pkg/memstore"
 	"github.com/dwethmar/atami/pkg/message"
+	"github.com/dwethmar/atami/pkg/model"
 )
 
 // readerRepository reads messages from memory
@@ -11,7 +12,7 @@ type findRepository struct {
 }
 
 // FindByID get one message
-func (i findRepository) FindByID(ID message.ID) (*message.Message, error) {
+func (i findRepository) FindByID(ID model.MessageID) (*message.Message, error) {
 	result, ok := i.store.Get(ID.String())
 	if ok {
 		if message, ok := result.(message.Message); ok {

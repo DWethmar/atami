@@ -3,6 +3,7 @@ package memory
 import (
 	"github.com/dwethmar/atami/pkg/auth"
 	"github.com/dwethmar/atami/pkg/memstore"
+	"github.com/dwethmar/atami/pkg/model"
 )
 
 // findRepository reads messages from memory
@@ -27,7 +28,7 @@ func (f findRepository) FindAll() ([]*auth.User, error) {
 }
 
 // FindByID get one message
-func (f findRepository) FindByID(ID auth.ID) (*auth.User, error) {
+func (f findRepository) FindByID(ID model.UserID) (*auth.User, error) {
 	if result, ok := f.store.Get(ID.String()); ok {
 		if record, ok := result.(userRecord); ok {
 			return recordToUser(record), nil
