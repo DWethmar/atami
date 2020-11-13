@@ -40,7 +40,7 @@ func setup(db *sql.DB) (*message.Finder, []model.Message) {
 func TestReadOne(t *testing.T) {
 	assert.NoError(t, database.WithTestDB(t, func(db *sql.DB) error {
 		finder, messages := setup(db)
-		message.TestReadOne(t, finder, model.MessageID(10), messages[9])
+		message.TestFindOne(t, finder, model.MessageID(10), messages[9])
 		return nil
 	}))
 }
@@ -56,7 +56,7 @@ func TestNotFound(t *testing.T) {
 func TestReadAll(t *testing.T) {
 	assert.NoError(t, database.WithTestDB(t, func(db *sql.DB) error {
 		finder, messages := setup(db)
-		message.TestReadAll(t, finder, 100, messages)
+		message.TestFindAll(t, finder, 100, messages)
 		return nil
 	}))
 }

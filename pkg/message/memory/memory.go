@@ -3,5 +3,5 @@ package memory
 import "errors"
 
 var (
-	errCouldNotParse = errors.New("could not parse user")
+	errCouldNotParse = errors.New("could not parse message")
 )

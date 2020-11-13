@@ -12,7 +12,7 @@ type findRepository struct {
 }
 
 // FindByID get one message
-func (i findRepository) FindByID(ID model.MessageID) (*message.Message, error) {
+func (i *findRepository) FindByID(ID model.MessageID) (*message.Message, error) {
 	result, ok := i.store.Get(ID.String())
 	if ok {
 		if message, ok := result.(message.Message); ok {
@@ -24,7 +24,7 @@ func (i findRepository) FindByID(ID model.MessageID) (*message.Message, error) {
 }
 
 // FindAll get multiple messages
-func (i findRepository) FindAll() ([]*message.Message, error) {
+func (i *findRepository) FindAll() ([]*message.Message, error) {
 	results := i.store.List()
 	items := make([]*message.Message, len(results))
 

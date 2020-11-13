@@ -15,11 +15,13 @@ type Message struct {
 	CreatedAt time.Time
 }
 
-func toMessage(message *Message) *model.Message {
+// ToMessage maps a message to a model message
+func ToMessage(message *Message) *model.Message {
 	return &model.Message{
 		ID:        message.ID,
 		UID:       message.UID,
 		Text:      message.Text,
+		CreatedBy: message.CreatedBy,
 		CreatedAt: message.CreatedAt,
 	}
 }

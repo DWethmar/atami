@@ -24,7 +24,7 @@ func (m *Creator) Create(newMessage NewMessage) (*model.Message, error) {
 	if err != nil {
 		return nil, err
 	}
-	return toMessage(message), nil
+	return ToMessage(message), nil
 }
 
 // NewCreator returns a new Listing

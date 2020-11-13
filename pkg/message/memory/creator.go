@@ -17,18 +17,19 @@ type creatorRepository struct {
 }
 
 // Create new message
-func (i creatorRepository) Create(newMessage message.NewMessage) (*message.Message, error) {
+func (i *creatorRepository) Create(newMessage message.NewMessage) (*message.Message, error) {
 	i.newID++
 	uid := model.MessageUID(ksuid.New().String())
-
-	i.store.Add(string(uid), message.Message{
+	msg := message.Message{
 		ID:        i.newID,
 		UID:       uid,
 		Text:      newMessage.Text,
 		CreatedAt: time.Now(),
-	})
+		CreatedBy: newMessage.CreatedBy,
+	}
+	i.store.Add(msg.ID.String(), msg)
 
-	if value, ok := i.store.Get(string(uid)); ok {
+	if value, ok := i.store.Get(msg.ID.String()); ok {
 		if msg, ok := value.(message.Message); ok {
 			return &msg, nil
 		}

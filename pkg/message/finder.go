@@ -28,7 +28,7 @@ func (m *Finder) FindByID(ID model.MessageID) (*model.Message, error) {
 	if err != nil {
 		return nil, err
 	}
-	return toMessage(message), nil
+	return ToMessage(message), nil
 }
 
 // FindAll return a list of list items.
@@ -40,7 +40,7 @@ func (m *Finder) FindAll() ([]*model.Message, error) {
 
 	messages := make([]*model.Message, len(results))
 	for i, result := range results {
-		messages[i] = toMessage(result)
+		messages[i] = ToMessage(result)
 	}
 
 	return messages, nil
