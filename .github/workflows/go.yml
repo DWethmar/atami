@@ -46,7 +46,7 @@ jobs:
         fi
 
     - name: Build
-      run: make buildServer
+      run: make server
 
     - name: Test
       run: go test -test.v ./...
