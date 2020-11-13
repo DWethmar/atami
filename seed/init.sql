@@ -9,7 +9,7 @@ INSERT INTO public.user (
 	updated_on
 )
 VALUES (
-    '1kF1ZTVJ3xknUgLWAAmPRKX3r8X'
+    '1kF1ZTVJ3xknUgLWAAmPRKX3r8X',
     'testaccount_1',
     'testaccount_1@test.com',
     '$2a$04$MO1v6z7S8FNOj3GjY7yIzOMw6sfgMCTdLknXz4jMuFBGJA6CmI9zC',
@@ -26,7 +26,7 @@ INSERT INTO public.user (
 	updated_on
 )
 VALUES (
-    '1kF488tsFU3qQkuXKWwUrPEI79K'
+    '1kF488tsFU3qQkuXKWwUrPEI79K',
     'testaccount_2',
     'testaccount_2@test.com',
     '$2a$04$"1kF488tsFU3qQkuXKWwUrPEI79K"',
