@@ -59,3 +59,5 @@ jobs:
         DB_DRIVER_NAME: postgres
         MIGRATION_FILES: /home/runner/work/go-api/go-api/scripts/migrations/
         TEST_WITH_DB: true
+        ACCESS_SECRET: "abcdefghijklmnopqrstuvwxyz"
+
