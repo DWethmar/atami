@@ -1,5 +1,7 @@
 package message
 
+import "github.com/dwethmar/atami/pkg/model"
+
 // NewMessage model
 type NewMessage struct {
 	Content string
@@ -16,8 +18,12 @@ type Creator struct {
 }
 
 // Create a new message
-func (m *Creator) Create(newMessage NewMessage) (*Message, error) {
-	return m.createRepo.Create(newMessage)
+func (m *Creator) Create(newMessage NewMessage) (*model.Message, error) {
+	message, err := m.createRepo.Create(newMessage)
+	if err != nil {
+		return nil, err
+	}
+	return toMessage(message), nil
 }
 
 // NewCreator returns a new Listing

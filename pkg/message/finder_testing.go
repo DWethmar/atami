@@ -3,11 +3,12 @@ package message
 import (
 	"testing"
 
+	"github.com/dwethmar/atami/pkg/model"
 	"github.com/stretchr/testify/assert"
 )
 
 // TestReadOne tests the ReadOne function.
-func TestReadOne(t *testing.T, finder *Finder, ID ID, messages Message) {
+func TestReadOne(t *testing.T, finder *Finder, ID model.MessageID, messages Message) {
 	m, err := finder.FindByID(ID)
 	assert.Nil(t, err)
 
@@ -18,7 +19,7 @@ func TestReadOne(t *testing.T, finder *Finder, ID ID, messages Message) {
 
 // TestNotFound tests the ReadOne function for a not found error.
 func TestNotFound(t *testing.T, finder *Finder) {
-	_, err := finder.FindByID(ID(0))
+	_, err := finder.FindByID(model.MessageID(0))
 	assert.Equal(t, ErrCouldNotFind, err)
 }
 

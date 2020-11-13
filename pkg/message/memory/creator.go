@@ -6,19 +6,21 @@ import (
 
 	"github.com/dwethmar/atami/pkg/memstore"
 	"github.com/dwethmar/atami/pkg/message"
+	"github.com/dwethmar/atami/pkg/model"
 	"github.com/segmentio/ksuid"
 )
 
 // creatorRepository stores new messages
 type creatorRepository struct {
 	store *memstore.Store
-	newID message.ID
+	newID model.MessageID
 }
 
 // Create new message
 func (i creatorRepository) Create(newMessage message.NewMessage) (*message.Message, error) {
 	i.newID++
-	uid := message.UID(ksuid.New().String())
+	uid := model.MessageUID(ksuid.New().String())
+
 	i.store.Add(string(uid), message.Message{
 		ID:        i.newID,
 		UID:       uid,
