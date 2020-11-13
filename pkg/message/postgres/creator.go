@@ -34,7 +34,7 @@ func (i creatorRepository) Create(newMessage message.NewMessage) (*message.Messa
 	defer stmt.Close()
 
 	var messageID int
-	if stmt.QueryRow(
+	if err := stmt.QueryRow(
 		model.MessageUID(ksuid.New().String()),
 		newMessage.Text,
 		newMessage.CreatedBy,

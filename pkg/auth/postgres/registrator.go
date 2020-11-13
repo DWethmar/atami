@@ -44,15 +44,14 @@ func (i *registerRepository) Register(newUser auth.HashedCreateUser) (*auth.User
 	now := time.Now().UTC()
 
 	var userID int
-	err = stmt.QueryRow(
+	if err = stmt.QueryRow(
 		uid,
 		newUser.Username,
 		newUser.Email,
 		newUser.HashedPassword,
 		now,
 		now,
-	).Scan(&userID)
-	if err != nil {
+	).Scan(&userID); err != nil {
 		return nil, err
 	}
 
