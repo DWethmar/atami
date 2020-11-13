@@ -17,6 +17,7 @@ SELECT
 	created_on, 
 	updated_on
 FROM %s
+ORDER BY created_on ASC
 `, tableName)
 
 var getUserByID = fmt.Sprintf(`
