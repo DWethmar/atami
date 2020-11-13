@@ -57,6 +57,6 @@ jobs:
         POSTGRES_PASSWORD: postgres
         POSTGRES_DATABASE: atami
         DB_DRIVER_NAME: postgres
-        MIGRATION_FILES: /home/runner/work/go-api/go-api/scripts/migrations/
+        MIGRATION_FILES: /home/runner/work/atami/atami/migrations/
         TEST_WITH_DB: true
         ACCESS_SECRET: "abcdefghijklmnopqrstuvwxyz"
