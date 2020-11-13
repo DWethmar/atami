@@ -2,12 +2,13 @@ package postgres
 
 import (
 	"database/sql"
+	"fmt"
 
 	"github.com/dwethmar/atami/pkg/auth"
 	"github.com/dwethmar/atami/pkg/model"
 )
 
-var getUsers = `
+var getUsers = fmt.Sprintf(`
 SELECT
 	id,  
 	uid,
@@ -15,10 +16,10 @@ SELECT
 	email,
 	created_on, 
 	updated_on
-FROM public.user
-`
+FROM %s
+`, tableName)
 
-var getUserByID = `
+var getUserByID = fmt.Sprintf(`
 SELECT
 	id,  
 	uid,
@@ -26,11 +27,11 @@ SELECT
 	email,
 	created_on, 
 	updated_on
-FROM public.user
+FROM %s
 WHERE id = $1
-LIMIT 1`
+LIMIT 1`, tableName)
 
-var getUserByEmail = `
+var getUserByEmail = fmt.Sprintf(`
 SELECT
 	id,  
 	uid,
@@ -38,11 +39,11 @@ SELECT
 	email,
 	created_on, 
 	updated_on
-FROM public.user
+FROM %s
 WHERE email = $1
-LIMIT 1`
+LIMIT 1`, tableName)
 
-var getUserByUsername = `
+var getUserByUsername = fmt.Sprintf(`
 SELECT
 	id,  
 	uid,
@@ -50,9 +51,9 @@ SELECT
 	email,
 	created_on, 
 	updated_on
-FROM public.user
+FROM %s
 WHERE username = $1
-LIMIT 1`
+LIMIT 1`, tableName)
 
 // findRepository reads messages from memory
 type findRepository struct {

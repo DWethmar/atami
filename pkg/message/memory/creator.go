@@ -24,7 +24,7 @@ func (i creatorRepository) Create(newMessage message.NewMessage) (*message.Messa
 	i.store.Add(string(uid), message.Message{
 		ID:        i.newID,
 		UID:       uid,
-		Text:      newMessage.Content,
+		Text:      newMessage.Text,
 		CreatedAt: time.Now(),
 	})
 

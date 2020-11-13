@@ -11,6 +11,7 @@ type Message struct {
 	ID        model.MessageID
 	UID       model.MessageUID
 	Text      string
+	CreatedBy model.UserID
 	CreatedAt time.Time
 }
 

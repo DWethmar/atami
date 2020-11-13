@@ -4,7 +4,8 @@ import "github.com/dwethmar/atami/pkg/model"
 
 // NewMessage model
 type NewMessage struct {
-	Content string
+	Text      string
+	CreatedBy model.UserID
 }
 
 // CreatorRepository defines a messsage listing repository

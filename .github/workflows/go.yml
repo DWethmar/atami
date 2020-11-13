@@ -58,4 +58,5 @@ jobs:
         DB_DRIVER_NAME: postgres
         MIGRATION_FILES: /home/runner/work/atami/atami/migrations/
         TEST_WITH_DB: true
+        TEST_SEED_FILE: /home/runner/work/atami/atami/seed/init.sql
         ACCESS_SECRET: "abcdefghijklmnopqrstuvwxyz"

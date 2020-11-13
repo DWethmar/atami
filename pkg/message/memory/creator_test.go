@@ -9,7 +9,7 @@ import (
 
 func TestCreate(t *testing.T) {
 	newMessage := message.NewMessage{
-		Content: "wow",
+		Text: "lorum ipsum",
 	}
 	message.TestCreator(t, NewCreator(memstore.New()), newMessage)
 }

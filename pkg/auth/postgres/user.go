@@ -7,6 +7,10 @@ import (
 	"github.com/dwethmar/atami/pkg/model"
 )
 
+var (
+	tableName = "public.user"
+)
+
 // User struct declaration
 type userRecord struct {
 	ID        model.UserID

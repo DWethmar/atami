@@ -3,6 +3,8 @@ package database
 import (
 	"database/sql"
 	"fmt"
+	"io/ioutil"
+	"log"
 	"math/rand"
 	"strings"
 	"testing"
@@ -40,6 +42,25 @@ func DropDatabase(db *sql.DB, database string) error {
 	return nil
 }
 
+// ExecSQLFile runs a sql file
+func ExecSQLFile(db *sql.DB, sqlFile string) error {
+
+	fmt.Printf("Reading SQL file: %v \n", sqlFile)
+
+	b, err := ioutil.ReadFile(sqlFile)
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	sql := string(b)
+	fmt.Printf("Excecuting SQL file: %v \n", sqlFile)
+
+	if _, err = db.Exec(sql); err != nil {
+		return err
+	}
+	return nil
+}
+
 // NewTestDB create new testy db. Returns a cleanup function and error.
 func NewTestDB(c config.Config) (*sql.DB, error) {
 	var db *sql.DB
@@ -56,6 +77,7 @@ func NewTestDB(c config.Config) (*sql.DB, error) {
 		DBName:       "postgres",
 		DBDriverName: c.DBDriverName,
 	})
+
 	db, err := Connect(c.DBDriverName, dataSource)
 	if err != nil {
 		fmt.Printf("Could not connect to database with %v %v", c.DBDriverName, dataSource)
@@ -78,8 +100,12 @@ func NewTestDB(c config.Config) (*sql.DB, error) {
 		return nil, err
 	}
 
-	err = RunMigrations(db, c.DBName, c.MigrationFiles, c.DBMigrationVersion)
-	if err != nil {
+	if err := RunMigrations(db, c.DBName, c.MigrationFiles, c.DBMigrationVersion); err != nil {
+		fmt.Printf("Error while running migrations")
+		return nil, err
+	}
+
+	if err := ExecSQLFile(db, c.TestSeedSQLFile); err != nil {
 		fmt.Printf("Error while running migrations")
 		return nil, err
 	}

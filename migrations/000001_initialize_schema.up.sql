@@ -11,4 +11,13 @@ CREATE TABLE public.user
     updated_on timestamp NOT NULL
 );
 
+CREATE TABLE public.message
+(
+    id SERIAL PRIMARY KEY,
+    uid VARCHAR (36) NOT NULL UNIQUE,
+    text TEXT NOT NULL,
+    created_by_user_id integer REFERENCES public.user (id) ON DELETE CASCADE,
+    created_on timestamp NOT NULL
+);
+
 COMMIT;

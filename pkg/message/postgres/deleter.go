@@ -4,11 +4,11 @@ import (
 	"database/sql"
 	"fmt"
 
-	"github.com/dwethmar/atami/pkg/auth"
+	"github.com/dwethmar/atami/pkg/message"
 	"github.com/dwethmar/atami/pkg/model"
 )
 
-var deleteUser = fmt.Sprintf(`
+var deleteMessage = fmt.Sprintf(`
 DELETE FROM %s
 WHERE id = $1
 `, tableName)
@@ -19,8 +19,8 @@ type deleterRepository struct {
 }
 
 // Delete deletes one user
-func (i deleterRepository) Delete(ID model.UserID) error {
-	r, err := i.db.Exec(deleteUser, ID)
+func (i deleterRepository) Delete(ID model.MessageID) error {
+	r, err := i.db.Exec(deleteMessage, ID)
 	if err != nil {
 		return err
 	}
@@ -28,13 +28,13 @@ func (i deleterRepository) Delete(ID model.UserID) error {
 	if a, err := r.RowsAffected(); err != nil {
 		return err
 	} else if a == 0 {
-		return auth.ErrCouldNotDelete
+		return message.ErrCouldNotDelete
 	}
 
 	return nil
 }
 
-// NewDeleter return a new in deleter repo
-func NewDeleter(db *sql.DB) *auth.Deleter {
-	return auth.NewDeleter(&deleterRepository{db})
+// NewDeleter return a new deleter
+func NewDeleter(db *sql.DB) *message.Deleter {
+	return message.NewDeleter(&deleterRepository{db})
 }
