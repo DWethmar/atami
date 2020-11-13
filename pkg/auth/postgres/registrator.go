@@ -7,6 +7,7 @@ import (
 	"time"
 
 	"github.com/dwethmar/atami/pkg/auth"
+	"github.com/dwethmar/atami/pkg/model"
 	"github.com/segmentio/ksuid"
 )
 
@@ -34,7 +35,7 @@ func (i *registerRepository) Register(newUser auth.HashedCreateUser) (*auth.User
 		return nil, auth.ErrPwdNotSet
 	}
 
-	uid := auth.UID(ksuid.New().String())
+	uid := model.UserUID(ksuid.New().String())
 
 	stmt, err := i.db.Prepare(insertUser)
 	if err != nil {

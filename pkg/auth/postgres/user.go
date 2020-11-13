@@ -4,12 +4,13 @@ import (
 	"time"
 
 	"github.com/dwethmar/atami/pkg/auth"
+	"github.com/dwethmar/atami/pkg/model"
 )
 
 // User struct declaration
 type userRecord struct {
-	ID        auth.ID
-	UID       auth.UID
+	ID        model.UserID
+	UID       model.UserUID
 	Username  string
 	Email     string
 	Salt      string

@@ -4,6 +4,7 @@ import (
 	"testing"
 	"time"
 
+	"github.com/dwethmar/atami/pkg/model"
 	"github.com/stretchr/testify/assert"
 )
 
@@ -12,7 +13,7 @@ func TestRegister(t *testing.T, register *Registrator, newUser CreateUser) {
 	user, err := register.Register(newUser)
 
 	if assert.NoError(t, err) {
-		assert.Equal(t, user.ID, ID(1))
+		assert.Equal(t, user.ID, model.UserID(1))
 		assert.NotEmpty(t, user.UID)
 		assert.Equal(t, user.Email, newUser.Email)
 		time.Sleep(1)

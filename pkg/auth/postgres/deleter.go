@@ -4,6 +4,7 @@ import (
 	"database/sql"
 
 	"github.com/dwethmar/atami/pkg/auth"
+	"github.com/dwethmar/atami/pkg/model"
 )
 
 var deleteUser = `
@@ -17,7 +18,7 @@ type deleterRepository struct {
 }
 
 // Delete deletes one user
-func (i deleterRepository) Delete(ID auth.ID) error {
+func (i deleterRepository) Delete(ID model.UserID) error {
 	r, err := i.db.Exec(deleteUser, ID)
 	if err != nil {
 		return err

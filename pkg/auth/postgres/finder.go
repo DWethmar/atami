@@ -4,6 +4,7 @@ import (
 	"database/sql"
 
 	"github.com/dwethmar/atami/pkg/auth"
+	"github.com/dwethmar/atami/pkg/model"
 )
 
 var getUsers = `
@@ -94,7 +95,7 @@ func (f findRepository) FindAll() ([]*auth.User, error) {
 }
 
 // FindByID get one message
-func (f findRepository) FindByID(ID auth.ID) (*auth.User, error) {
+func (f findRepository) FindByID(ID model.UserID) (*auth.User, error) {
 	entry := &auth.User{}
 	if err := f.db.QueryRow(getUserByID, ID).Scan(
 		&entry.ID,

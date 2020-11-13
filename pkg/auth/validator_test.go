@@ -4,12 +4,13 @@ import (
 	"testing"
 	"time"
 
+	"github.com/dwethmar/atami/pkg/model"
 	"github.com/dwethmar/atami/pkg/validate"
 	"github.com/stretchr/testify/assert"
 )
 
 var validUser = User{
-	ID:        ID(1),
+	ID:        model.UserID(1),
 	UID:       "asdasdasdasd",
 	Username:  "username",
 	Email:     "test@test.nl",

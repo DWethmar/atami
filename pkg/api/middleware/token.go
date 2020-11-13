@@ -11,7 +11,7 @@ import (
 	"github.com/dgrijalva/jwt-go"
 	"github.com/dwethmar/atami/pkg/api/response"
 	"github.com/dwethmar/atami/pkg/api/token"
-	"github.com/dwethmar/atami/pkg/auth"
+	"github.com/dwethmar/atami/pkg/model"
 )
 
 type userUIDCtxKeyType string
@@ -19,15 +19,15 @@ type userUIDCtxKeyType string
 const userUIDCtxKey userUIDCtxKeyType = "uuid"
 
 // WithUserUID puts the request ID into the current context.
-func WithUserUID(ctx context.Context, UID auth.UID) context.Context {
+func WithUserUID(ctx context.Context, UID model.UserUID) context.Context {
 	return context.WithValue(ctx, userUIDCtxKey, UID)
 }
 
 // UserUIDFromContext returns the user UID from the context.
-func UserUIDFromContext(ctx context.Context) (auth.UID, error) {
-	v, ok := ctx.Value(userUIDCtxKey).(auth.UID)
+func UserUIDFromContext(ctx context.Context) (model.UserUID, error) {
+	v, ok := ctx.Value(userUIDCtxKey).(model.UserUID)
 	if !ok {
-		return auth.UID(""), errors.New("No user UID found in context")
+		return model.UserUID(""), errors.New("No user UID found in context")
 	}
 	return v, nil
 }
@@ -44,12 +44,11 @@ func Token(next http.Handler) http.Handler {
 		}
 
 		tokenString := splitToken[1]
-		var UID string
 
 		if token, err := token.VerifyToken(tokenString); err == nil && token.Valid {
 			if claims, ok := token.Claims.(jwt.MapClaims); ok && token.Valid {
-				UID = claims["uid"].(string)
-				WithUserUID(r.Context(), auth.UID(UID))
+				UID := claims["uid"].(model.UserUID)
+				WithUserUID(r.Context(), UID)
 			} else {
 				response.SendBadRequestError(w, r, errors.New("Invalid JWT Token"))
 				return

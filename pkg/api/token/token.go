@@ -5,7 +5,7 @@ import (
 	"time"
 
 	"github.com/dgrijalva/jwt-go"
-	"github.com/dwethmar/atami/pkg/auth"
+	"github.com/dwethmar/atami/pkg/model"
 )
 
 // https://www.sohamkamani.com/golang/2019-01-01-jwt-authentication/
@@ -17,7 +17,7 @@ type Details struct {
 }
 
 // CreateToken creates a new authentication token
-func CreateToken(UID auth.UID, username string, expiresOn int64) (*Details, error) {
+func CreateToken(UID model.UserUID, username string, expiresOn int64) (*Details, error) {
 	td := &Details{}
 
 	td.AccessTokenExpires = expiresOn

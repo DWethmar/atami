@@ -6,6 +6,7 @@ import (
 
 	"github.com/dwethmar/atami/pkg/auth"
 	"github.com/dwethmar/atami/pkg/memstore"
+	"github.com/dwethmar/atami/pkg/model"
 	"github.com/segmentio/ksuid"
 )
 
@@ -14,7 +15,7 @@ var layoutISO = "2006-01-02"
 // registerRepository stores new messages
 type registerRepository struct {
 	store *memstore.Store
-	newID auth.ID
+	newID model.UserID
 }
 
 // Create new user
@@ -26,7 +27,7 @@ func (i *registerRepository) Register(newUser auth.HashedCreateUser) (*auth.User
 	i.newID++
 	usr := userRecord{
 		ID:        i.newID,
-		UID:       auth.UID(ksuid.New().String()),
+		UID:       model.UserUID(ksuid.New().String()),
 		Username:  newUser.Username,
 		Email:     newUser.Email,
 		CreatedAt: time.Now(),
