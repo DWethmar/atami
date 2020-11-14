@@ -7,13 +7,17 @@ import (
 
 	"github.com/dwethmar/atami/pkg/api/testutil"
 	"github.com/dwethmar/atami/pkg/service"
+	"github.com/stretchr/testify/assert"
 )
 
 func TestAuthenticated(t *testing.T) {
 	authService := service.NewAuthServiceMemory()
 	handler := NewHandler(authService)
 	req := httptest.NewRequest("GET", "/", nil)
-	testutil.TestWithAuthorizationHeader(t, authService, req, handler, http.StatusOK)
+	testutil.WithAuthorizationHeader(req, authService)
+	rr := httptest.NewRecorder()
+	handler.ServeHTTP(rr, req)
+	assert.Equal(t, http.StatusOK, rr.Code, rr.Body.String())
 }
 
 func TestUnauthenticated(t *testing.T) {
@@ -21,5 +25,5 @@ func TestUnauthenticated(t *testing.T) {
 	req := httptest.NewRequest("GET", "/feed", nil)
 	rr := httptest.NewRecorder()
 	handler.ServeHTTP(rr, req)
-	testutil.TestStatus(t, req, handler, http.StatusUnauthorized)
+	assert.Equal(t, http.StatusUnauthorized, rr.Code, rr.Body.String())
 }
