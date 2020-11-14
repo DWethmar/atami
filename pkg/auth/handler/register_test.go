@@ -1,4 +1,4 @@
-package registration
+package handler
 
 import (
 	"bytes"
@@ -7,9 +7,9 @@ import (
 	"net/http/httptest"
 	"testing"
 
-	"github.com/dwethmar/atami/pkg/api/response"
 	userMemory "github.com/dwethmar/atami/pkg/auth/memory"
 	"github.com/dwethmar/atami/pkg/memstore"
+	"github.com/dwethmar/atami/pkg/response"
 	"github.com/stretchr/testify/assert"
 )
 

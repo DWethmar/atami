@@ -7,7 +7,6 @@ import (
 	"testing"
 	"time"
 
-	"github.com/dwethmar/atami/pkg/api/token"
 	"github.com/dwethmar/atami/pkg/auth"
 	"github.com/dwethmar/atami/pkg/model"
 	"github.com/dwethmar/atami/pkg/service"
@@ -26,7 +25,7 @@ func TestAuthenticated(t *testing.T) {
 		return
 	}
 
-	token, err := token.CreateToken(user.UID, user.Username, 4100760000)
+	token, err := auth.CreateToken(user.UID, user.Username, 4100760000)
 	if !assert.NoError(t, err) {
 		return
 	}

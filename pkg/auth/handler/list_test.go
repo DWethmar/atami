@@ -1,4 +1,4 @@
-package registration
+package handler
 
 import (
 	"encoding/json"

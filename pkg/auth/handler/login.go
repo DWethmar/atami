@@ -1,4 +1,4 @@
-package login
+package handler
 
 import (
 	"errors"
@@ -6,9 +6,8 @@ import (
 	"net/http"
 	"time"
 
-	"github.com/dwethmar/atami/pkg/api/response"
-	"github.com/dwethmar/atami/pkg/api/token"
 	"github.com/dwethmar/atami/pkg/auth"
+	"github.com/dwethmar/atami/pkg/response"
 )
 
 type loginResponds struct {
@@ -61,7 +60,7 @@ func Login(authService auth.Service) http.HandlerFunc {
 			return
 		}
 
-		details, err := token.CreateToken(user.UID, user.Username, newExpirationDate())
+		details, err := auth.CreateToken(user.UID, user.Username, newExpirationDate())
 		if err != nil || details.AccessToken == "" {
 			fmt.Printf("Error creating token: %v\n", err)
 			response.SendServerError(w, r)

@@ -1,10 +1,12 @@
-package token
+package auth
 
 import (
+	"errors"
 	"fmt"
 	"time"
 
 	"github.com/dgrijalva/jwt-go"
+	"github.com/dwethmar/atami/pkg/config"
 	"github.com/dwethmar/atami/pkg/model"
 )
 
@@ -14,6 +16,14 @@ import (
 type Details struct {
 	AccessToken        string
 	AccessTokenExpires int64
+}
+
+func getAccessSecret() ([]byte, error) {
+	t := config.Load().AccessSecret
+	if t == "" {
+		return nil, errors.New("access token is not set")
+	}
+	return []byte(t), nil
 }
 
 // CreateToken creates a new authentication token
@@ -30,12 +40,12 @@ func CreateToken(UID model.UserUID, username string, expiresOn int64) (*Details,
 	claims["exp"] = td.AccessTokenExpires
 	claims["iat"] = time.Now().Unix()
 
-	at := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)
-
-	accessSecret, err := GetAccessSecret()
+	accessSecret, err := getAccessSecret()
 	if err != nil {
 		return nil, err
 	}
+
+	at := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)
 
 	td.AccessToken, err = at.SignedString([]byte(accessSecret))
 	if err != nil {
@@ -53,7 +63,7 @@ func VerifyToken(tokenString string) (*jwt.Token, error) {
 			return nil, fmt.Errorf("unexpected signing method: %v", token.Header["alg"])
 		}
 
-		return GetAccessSecret()
+		return getAccessSecret()
 	})
 
 	if err != nil {

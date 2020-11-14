@@ -6,11 +6,9 @@ import (
 	"net/http"
 
 	"github.com/dwethmar/atami/pkg/api"
-	"github.com/dwethmar/atami/pkg/api/feed"
-	"github.com/dwethmar/atami/pkg/api/login"
-	"github.com/dwethmar/atami/pkg/api/registration"
 	"github.com/dwethmar/atami/pkg/config"
 	"github.com/dwethmar/atami/pkg/database"
+	"github.com/dwethmar/atami/pkg/router"
 	"github.com/dwethmar/atami/pkg/service"
 
 	"github.com/go-chi/chi"
@@ -39,9 +37,8 @@ func main() {
 	authService := service.NewAuthServicePostgres(db)
 
 	handler := chi.NewRouter()
-	handler.Mount("/auth/register", registration.NewHandler(authService))
-	handler.Mount("/auth/login", login.NewHandler(authService))
-	handler.Mount("/feed", feed.NewHandler(authService))
+	handler.Mount("/auth/register", router.NewRegisterRouter(authService))
+	handler.Mount("/auth/login", router.NewLoginRouter(authService))
 
 	api := api.NewAPI(api.NewAPI(handler))
 	srv := &http.Server{Addr: ":8080", Handler: api}

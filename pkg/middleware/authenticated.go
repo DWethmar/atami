@@ -8,10 +8,9 @@ import (
 	"strings"
 
 	"github.com/dgrijalva/jwt-go"
-	"github.com/dwethmar/atami/pkg/api/response"
-	"github.com/dwethmar/atami/pkg/api/token"
 	"github.com/dwethmar/atami/pkg/auth"
 	"github.com/dwethmar/atami/pkg/model"
+	"github.com/dwethmar/atami/pkg/response"
 )
 
 type userCTXKeyType string
@@ -47,7 +46,7 @@ func Authenticated(authService auth.Service) func(next http.Handler) http.Handle
 			tokenString := splitToken[1]
 			var UID model.UserUID
 
-			if token, err := token.VerifyToken(tokenString); err == nil && token.Valid {
+			if token, err := auth.VerifyToken(tokenString); err == nil && token.Valid {
 				if claims, ok := token.Claims.(jwt.MapClaims); ok && token.Valid {
 					UIDString, ok := claims["uid"].(string)
 					if ok {

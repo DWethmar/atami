@@ -1,11 +1,11 @@
-package registration
+package handler
 
 import (
 	"fmt"
 	"net/http"
 
-	"github.com/dwethmar/atami/pkg/api/response"
 	"github.com/dwethmar/atami/pkg/auth"
+	"github.com/dwethmar/atami/pkg/response"
 )
 
 // ListUsers handler
