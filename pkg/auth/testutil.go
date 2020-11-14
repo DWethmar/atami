@@ -29,6 +29,7 @@ func WithAuthorizationHeader(req *http.Request, authService Service) error {
 	return nil
 }
 
+// TestStatus tests if status is returned by handler
 func TestStatus(t *testing.T, req *http.Request, handler http.Handler, expectedStatus int) bool {
 	rr := httptest.NewRecorder()
 	handler.ServeHTTP(rr, req)

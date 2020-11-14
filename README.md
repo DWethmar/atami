@@ -11,3 +11,4 @@
 - [ ] Channel? Or other name
 - [ ] Verify email for users
 - [ ] Add user to context
+- [ ] check if test with db actually works by running it locally 
