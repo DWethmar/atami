@@ -1,8 +1,9 @@
 # Atami - Messaging platform
 
 
-
-
+## setup
+- `go mod download`
+- `make serve`
 
 ## TODO
 

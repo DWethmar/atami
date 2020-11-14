@@ -37,11 +37,11 @@ func setup(db *sql.DB) (*auth.Finder, []model.User) {
 	return NewFinder(db), users
 }
 
-func TestFindAll(t *testing.T) {
+func TestFind(t *testing.T) {
 	assert.NoError(t, database.WithTestDB(t, func(db *sql.DB) error {
 		var existingUsers []model.User
 		finder := NewFinder(db)
-		if users, err := finder.FindAll(); err == nil {
+		if users, err := finder.Find(); err == nil {
 			for _, u := range users {
 				existingUsers = append(existingUsers, *u)
 			}
@@ -51,7 +51,7 @@ func TestFindAll(t *testing.T) {
 
 		finder, users := setup(db)
 		users = append(existingUsers, users...)
-		auth.TestFindAll(t, finder, 100+len(existingUsers), users)
+		auth.TestFind(t, finder, 100+len(existingUsers), users)
 
 		return nil
 	}))

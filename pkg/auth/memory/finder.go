@@ -11,8 +11,21 @@ type findRepository struct {
 	store *memstore.Store
 }
 
-// FindAll get multiple messages
-func (f findRepository) FindAll() ([]*auth.User, error) {
+func filterList(list []interface{}, filterFn func(userRecord) bool) (*auth.User, error) {
+	for _, item := range list {
+		if record, ok := item.(userRecord); ok {
+			if filterFn(record) {
+				return recordToUser(record), nil
+			}
+		} else {
+			return nil, errCouldNotParse
+		}
+	}
+	return nil, auth.ErrCouldNotFind
+}
+
+// Find get multiple messages
+func (f findRepository) Find() ([]*auth.User, error) {
 	results := f.store.List()
 	items := make([]*auth.User, len(results))
 
@@ -38,34 +51,25 @@ func (f findRepository) FindByID(ID model.UserID) (*auth.User, error) {
 	return nil, auth.ErrCouldNotFind
 }
 
+// FindByID get one message
+func (f findRepository) FindByUID(UID model.UserUID) (*auth.User, error) {
+	return filterList(f.store.List(), func(record userRecord) bool {
+		return UID == record.UID
+	})
+}
+
 // FindByEmail func
 func (f *findRepository) FindByEmail(email string) (*auth.User, error) {
-	for _, result := range f.store.List() {
-		if record, ok := result.(userRecord); ok {
-			if email == record.Email {
-				return recordToUser(record), nil
-			}
-		} else {
-			return nil, errCouldNotParse
-		}
-	}
-
-	return nil, auth.ErrCouldNotFind
+	return filterList(f.store.List(), func(record userRecord) bool {
+		return email == record.Email
+	})
 }
 
 // FindByEmail func
 func (f *findRepository) FindByUsername(username string) (*auth.User, error) {
-	for _, result := range f.store.List() {
-		if record, ok := result.(userRecord); ok {
-			if username == record.Username {
-				return recordToUser(record), nil
-			}
-		} else {
-			return nil, errCouldNotParse
-		}
-	}
-
-	return nil, auth.ErrCouldNotFind
+	return filterList(f.store.List(), func(record userRecord) bool {
+		return username == record.Username
+	})
 }
 
 // NewFinder return a new in memory listin repository

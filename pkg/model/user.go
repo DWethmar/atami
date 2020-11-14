@@ -28,3 +28,12 @@ type User struct {
 	CreatedAt time.Time
 	UpdatedAt time.Time
 }
+
+// Equal check if a user is equal
+func (u User) Equal(user User) bool {
+	return (u.ID == user.ID &&
+		u.UID == user.UID &&
+		u.Email == user.Email &&
+		u.CreatedAt.Equal(user.CreatedAt) &&
+		u.UpdatedAt.Equal(user.UpdatedAt))
+}

@@ -36,9 +36,9 @@ func setup() (*auth.Finder, []model.User) {
 	return NewFinder(store), users
 }
 
-func TestFindAll(t *testing.T) {
+func TestFind(t *testing.T) {
 	finder, users := setup()
-	auth.TestFindAll(t, finder, 100, users)
+	auth.TestFind(t, finder, 100, users)
 }
 
 func TestFindByID(t *testing.T) {

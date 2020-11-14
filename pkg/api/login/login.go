@@ -16,7 +16,7 @@ type loginResponds struct {
 }
 
 // Login handles login requests
-func Login(service auth.Service) http.HandlerFunc {
+func Login(authService auth.Service) http.HandlerFunc {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 
 		if err := r.ParseForm(); err != nil {
@@ -39,7 +39,7 @@ func Login(service auth.Service) http.HandlerFunc {
 
 		var authenticated = false
 
-		if ok, err := service.Authenticate(auth.Credentials{
+		if ok, err := authService.Authenticate(auth.Credentials{
 			Email:    email,
 			Password: password,
 		}); err == nil && ok {
@@ -51,7 +51,7 @@ func Login(service auth.Service) http.HandlerFunc {
 			return
 		}
 
-		user, err := service.FindByEmail(email)
+		user, err := authService.FindByEmail(email)
 		if err != nil || user == nil {
 			fmt.Printf("error while retrieving user\n")
 			response.SendServerError(w, r)

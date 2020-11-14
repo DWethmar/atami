@@ -24,7 +24,7 @@ func (i *findRepository) FindByID(ID model.MessageID) (*message.Message, error) 
 }
 
 // FindAll get multiple messages
-func (i *findRepository) FindAll() ([]*message.Message, error) {
+func (i *findRepository) Find() ([]*message.Message, error) {
 	results := i.store.List()
 	items := make([]*message.Message, len(results))
 

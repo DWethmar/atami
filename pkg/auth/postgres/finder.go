@@ -32,6 +32,18 @@ FROM %s
 WHERE id = $1
 LIMIT 1`, tableName)
 
+var getUserByUID = fmt.Sprintf(`
+SELECT
+	id,  
+	uid,
+	username, 
+	email,
+	created_on, 
+	updated_on
+FROM %s
+WHERE uid = $1
+LIMIT 1`, tableName)
+
 var getUserByEmail = fmt.Sprintf(`
 SELECT
 	id,  
@@ -62,7 +74,7 @@ type findRepository struct {
 }
 
 // FindAll get multiple messages
-func (f findRepository) FindAll() ([]*auth.User, error) {
+func (f findRepository) Find() ([]*auth.User, error) {
 	rows, err := f.db.Query(getUsers)
 
 	if err != nil {
@@ -96,10 +108,29 @@ func (f findRepository) FindAll() ([]*auth.User, error) {
 	return entries, nil
 }
 
-// FindByID get one message
+// FindByID get one message by ID
 func (f findRepository) FindByID(ID model.UserID) (*auth.User, error) {
 	entry := &auth.User{}
 	if err := f.db.QueryRow(getUserByID, ID).Scan(
+		&entry.ID,
+		&entry.UID,
+		&entry.Username,
+		&entry.Email,
+		&entry.CreatedAt,
+		&entry.UpdatedAt,
+	); err != nil {
+		if err == sql.ErrNoRows {
+			return nil, auth.ErrCouldNotFind
+		}
+		return nil, err
+	}
+	return entry, nil
+}
+
+// FindByUID get one message by UID
+func (f findRepository) FindByUID(UID model.UserUID) (*auth.User, error) {
+	entry := &auth.User{}
+	if err := f.db.QueryRow(getUserByUID, UID).Scan(
 		&entry.ID,
 		&entry.UID,
 		&entry.Username,

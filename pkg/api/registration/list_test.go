@@ -7,8 +7,7 @@ import (
 	"testing"
 
 	"github.com/dwethmar/atami/pkg/auth"
-	userMem "github.com/dwethmar/atami/pkg/auth/memory"
-	"github.com/dwethmar/atami/pkg/memstore"
+	"github.com/dwethmar/atami/pkg/service"
 	"github.com/stretchr/testify/assert"
 )
 
@@ -26,11 +25,11 @@ var users = []*auth.CreateUser{
 }
 
 func TestList(t *testing.T) {
-	service := userMem.NewService(memstore.New())
+	authService := service.NewAuthServiceMemory()
 
 	var expectedResponds = make([]*Responds, len(users))
 	for i, user := range users {
-		r, _ := service.Register(*user)
+		r, _ := authService.Register(*user)
 		expectedResponds[i] = toRespond(r)
 	}
 
@@ -38,7 +37,7 @@ func TestList(t *testing.T) {
 	assert.Nil(t, err)
 
 	rr := httptest.NewRecorder()
-	handler := http.HandlerFunc(ListUsers(service))
+	handler := http.HandlerFunc(ListUsers(authService))
 	handler.ServeHTTP(rr, req)
 
 	assert.Equal(t, http.StatusOK, rr.Code, "Status code should be equal")

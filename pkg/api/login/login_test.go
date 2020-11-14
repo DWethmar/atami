@@ -10,15 +10,14 @@ import (
 	"testing"
 
 	"github.com/dwethmar/atami/pkg/auth"
-	userMemory "github.com/dwethmar/atami/pkg/auth/memory"
-	"github.com/dwethmar/atami/pkg/memstore"
+	"github.com/dwethmar/atami/pkg/service"
 	"github.com/stretchr/testify/assert"
 )
 
 func TestLogin(t *testing.T) {
 	os.Setenv("ACCESS_SECRET", "abc")
 
-	service := userMemory.NewService(memstore.New())
+	service := service.NewAuthServiceMemory()
 	_, err := service.Register(auth.CreateUser{
 		Username: "test_username",
 		Email:    "test@test.com",
@@ -39,7 +38,6 @@ func TestLogin(t *testing.T) {
 
 	if assert.Equal(t, http.StatusOK, rr.Code, rr.Body.String()) {
 		assert.Equal(t, "application/json", rr.Header().Get("Content-Type"))
-
 		// Check the response body is what we expect.
 		responds := loginResponds{}
 		assert.NoError(t, json.Unmarshal(rr.Body.Bytes(), &responds))

@@ -8,13 +8,13 @@ import (
 )
 
 // NewHandler returns the api routes handler
-func NewHandler(service auth.Service) http.Handler {
+func NewHandler(authService auth.Service) http.Handler {
 	r := chi.NewRouter()
 
 	// logger := httplog.NewLogger("login", httplog.Options{})
 	// r.Use(httplog.RequestLogger(logger))
 
-	r.Post("/", Login(service))
+	r.Post("/", Login(authService))
 
 	return r
 }

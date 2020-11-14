@@ -13,10 +13,11 @@ var (
 
 // FindRepository defines a messsage listing repository
 type FindRepository interface {
-	FindAll() ([]*User, error)
+	Find() ([]*User, error)
 	FindByEmail(email string) (*User, error)
 	FindByUsername(username string) (*User, error)
 	FindByID(ID model.UserID) (*User, error)
+	FindByUID(UID model.UserUID) (*User, error)
 }
 
 // Finder searches messages.
@@ -24,9 +25,9 @@ type Finder struct {
 	findRepo FindRepository
 }
 
-// FindAll return a list of list items.
-func (m *Finder) FindAll() ([]*model.User, error) {
-	results, err := m.findRepo.FindAll()
+// Find return a list of list items.
+func (m *Finder) Find() ([]*model.User, error) {
+	results, err := m.findRepo.Find()
 	if err != nil {
 		return nil, err
 	}
@@ -39,7 +40,7 @@ func (m *Finder) FindAll() ([]*model.User, error) {
 	return users, nil
 }
 
-// FindByEmail searches users by email
+// FindByEmail search for user with email
 func (m *Finder) FindByEmail(email string) (*model.User, error) {
 	user, err := m.findRepo.FindByEmail(email)
 	if err != nil {
@@ -48,7 +49,7 @@ func (m *Finder) FindByEmail(email string) (*model.User, error) {
 	return toUser(user), nil
 }
 
-// FindByUsername searches users by username
+// FindByUsername search for user with username
 func (m *Finder) FindByUsername(username string) (*model.User, error) {
 	user, err := m.findRepo.FindByUsername(username)
 	if err != nil {
@@ -57,9 +58,18 @@ func (m *Finder) FindByUsername(username string) (*model.User, error) {
 	return toUser(user), nil
 }
 
-// FindByID return a list of list items.
+// FindByID search for user with provided ID
 func (m *Finder) FindByID(ID model.UserID) (*model.User, error) {
 	user, err := m.findRepo.FindByID(ID)
+	if err != nil {
+		return nil, err
+	}
+	return toUser(user), nil
+}
+
+// FindByUID search for user with provided UID
+func (m *Finder) FindByUID(UID model.UserUID) (*model.User, error) {
+	user, err := m.findRepo.FindByUID(UID)
 	if err != nil {
 		return nil, err
 	}

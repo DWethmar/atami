@@ -14,7 +14,7 @@ var (
 // FindRepository defines a messsage listing repository
 type FindRepository interface {
 	FindByID(ID model.MessageID) (*Message, error)
-	FindAll() ([]*Message, error)
+	Find() ([]*Message, error)
 }
 
 // Finder lists messages.
@@ -31,9 +31,9 @@ func (m *Finder) FindByID(ID model.MessageID) (*model.Message, error) {
 	return ToMessage(message), nil
 }
 
-// FindAll return a list of list items.
-func (m *Finder) FindAll() ([]*model.Message, error) {
-	results, err := m.readerRepo.FindAll()
+// Find return a list of list items.
+func (m *Finder) Find() ([]*model.Message, error) {
+	results, err := m.readerRepo.Find()
 	if err != nil {
 		return nil, err
 	}

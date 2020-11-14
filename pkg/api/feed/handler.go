@@ -1,4 +1,4 @@
-package thread
+package feed
 
 import (
 	"net/http"
@@ -10,14 +10,14 @@ import (
 )
 
 // NewHandler returns the thread routes handler
-func NewHandler(service auth.Service) http.Handler {
+func NewHandler(authService auth.Service) http.Handler {
 	r := chi.NewRouter()
 
-	logger := httplog.NewLogger("thread", httplog.Options{})
+	logger := httplog.NewLogger("feed", httplog.Options{})
 	r.Use(httplog.RequestLogger(logger))
-	r.Use(middleware.Token)
+	r.Use(middleware.Authenticated(authService))
 
-	r.Get("/", Thread(service))
+	r.Get("/", Feed())
 
 	return r
 }

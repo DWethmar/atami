@@ -25,8 +25,8 @@ func CreateToken(UID model.UserUID, username string, expiresOn int64) (*Details,
 	var err error
 	//Creating Access Token
 	claims := jwt.MapClaims{}
-	claims["authorized"] = true
-	claims["uid"] = UID
+	claims["username"] = username
+	claims["uid"] = UID.String()
 	claims["exp"] = td.AccessTokenExpires
 	claims["iat"] = time.Now().Unix()
 

@@ -28,7 +28,7 @@ func TestNotFound(t *testing.T, finder *Finder) {
 
 // TestFindAll tests the ReadOne function.
 func TestFindAll(t *testing.T, finder *Finder, length int, messages []model.Message) {
-	list, err := finder.FindAll()
+	list, err := finder.Find()
 
 	assert.NoError(t, err)
 	if assert.Equal(t, length, len(list)) {

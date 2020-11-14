@@ -5,8 +5,9 @@ import "github.com/dwethmar/atami/pkg/model"
 // Service defines interations with users
 type Service interface {
 	Authenticate(credentials Credentials) (bool, error)
-	FindAll() ([]*model.User, error)
+	Find() ([]*model.User, error)
 	FindByID(ID model.UserID) (*model.User, error)
+	FindByUID(ID model.UserUID) (*model.User, error)
 	FindByEmail(email string) (*model.User, error)
 	FindByUsername(username string) (*model.User, error)
 	Delete(ID model.UserID) error
