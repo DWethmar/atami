@@ -43,6 +43,14 @@ func SendBadRequestError(w http.ResponseWriter, r *http.Request, err error) {
 	}, http.StatusBadRequest)
 }
 
+// SendUnauthorizedError set bad request responds
+func SendUnauthorizedError(w http.ResponseWriter, r *http.Request, err error) {
+	SendJSON(w, r, ErrorResponds{
+		Error:   http.StatusText(http.StatusUnauthorized),
+		Message: err.Error(),
+	}, http.StatusUnauthorized)
+}
+
 // SendNotFoundError set not found responds
 func SendNotFoundError(w http.ResponseWriter, r *http.Request) {
 	SendJSON(w, r, ErrorResponds{

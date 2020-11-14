@@ -40,7 +40,7 @@ func Authenticated(authService auth.Service) func(next http.Handler) http.Handle
 			splitToken := strings.Split(reqToken, "Bearer ")
 
 			if len(splitToken) != 2 {
-				response.SendBadRequestError(w, r, errors.New("Invalid authorization header"))
+				response.SendUnauthorizedError(w, r, errors.New("Invalid authorization header"))
 				return
 			}
 
@@ -53,12 +53,12 @@ func Authenticated(authService auth.Service) func(next http.Handler) http.Handle
 					if ok {
 						UID = model.UserUID(UIDString)
 					} else {
-						response.SendBadRequestError(w, r, errors.New("UID not set"))
+						response.SendUnauthorizedError(w, r, errors.New("UID not set"))
 						return
 					}
 				}
 			} else {
-				response.SendBadRequestError(w, r, err)
+				response.SendUnauthorizedError(w, r, err)
 				return
 			}
 
@@ -73,7 +73,7 @@ func Authenticated(authService auth.Service) func(next http.Handler) http.Handle
 					return
 				}
 			} else {
-				response.SendBadRequestError(w, r, errors.New("Invalid JWT Token"))
+				response.SendUnauthorizedError(w, r, errors.New("Invalid JWT Token"))
 			}
 		}
 		return http.HandlerFunc(fn)

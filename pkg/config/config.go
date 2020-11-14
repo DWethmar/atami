@@ -1,8 +1,21 @@
 package config
 
 import (
-	"errors"
+	"fmt"
 	"os"
+)
+
+const (
+	dbHostEnvKey          = "POSTGRES_HOST"
+	dbPortEnvKey          = "POSTGRES_PORT"
+	dbUserEnvKey          = "POSTGRES_USER"
+	dbPasswordEnvKey      = "POSTGRES_PASSWORD"
+	dbNameEnvKey          = "POSTGRES_DATABASE"
+	dbDriverNameEnvKey    = "DB_DRIVER_NAME"
+	migrationFilesEnvKey  = "MIGRATION_FILES"
+	accessSecretEnvKey    = "ACCESS_SECRET"
+	testWithDBEnvKey      = "TEST_WITH_DB"
+	testSeedSQLFileEnvKey = "TEST_SEED_FILE"
 )
 
 // Config collection of the config variables.
@@ -22,36 +35,37 @@ type Config struct {
 
 // Valid checks if the config has valid values.
 func (c Config) Valid() error {
+
 	if c.DBDriverName == "" {
-		return errors.New("Config is missing database connection information: DBDriverName")
+		return fmt.Errorf("env is missing database connection information: %s", dbDriverNameEnvKey)
 	}
 
 	if c.DBHost == "" {
-		return errors.New("Config is missing database connection information: DBHost")
+		return fmt.Errorf("env is missing database connection information: %s", dbHostEnvKey)
 	}
 
 	if c.DBName == "" {
-		return errors.New("Config is missing database connection information: DBName")
+		return fmt.Errorf("env is missing database connection information: %s", dbNameEnvKey)
 	}
 
 	if c.DBPassword == "" {
-		return errors.New("Config is missing database connection information: DBPassword")
+		return fmt.Errorf("env is missing database connection information: %s", dbPasswordEnvKey)
 	}
 
 	if c.DBPort == "" {
-		return errors.New("Config is missing database connection information: DBPort")
+		return fmt.Errorf("env is missing database connection information: %s", dbPortEnvKey)
 	}
 
 	if c.DBUser == "" {
-		return errors.New("Config is missing database connection information: DBUser")
+		return fmt.Errorf("env is missing database connection information: %s", dbUserEnvKey)
 	}
 
 	if c.MigrationFiles == "" {
-		return errors.New("Config is missing database connection information: MigrationFiles")
+		return fmt.Errorf("env is missing database connection information: %s", migrationFilesEnvKey)
 	}
 
-	if c.DBMigrationVersion == 0 {
-		return errors.New("Config is missing database connection information: DBMigrationVersion")
+	if c.AccessSecret == "" {
+		return fmt.Errorf("env is missing access secret: %s", accessSecretEnvKey)
 	}
 
 	return nil
@@ -59,31 +73,31 @@ func (c Config) Valid() error {
 
 // Load collects the necessary env vars and returns them in a struct.
 func Load() Config {
-	dbHost := os.Getenv("POSTGRES_HOST")
-	dbPort := os.Getenv("POSTGRES_PORT")
-	dbUser := os.Getenv("POSTGRES_USER")
-	dbPassword := os.Getenv("POSTGRES_PASSWORD")
+	dbHost := os.Getenv(dbHostEnvKey)
+	dbPort := os.Getenv(dbPortEnvKey)
+	dbUser := os.Getenv(dbUserEnvKey)
+	dbPassword := os.Getenv(dbPasswordEnvKey)
 
-	dbName := "atami"
-	if v, success := os.LookupEnv("POSTGRES_DATABASE"); success {
+	dbName := ""
+	if v, success := os.LookupEnv(dbNameEnvKey); success {
 		dbName = v
 	}
 
-	dbDriverName := os.Getenv("DB_DRIVER_NAME")
+	dbDriverName := os.Getenv(dbDriverNameEnvKey)
 
-	migrationFiles := "/app/migrations"
-	if v, success := os.LookupEnv("MIGRATION_FILES"); success {
+	migrationFiles := ""
+	if v, success := os.LookupEnv(migrationFilesEnvKey); success {
 		migrationFiles = v
 	}
 
 	testWithDB := false
-	if v, success := os.LookupEnv("TEST_WITH_DB"); success {
+	if v, success := os.LookupEnv(testWithDBEnvKey); success {
 		testWithDB = success && v == "true"
 	}
 
-	testSeedFile := os.Getenv("TEST_SEED_FILE")
+	testSeedFile := os.Getenv(testSeedSQLFileEnvKey)
 	dbMigrationVersion := uint(1)
-	accessSecret := os.Getenv("ACCESS_SECRET")
+	accessSecret := os.Getenv(accessSecretEnvKey)
 
 	return Config{
 		DBHost:             dbHost,

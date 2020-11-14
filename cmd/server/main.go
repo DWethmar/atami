@@ -9,7 +9,6 @@ import (
 	"github.com/dwethmar/atami/pkg/api/feed"
 	"github.com/dwethmar/atami/pkg/api/login"
 	"github.com/dwethmar/atami/pkg/api/registration"
-	"github.com/dwethmar/atami/pkg/api/token"
 	"github.com/dwethmar/atami/pkg/config"
 	"github.com/dwethmar/atami/pkg/database"
 	"github.com/dwethmar/atami/pkg/service"
@@ -21,6 +20,10 @@ func main() {
 	fmt.Println("Staring server")
 
 	c := config.LoadEnvFile()
+	if err := c.Valid(); err != nil {
+		panic(err)
+	}
+
 	dataSource := database.GetPostgresConnectionString(c)
 
 	db, err := database.Connect(c.DBDriverName, dataSource)
@@ -30,10 +33,6 @@ func main() {
 	defer db.Close()
 
 	if err := database.RunMigrations(db, c.DBName, c.MigrationFiles, c.DBMigrationVersion); err != nil {
-		panic(err)
-	}
-
-	if secret, err := token.GetAccessSecret(); secret == nil || err != nil {
 		panic(err)
 	}
 

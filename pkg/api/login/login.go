@@ -15,6 +15,10 @@ type loginResponds struct {
 	AccessToken string `json:"access_token"`
 }
 
+func newExpirationDate() int64 {
+	return time.Now().Add(time.Minute * 15).Unix()
+}
+
 // Login handles login requests
 func Login(authService auth.Service) http.HandlerFunc {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
@@ -38,7 +42,6 @@ func Login(authService auth.Service) http.HandlerFunc {
 		}
 
 		var authenticated = false
-
 		if ok, err := authService.Authenticate(auth.Credentials{
 			Email:    email,
 			Password: password,
@@ -53,12 +56,12 @@ func Login(authService auth.Service) http.HandlerFunc {
 
 		user, err := authService.FindByEmail(email)
 		if err != nil || user == nil {
-			fmt.Printf("error while retrieving user\n")
+			fmt.Printf("error while retrieving user: %v\n", err)
 			response.SendServerError(w, r)
 			return
 		}
 
-		details, err := token.CreateToken(user.UID, user.Username, time.Now().Add(time.Minute*1).Unix())
+		details, err := token.CreateToken(user.UID, user.Username, newExpirationDate())
 		if err != nil || details.AccessToken == "" {
 			fmt.Printf("Error creating token: %v\n", err)
 			response.SendServerError(w, r)
