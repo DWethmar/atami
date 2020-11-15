@@ -37,8 +37,7 @@ func main() {
 	authService := service.NewAuthServicePostgres(db)
 
 	handler := chi.NewRouter()
-	handler.Mount("/auth/register", router.NewRegisterRouter(authService))
-	handler.Mount("/auth/login", router.NewLoginRouter(authService))
+	handler.Mount("/auth", router.NewAuthRouter(authService))
 
 	api := api.NewAPI(api.NewAPI(handler))
 	srv := &http.Server{Addr: ":8080", Handler: api}
