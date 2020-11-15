@@ -2,19 +2,15 @@ package auth
 
 import (
 	"testing"
-	"time"
 
 	"github.com/dwethmar/atami/pkg/validate"
 	"github.com/stretchr/testify/assert"
 )
 
-var validUser = User{
-	ID:        1,
-	UID:       "asdasdasdasd",
-	Username:  "username",
-	Email:     "test@test.nl",
-	CreatedAt: time.Now(),
-	UpdatedAt: time.Now(),
+var validUser = CreateUser{
+	Username: "username",
+	Email:    "test@test.nl",
+	Password: "Abc123QWERRTY@#1",
 }
 
 var emailValidator = validate.NewEmailValidator()
@@ -29,28 +25,28 @@ var validator = NewValidator(
 
 // TestValidUser tests the validate function.
 func TestValidUser(t *testing.T) {
-	assert.NoError(t, validator.ValidateUser(validUser))
+	assert.NoError(t, validator.ValidateNewUser(validUser))
 }
 
 func TestInvalidUsername(t *testing.T) {
 	invalidUsername := validUser
 	invalidUsername.Username = "!@#$%^&*(Iasd"
-	assert.EqualError(t, validator.ValidateUser(invalidUsername), validate.ErrUsernameContainsInvalidChars.Error())
+	assert.EqualError(t, validator.ValidateNewUser(invalidUsername), validate.ErrUsernameContainsInvalidChars.Error())
 
 	toLongUsername := validUser
 	toLongUsername.Username = "abcdefghijklmnopqrstuvwxyz"
-	assert.EqualError(t, validator.ValidateUser(toLongUsername), validate.ErrUsernameToLong.Error())
+	assert.EqualError(t, validator.ValidateNewUser(toLongUsername), validate.ErrUsernameToLong.Error())
 
 	toShortUsername := validUser
 	toShortUsername.Username = "a"
-	assert.EqualError(t, validator.ValidateUser(toShortUsername), validate.ErrUsernameToShort.Error())
+	assert.EqualError(t, validator.ValidateNewUser(toShortUsername), validate.ErrUsernameToShort.Error())
 }
 
 func TestInvalidEmail(t *testing.T) {
 	wrongEmail := validUser
 	wrongEmail.Email = ""
 
-	assert.EqualError(t, validator.ValidateUser(wrongEmail), validate.ErrEmailRequired.Error())
+	assert.EqualError(t, validator.ValidateNewUser(wrongEmail), validate.ErrEmailRequired.Error())
 }
 
 func TestValidNewUser(t *testing.T) {

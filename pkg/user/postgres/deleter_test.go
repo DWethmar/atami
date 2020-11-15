@@ -12,10 +12,7 @@ import (
 
 func TestDelete(t *testing.T) {
 	assert.NoError(t, database.WithTestDB(t, func(db *sql.DB) error {
-		creator := NewCreator(
-			user.NewDefaultValidator(),
-			db,
-		)
+		creator := NewCreator(db)
 
 		u, err := creator.Create(user.CreateUser{
 			Username:       "username",

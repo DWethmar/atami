@@ -12,6 +12,7 @@ import (
 
 	"github.com/dwethmar/atami/pkg/api/response"
 	"github.com/dwethmar/atami/pkg/auth"
+	"github.com/dwethmar/atami/pkg/memstore"
 	"github.com/dwethmar/atami/pkg/service"
 	"github.com/stretchr/testify/assert"
 )
@@ -30,7 +31,8 @@ var users = []*auth.CreateUser{
 }
 
 func TestList(t *testing.T) {
-	authService := service.NewAuthServiceMemory()
+	userService, store := service.NewUserServiceMemory()
+	authService := service.NewAuthServiceMemory(store)
 
 	var expectedResponds = make([]*Responds, len(users))
 	for i, user := range users {
@@ -42,7 +44,7 @@ func TestList(t *testing.T) {
 	assert.Nil(t, err)
 
 	rr := httptest.NewRecorder()
-	handler := http.HandlerFunc(ListUsers(authService))
+	handler := http.HandlerFunc(ListUsers(userService))
 	handler.ServeHTTP(rr, req)
 
 	assert.Equal(t, http.StatusOK, rr.Code, "Status code should be equal")
@@ -66,7 +68,8 @@ var invalidUser1 = NewUser{
 }
 
 func TestRegisterUser(t *testing.T) {
-	authService := service.NewAuthServiceMemory()
+	store := memstore.New()
+	authService := service.NewAuthServiceMemory(store)
 	handler := http.HandlerFunc(Register(authService))
 
 	body, _ := json.Marshal(newUser)
@@ -84,8 +87,9 @@ func TestRegisterUser(t *testing.T) {
 }
 
 func TestRegisterInvalidUser(t *testing.T) {
-	service := service.NewAuthServiceMemory()
-	handler := http.HandlerFunc(Register(service))
+	store := memstore.New()
+	authService := service.NewAuthServiceMemory(store)
+	handler := http.HandlerFunc(Register(authService))
 
 	requests := []*NewUser{
 		{
@@ -140,15 +144,17 @@ func TestRegisterInvalidUser(t *testing.T) {
 
 func TestLogin(t *testing.T) {
 	os.Setenv("ACCESS_SECRET", "abc")
+	store := memstore.New()
+	userService, store := service.NewUserServiceMemory()
+	authService := service.NewAuthServiceMemory(store)
 
-	service := service.NewAuthServiceMemory()
-	_, err := service.Register(auth.CreateUser{
+	_, err := authService.Register(auth.CreateUser{
 		Username: "test_username",
 		Email:    "test@test.com",
 		Password: "test123!@#ABC",
 	})
 	assert.NoError(t, err)
-	handler := http.HandlerFunc(Login(service))
+	handler := http.HandlerFunc(Login(authService, userService))
 
 	form := url.Values{}
 	form.Add("email", "test@test.com")

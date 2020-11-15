@@ -2,6 +2,8 @@ package auth
 
 import (
 	"errors"
+
+	"github.com/dwethmar/atami/pkg/user"
 )
 
 var (
@@ -15,54 +17,54 @@ var (
 
 // RegisterRepository declares a storage repository
 type RegisterRepository interface {
-	Register(createUser HashedCreateUser) (*User, error)
+	Register(createUser CreateUser) (*user.User, error)
 }
 
 // Registrator struct declaration
 type Registrator struct {
-	validator    *Validator
-	finder       *Finder // TODO: refactor to repo
-	registerRepo RegisterRepository
+	validator *Validator
+	finder    *user.Finder
+	creator   *user.Creator
 }
 
 // Register registers a new user
-func (m *Registrator) Register(newUser CreateUser) (*User, error) {
+func (m *Registrator) Register(newUser CreateUser) (*user.User, error) {
 	if err := m.validator.ValidateNewUser(newUser); err != nil {
 		return nil, err
 	}
 
-	if usr, err := m.finder.FindByEmail(newUser.Email); usr != nil && err == nil {
+	if usr, err := m.finder.FindByEmail(newUser.Email, false); usr != nil && err == nil {
 		return nil, ErrEmailAlreadyTaken
-	} else if err != nil && err != ErrCouldNotFind {
+	} else if err != nil && err != user.ErrCouldNotFind {
 		return nil, err
 	}
 
 	if usr, err := m.finder.FindByUsername(newUser.Username); usr != nil && err == nil {
 		return nil, ErrUsernameAlreadyTaken
-	} else if err != nil && err != ErrCouldNotFind {
+	} else if err != nil && err != user.ErrCouldNotFind {
 		return nil, err
 	}
 
 	hashedPassword := HashPassword([]byte(newUser.Password))
 
-	createUser := HashedCreateUser{
+	createUser := user.CreateUser{
 		Username:       newUser.Username,
 		Email:          newUser.Email,
 		HashedPassword: hashedPassword,
 	}
 
-	user, err := m.registerRepo.Register(createUser)
+	user, err := m.creator.Create(createUser)
 	if err != nil {
 		return nil, err
 	}
 	return user, nil
 }
 
-// NewRegistartor returns a new searcher
-func NewRegistartor(r RegisterRepository, f *Finder, v *Validator) *Registrator {
+// NewRegistrator returns a new searcher
+func NewRegistrator(r *user.Creator, f *user.Finder) *Registrator {
 	return &Registrator{
-		registerRepo: r,
-		finder:       f,
-		validator:    v,
+		creator:   r,
+		finder:    f,
+		validator: NewDefaultValidator(),
 	}
 }

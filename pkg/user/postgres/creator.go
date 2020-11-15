@@ -75,13 +75,12 @@ func (i *creatorRepository) Create(newUser user.CreateUser) (*user.User, error) 
 
 // NewCreator creates new creator.
 func NewCreator(
-	validator *user.Validator,
 	db *sql.DB,
 ) *user.Creator {
 	return user.NewCreator(
 		&creatorRepository{
 			db,
 		},
-		validator,
+		user.NewDefaultValidator(),
 	)
 }

@@ -8,16 +8,13 @@ import (
 
 // New creates a new user service
 func New(db *sql.DB) *user.Service {
-	var validator = user.NewDefaultValidator()
-
 	f := NewFinder(db)
 	d := NewDeleter(db)
-	r := NewCreator(validator, db)
+	r := NewCreator(db)
 
 	return user.NewService(
 		*f,
 		*d,
 		*r,
-		*validator,
 	)
 }

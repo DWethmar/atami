@@ -26,16 +26,13 @@ var passwords = []string{
 func TestDefaultComparePassword(t *testing.T) {
 	for _, password := range passwords {
 		hashedPassword := HashPassword([]byte(password))
-		assert.True(t, defaultComparePassword(hashedPassword, password), fmt.Sprintf("Password %s with hash %s are not equal", password, hashedPassword))
+		assert.True(t, ComparePasswords(hashedPassword, []byte(password)), fmt.Sprintf("Password %s with hash %s are not equal", password, hashedPassword))
 	}
 }
 
 func TestInvalidDefaultComparePassword(t *testing.T) {
 	for _, password := range passwords {
 		hashedPassword := HashPassword([]byte(password))
-		assert.False(t, defaultComparePassword(
-			hashedPassword,
-			"password",
-		), fmt.Sprintf("Password %s with hash %s are equal", password, hashedPassword))
+		assert.False(t, ComparePasswords(hashedPassword, []byte("oof")), fmt.Sprintf("Password %s with hash %s are equal", password, hashedPassword))
 	}
 }

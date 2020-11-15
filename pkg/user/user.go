@@ -18,6 +18,7 @@ type User struct {
 	UID       string
 	Username  string
 	Email     string
+	Password  string
 	CreatedAt time.Time
 	UpdatedAt time.Time
 }
@@ -56,10 +57,4 @@ func (u CreateUser) GetUsername() string {
 // GetEmail return the email
 func (u CreateUser) GetEmail() string {
 	return u.Email
-}
-
-// Credentials is information used to authenticate an user
-type Credentials struct {
-	Email    string
-	Password string
 }

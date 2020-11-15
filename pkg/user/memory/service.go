@@ -7,16 +7,13 @@ import (
 
 // New creates a new user service
 func New(store *memstore.Store) *user.Service {
-	var validator = user.NewDefaultValidator()
-
 	f := NewFinder(store)
 	d := NewDeleter(store)
-	r := NewCreator(validator, store)
+	r := NewCreator(store)
 
 	return user.NewService(
 		*f,
 		*d,
 		*r,
-		*validator,
 	)
 }

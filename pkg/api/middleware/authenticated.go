@@ -10,6 +10,7 @@ import (
 	"github.com/dgrijalva/jwt-go"
 	"github.com/dwethmar/atami/pkg/api/response"
 	"github.com/dwethmar/atami/pkg/auth"
+	"github.com/dwethmar/atami/pkg/user"
 )
 
 type userCTXKeyType string
@@ -17,21 +18,21 @@ type userCTXKeyType string
 const userCTXKey userCTXKeyType = "userCTXKey"
 
 // WithUser puts the request ID into the current context.
-func WithUser(ctx context.Context, user *auth.User) context.Context {
+func WithUser(ctx context.Context, user *user.User) context.Context {
 	return context.WithValue(ctx, userCTXKey, user)
 }
 
 // UserFromContext returns the user UID from the context.
-func UserFromContext(ctx context.Context) (*auth.User, error) {
+func UserFromContext(ctx context.Context) (*user.User, error) {
 	value := ctx.Value(userCTXKey)
-	if user, ok := value.(*auth.User); ok {
+	if user, ok := value.(*user.User); ok {
 		return user, nil
 	}
 	return nil, errors.New("No user found in context")
 }
 
 // Authenticated handles auth requests
-func Authenticated(authService *auth.Service) func(next http.Handler) http.Handler {
+func Authenticated(userService *user.Service) func(next http.Handler) http.Handler {
 
 	return func(next http.Handler) http.Handler {
 		fn := func(w http.ResponseWriter, r *http.Request) {
@@ -56,7 +57,7 @@ func Authenticated(authService *auth.Service) func(next http.Handler) http.Handl
 			}
 
 			if UID != "" {
-				if user, err := authService.FindByUID(UID); err == nil {
+				if user, err := userService.FindByUID(UID); err == nil {
 					fmt.Printf("OK! %v \n", user)
 					ctx := WithUser(r.Context(), user)
 					next.ServeHTTP(w, r.WithContext(ctx))

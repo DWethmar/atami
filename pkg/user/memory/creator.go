@@ -67,7 +67,6 @@ func (i *creatorRepository) Create(newUser user.CreateUser) (*user.User, error) 
 
 // NewCreator creates new creator.
 func NewCreator(
-	validator *user.Validator,
 	store *memstore.Store,
 ) *user.Creator {
 	return user.NewCreator(
@@ -75,6 +74,6 @@ func NewCreator(
 			store,
 			0,
 		},
-		validator,
+		user.NewDefaultValidator(),
 	)
 }

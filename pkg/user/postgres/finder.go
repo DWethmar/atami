@@ -48,6 +48,7 @@ SELECT
 	id,  
 	uid,
 	username, 
+	password, 
 	email,
 	created_on, 
 	updated_on
@@ -146,12 +147,13 @@ func (f findRepository) FindByUID(UID string) (*user.User, error) {
 }
 
 // FindByEmail func
-func (f *findRepository) FindByEmail(email string) (*user.User, error) {
+func (f *findRepository) FindByEmail(email string, includePwd bool) (*user.User, error) {
 	entry := &user.User{}
 	if err := f.db.QueryRow(getUserByEmail, email).Scan(
 		&entry.ID,
 		&entry.UID,
 		&entry.Username,
+		&entry.Password,
 		&entry.Email,
 		&entry.CreatedAt,
 		&entry.UpdatedAt,

@@ -12,3 +12,5 @@
 - [ ] Verify email for users
 - [ ] Add user to context
 - [ ] check if test with db actually works by running it locally 
+
+- [ ] maybe check how many logins are done for a single user.

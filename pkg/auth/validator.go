@@ -29,38 +29,19 @@ func (err errValidate) Error() string {
 	return strings.Join(errors, ". ")
 }
 
-// ValidateUser validates a user
-func (v Validator) ValidateUser(user User) error {
-	err := errValidate{}
-
-	if e := v.validateUsername(user); e != nil {
-		err.Errors = append(err.Errors, e)
-	}
-
-	if e := v.validateEmail(user); e != nil {
-		err.Errors = append(err.Errors, e)
-	}
-
-	if err.Valid() {
-		return nil
-	}
-
-	return err
-}
-
 // ValidateNewUser validates a new user
 func (v Validator) ValidateNewUser(newUser CreateUser) error {
 	err := errValidate{}
 
-	if e := v.validateUsername(newUser); e != nil {
+	if e := v.usernameValidator.Validate(newUser.Username); e != nil {
 		err.Errors = append(err.Errors, e)
 	}
 
-	if e := v.validateEmail(newUser); e != nil {
+	if e := v.emailValidator.Validate(newUser.Email); e != nil {
 		err.Errors = append(err.Errors, e)
 	}
 
-	if e := v.validatePassword(newUser); e != nil {
+	if e := v.passwordValidator.Validate(newUser.Password); e != nil {
 		err.Errors = append(err.Errors, e)
 	}
 
@@ -69,27 +50,6 @@ func (v Validator) ValidateNewUser(newUser CreateUser) error {
 	}
 
 	return err
-}
-
-func (v Validator) validateUsername(user hasUsername) error {
-	if err := v.usernameValidator.Validate(user.GetUsername()); err != nil {
-		return err
-	}
-	return nil
-}
-
-func (v Validator) validateEmail(user hasEmail) error {
-	if err := v.emailValidator.Validate(user.GetEmail()); err != nil {
-		return err
-	}
-	return nil
-}
-
-func (v Validator) validatePassword(user CreateUser) error {
-	if err := v.passwordValidator.Validate(user.Password); err != nil {
-		return err
-	}
-	return nil
 }
 
 // NewValidator creates a new validator

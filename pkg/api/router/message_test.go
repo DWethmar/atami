@@ -10,9 +10,11 @@ import (
 )
 
 func TestMessageAuthenticated(t *testing.T) {
-	authService := service.NewAuthServiceMemory()
+	userService, store := service.NewUserServiceMemory()
+	authService := service.NewAuthServiceMemory(store)
+
 	messageService := service.NewMessageServiceMemory()
-	handler := NewMessageRouter(authService, messageService)
+	handler := NewMessageRouter(userService, messageService)
 
 	req := httptest.NewRequest("GET", "/", nil)
 	WithAuthorizationHeader(req, authService)
@@ -22,9 +24,9 @@ func TestMessageAuthenticated(t *testing.T) {
 }
 
 func TestMessageUnauthenticated(t *testing.T) {
-	authService := service.NewAuthServiceMemory()
+	userService, _ := service.NewUserServiceMemory()
 	messageService := service.NewMessageServiceMemory()
-	handler := NewMessageRouter(authService, messageService)
+	handler := NewMessageRouter(userService, messageService)
 
 	req := httptest.NewRequest("GET", "/feed", nil)
 	rr := httptest.NewRecorder()

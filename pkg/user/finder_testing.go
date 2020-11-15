@@ -33,7 +33,7 @@ func TestFind(t *testing.T, finder *Finder, length int, users []User) {
 
 // TestFindByEmail tests the search function.
 func TestFindByEmail(t *testing.T, finder *Finder, email string) {
-	result, err := finder.FindByEmail(email)
+	result, err := finder.FindByEmail(email, false)
 	assert.NoError(t, err)
 	if assert.NotNil(t, result) {
 		assert.Equal(t, email, result.Email)

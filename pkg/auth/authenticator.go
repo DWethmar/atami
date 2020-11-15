@@ -1,31 +1,12 @@
 package auth
 
 import (
-	"errors"
+	"github.com/dwethmar/atami/pkg/user"
 )
-
-var (
-	// ErrEmailRequired error decloration
-	ErrEmailRequired = errors.New("email is required")
-	// ErrPasswordRequired error decloration
-	ErrPasswordRequired = errors.New("password is required")
-)
-
-// AuthenticateRepository authenticate user
-type AuthenticateRepository interface {
-	Authenticate(credentials Credentials, comparePasswords PasswordComparer) (bool, error)
-}
 
 // Authenticator authenticate with credentials.
 type Authenticator struct {
-	authenticateRepo AuthenticateRepository
-}
-
-// PasswordComparer compares a hash against a password
-type PasswordComparer = func(hashedPassword, password string) bool
-
-func defaultComparePassword(hashedPassword, password string) bool {
-	return ComparePasswords(hashedPassword, []byte(password))
+	finder *user.Finder
 }
 
 // Authenticate by credentials
@@ -39,13 +20,22 @@ func (m *Authenticator) Authenticate(credentials Credentials) (bool, error) {
 		return false, ErrPasswordRequired
 	}
 
-	return m.authenticateRepo.Authenticate(Credentials{
-		Email:    credentials.Email,
-		Password: credentials.Password,
-	}, defaultComparePassword)
+	usr, err := m.finder.FindByEmail(credentials.Email, true)
+	if err != nil {
+		if err != user.ErrCouldNotFind {
+			return false, err
+		}
+		return false, ErrAuthentication
+	}
+
+	if ComparePasswords(usr.Password, []byte(credentials.Password)) {
+		return true, nil
+	}
+
+	return false, ErrAuthentication
 }
 
 // NewAuthenticator returns a new Authenticator
-func NewAuthenticator(a AuthenticateRepository) *Authenticator {
-	return &Authenticator{a}
+func NewAuthenticator(finder *user.Finder) *Authenticator {
+	return &Authenticator{finder}
 }

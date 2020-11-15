@@ -9,6 +9,7 @@ import (
 
 	"github.com/dwethmar/atami/pkg/api/response"
 	"github.com/dwethmar/atami/pkg/auth"
+	"github.com/dwethmar/atami/pkg/user"
 )
 
 // NewUser struct definition
@@ -33,7 +34,7 @@ type Responds struct {
 	CreatedAt time.Time `json:"created_at"`
 }
 
-func toResponds(users []*auth.User) []*Responds {
+func toResponds(users []*user.User) []*Responds {
 	r := make([]*Responds, len(users))
 	for i, user := range users {
 		r[i] = toRespond(user)
@@ -41,18 +42,18 @@ func toResponds(users []*auth.User) []*Responds {
 	return r
 }
 
-func toRespond(user *auth.User) *Responds {
+func toRespond(u *user.User) *Responds {
 	return &Responds{
-		UID:       user.UID,
-		Username:  user.Username,
-		CreatedAt: user.CreatedAt,
+		UID:       u.UID,
+		Username:  u.Username,
+		CreatedAt: u.CreatedAt,
 	}
 }
 
 // ListUsers handler
-func ListUsers(authService *auth.Service) http.HandlerFunc {
+func ListUsers(userService *user.Service) http.HandlerFunc {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		if users, err := authService.Find(); err == nil {
+		if users, err := userService.Find(); err == nil {
 			response.SendJSON(w, r, toResponds(users), 200)
 		} else {
 			fmt.Printf("Error: %v \n", err)
@@ -97,7 +98,7 @@ func Register(authService *auth.Service) http.HandlerFunc {
 }
 
 // Login handles login requests
-func Login(authService *auth.Service) http.HandlerFunc {
+func Login(authService *auth.Service, userService *user.Service) http.HandlerFunc {
 
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		if err := r.ParseForm(); err != nil {
@@ -131,7 +132,7 @@ func Login(authService *auth.Service) http.HandlerFunc {
 			return
 		}
 
-		user, err := authService.FindByEmail(email)
+		user, err := userService.FindByEmail(email, false)
 		if err != nil || user == nil {
 			fmt.Printf("error while retrieving user: %v\n", err)
 			response.SendServerError(w, r)
