@@ -8,9 +8,9 @@ import (
 	"strings"
 
 	"github.com/dgrijalva/jwt-go"
+	"github.com/dwethmar/atami/pkg/api/response"
 	"github.com/dwethmar/atami/pkg/auth"
 	"github.com/dwethmar/atami/pkg/model"
-	"github.com/dwethmar/atami/pkg/response"
 )
 
 type userCTXKeyType string

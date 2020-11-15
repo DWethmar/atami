@@ -6,9 +6,9 @@ import (
 	"net/http"
 
 	"github.com/dwethmar/atami/pkg/api"
+	"github.com/dwethmar/atami/pkg/api/router"
 	"github.com/dwethmar/atami/pkg/config"
 	"github.com/dwethmar/atami/pkg/database"
-	"github.com/dwethmar/atami/pkg/router"
 	"github.com/dwethmar/atami/pkg/service"
 
 	"github.com/go-chi/chi"

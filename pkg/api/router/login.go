@@ -3,8 +3,8 @@ package router
 import (
 	"net/http"
 
+	"github.com/dwethmar/atami/pkg/api/handler"
 	"github.com/dwethmar/atami/pkg/auth"
-	"github.com/dwethmar/atami/pkg/auth/handler"
 	"github.com/go-chi/chi"
 )
 
