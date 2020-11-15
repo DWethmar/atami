@@ -12,3 +12,9 @@ type Message struct {
 	CreatedByUserID int
 	CreatedAt       time.Time
 }
+
+// NewMessage model
+type NewMessage struct {
+	Text            string
+	CreatedByUserID int
+}
