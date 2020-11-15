@@ -9,7 +9,8 @@ import (
 )
 
 func TestToken(t *testing.T) {
-	details, err := CreateToken("abc123", "username", time.Now().Add(time.Hour*10).Unix())
+	expiresAt := time.Now().Add(time.Hour * 10).Unix()
+	details, err := CreateToken("abc123", "username", expiresAt)
 	assert.NoError(t, err)
 
 	if token, err := VerifyToken(details.AccessToken); err != nil || !token.Valid {
@@ -24,6 +25,17 @@ func TestInvalidToken(t *testing.T) {
 	if _, err := VerifyToken(details.AccessToken); err == nil {
 		assert.Fail(t, fmt.Sprintf("excpected error %s \n", details.AccessToken))
 	} else {
-		assert.EqualError(t, err, "Token is expired")
+		assert.EqualError(t, err, ErrExpiredToken.Error())
+	}
+}
+
+func TestExpiredToken(t *testing.T) {
+	details, err := CreateToken("abc123", "username", 667224000)
+	assert.NoError(t, err)
+
+	if _, err := VerifyToken(details.AccessToken); err == nil {
+		assert.Fail(t, fmt.Sprintf("excpected error %s \n", details.AccessToken))
+	} else {
+		assert.EqualError(t, err, ErrExpiredToken.Error())
 	}
 }

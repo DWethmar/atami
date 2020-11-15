@@ -11,6 +11,15 @@ import (
 
 // https://www.sohamkamani.com/golang/2019-01-01-jwt-authentication/
 
+// ErrExpiredToken defines a error
+var ErrExpiredToken = errors.New("token is expired")
+
+// CustomClaims adds soem fields to the standard claims
+type CustomClaims struct {
+	SessionID int64 `json:"sid,omitempty"`
+	jwt.StandardClaims
+}
+
 // Details contains details about a generated token
 type Details struct {
 	AccessToken        string
@@ -32,12 +41,14 @@ func CreateToken(UID string, username string, expiresOn int64) (*Details, error)
 	td.AccessTokenExpires = expiresOn
 
 	var err error
-	//Creating Access Token
-	claims := jwt.MapClaims{}
-	claims["username"] = username
-	claims["uid"] = UID
-	claims["exp"] = td.AccessTokenExpires
-	claims["iat"] = time.Now().Unix()
+	claims := CustomClaims{
+		SessionID: time.Now().Unix(),
+	}
+	claims.StandardClaims = jwt.StandardClaims{
+		Subject:   UID,
+		ExpiresAt: td.AccessTokenExpires,
+		IssuedAt:  time.Now().Unix(),
+	}
 
 	accessSecret, err := getAccessSecret()
 	if err != nil {
@@ -56,18 +67,21 @@ func CreateToken(UID string, username string, expiresOn int64) (*Details, error)
 
 // VerifyToken verifies the token
 func VerifyToken(tokenString string) (*jwt.Token, error) {
-	token, err := jwt.Parse(tokenString, func(token *jwt.Token) (interface{}, error) {
+	var claims CustomClaims
+	return jwt.ParseWithClaims(tokenString, &claims, func(token *jwt.Token) (interface{}, error) {
 		//Make sure that the token method conform to "SigningMethodHMAC"
 		if _, ok := token.Method.(*jwt.SigningMethodHMAC); !ok {
 			return nil, fmt.Errorf("unexpected signing method: %v", token.Header["alg"])
 		}
 
+		if time.Now().Unix() > claims.ExpiresAt {
+			return nil, ErrExpiredToken
+		}
+
+		if claims.SessionID == 0 {
+			return nil, errors.New("empty session ID")
+		}
+
 		return getAccessSecret()
 	})
-
-	if err != nil {
-		return nil, err
-	}
-
-	return token, nil
 }

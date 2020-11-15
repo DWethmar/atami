@@ -7,7 +7,6 @@ import (
 	"net/http"
 	"strings"
 
-	"github.com/dgrijalva/jwt-go"
 	"github.com/dwethmar/atami/pkg/api/response"
 	"github.com/dwethmar/atami/pkg/auth"
 	"github.com/dwethmar/atami/pkg/user"
@@ -48,26 +47,26 @@ func Authenticated(userService *user.Service) func(next http.Handler) http.Handl
 			var UID string
 
 			if token, err := auth.VerifyToken(tokenString); err == nil && token.Valid {
-				if claims, ok := token.Claims.(jwt.MapClaims); ok && token.Valid {
-					UID, _ = claims["uid"].(string)
+				if claims, ok := token.Claims.(*auth.CustomClaims); ok && token.Valid {
+					UID = claims.Subject
 				}
 			} else {
-				response.SendUnauthorizedError(w, r, err)
+				fmt.Print(err)
+				response.SendUnauthorizedError(w, r, errors.New("Invalid JWT Token 1"))
 				return
 			}
 
 			if UID != "" {
 				if user, err := userService.FindByUID(UID); err == nil {
-					fmt.Printf("OK! %v \n", user)
 					ctx := WithUser(r.Context(), user)
 					next.ServeHTTP(w, r.WithContext(ctx))
 				} else {
+					fmt.Print(err)
 					response.SendServerError(w, r)
-					fmt.Print("Not OK!\n")
 					return
 				}
 			} else {
-				response.SendUnauthorizedError(w, r, errors.New("Invalid JWT Token"))
+				response.SendUnauthorizedError(w, r, errors.New("Invalid JWT Token 2"))
 			}
 		}
 		return http.HandlerFunc(fn)
