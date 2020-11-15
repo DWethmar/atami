@@ -5,7 +5,6 @@ import (
 	"fmt"
 
 	"github.com/dwethmar/atami/pkg/message"
-	"github.com/dwethmar/atami/pkg/model"
 )
 
 var deleteMessage = fmt.Sprintf(`
@@ -19,7 +18,7 @@ type deleterRepository struct {
 }
 
 // Delete deletes one user
-func (i deleterRepository) Delete(ID model.MessageID) error {
+func (i deleterRepository) Delete(ID int) error {
 	r, err := i.db.Exec(deleteMessage, ID)
 	if err != nil {
 		return err

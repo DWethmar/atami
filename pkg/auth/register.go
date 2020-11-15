@@ -2,8 +2,6 @@ package auth
 
 import (
 	"errors"
-
-	"github.com/dwethmar/atami/pkg/model"
 )
 
 var (
@@ -28,7 +26,7 @@ type Registrator struct {
 }
 
 // Register registers a new user
-func (m *Registrator) Register(newUser CreateUser) (*model.User, error) {
+func (m *Registrator) Register(newUser CreateUser) (*User, error) {
 	if err := m.validator.ValidateNewUser(newUser); err != nil {
 		return nil, err
 	}
@@ -57,7 +55,7 @@ func (m *Registrator) Register(newUser CreateUser) (*model.User, error) {
 	if err != nil {
 		return nil, err
 	}
-	return toUser(user), nil
+	return user, nil
 }
 
 // NewRegistartor returns a new searcher

@@ -1,9 +1,10 @@
 package memory
 
 import (
+	"strconv"
+
 	"github.com/dwethmar/atami/pkg/memstore"
 	"github.com/dwethmar/atami/pkg/message"
-	"github.com/dwethmar/atami/pkg/model"
 )
 
 // readerRepository reads messages from memory
@@ -12,8 +13,8 @@ type findRepository struct {
 }
 
 // FindByID get one message
-func (i *findRepository) FindByID(ID model.MessageID) (*message.Message, error) {
-	result, ok := i.store.Get(ID.String())
+func (i *findRepository) FindByID(ID int) (*message.Message, error) {
+	result, ok := i.store.Get(strconv.Itoa(ID))
 	if ok {
 		if message, ok := result.(message.Message); ok {
 			return &message, nil

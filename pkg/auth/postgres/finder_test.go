@@ -7,7 +7,6 @@ import (
 
 	"github.com/dwethmar/atami/pkg/auth"
 	"github.com/dwethmar/atami/pkg/database"
-	"github.com/dwethmar/atami/pkg/model"
 	"github.com/stretchr/testify/assert"
 )
 
@@ -23,9 +22,9 @@ func generateTestUsers(size int) []auth.CreateUser {
 	return users
 }
 
-func setup(db *sql.DB) (*auth.Finder, []model.User) {
+func setup(db *sql.DB) (*auth.Finder, []auth.User) {
 	service := NewService(db)
-	users := make([]model.User, 100)
+	users := make([]auth.User, 100)
 	for i, testUser := range generateTestUsers(100) {
 		user, err := service.Register(testUser)
 		if err != nil {
@@ -39,7 +38,7 @@ func setup(db *sql.DB) (*auth.Finder, []model.User) {
 
 func TestFind(t *testing.T) {
 	assert.NoError(t, database.WithTestDB(t, func(db *sql.DB) error {
-		var existingUsers []model.User
+		var existingUsers []auth.User
 		finder := NewFinder(db)
 		if users, err := finder.Find(); err == nil {
 			for _, u := range users {

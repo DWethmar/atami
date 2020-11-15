@@ -1,6 +1,7 @@
 package memory
 
 import (
+	"strconv"
 	"testing"
 	"time"
 
@@ -17,7 +18,7 @@ func TestDelete(t *testing.T) {
 		Email:     "test@test.nl",
 		CreatedAt: time.Now(),
 	}
-	assert.True(t, store.Add(a.ID.String(), a))
+	assert.True(t, store.Add(strconv.Itoa(a.ID), a))
 
 	deleter := NewDeleter(store)
 	auth.TestDelete(t, deleter, a.ID)

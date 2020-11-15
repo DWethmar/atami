@@ -5,7 +5,6 @@ import (
 	"fmt"
 
 	"github.com/dwethmar/atami/pkg/auth"
-	"github.com/dwethmar/atami/pkg/model"
 )
 
 var getUsers = fmt.Sprintf(`
@@ -109,7 +108,7 @@ func (f findRepository) Find() ([]*auth.User, error) {
 }
 
 // FindByID get one message by ID
-func (f findRepository) FindByID(ID model.UserID) (*auth.User, error) {
+func (f findRepository) FindByID(ID int) (*auth.User, error) {
 	entry := &auth.User{}
 	if err := f.db.QueryRow(getUserByID, ID).Scan(
 		&entry.ID,
@@ -128,7 +127,7 @@ func (f findRepository) FindByID(ID model.UserID) (*auth.User, error) {
 }
 
 // FindByUID get one message by UID
-func (f findRepository) FindByUID(UID model.UserUID) (*auth.User, error) {
+func (f findRepository) FindByUID(UID string) (*auth.User, error) {
 	entry := &auth.User{}
 	if err := f.db.QueryRow(getUserByUID, UID).Scan(
 		&entry.ID,

@@ -2,11 +2,11 @@ package memory
 
 import (
 	"errors"
+	"strconv"
 	"time"
 
 	"github.com/dwethmar/atami/pkg/auth"
 	"github.com/dwethmar/atami/pkg/memstore"
-	"github.com/dwethmar/atami/pkg/model"
 	"github.com/segmentio/ksuid"
 )
 
@@ -15,7 +15,7 @@ var layoutISO = "2006-01-02"
 // registerRepository stores new messages
 type registerRepository struct {
 	store *memstore.Store
-	newID model.UserID
+	newID int
 }
 
 // Create new user
@@ -27,17 +27,17 @@ func (i *registerRepository) Register(newUser auth.HashedCreateUser) (*auth.User
 	i.newID++
 	usr := userRecord{
 		ID:        i.newID,
-		UID:       model.UserUID(ksuid.New().String()),
+		UID:       ksuid.New().String(),
 		Username:  newUser.Username,
 		Email:     newUser.Email,
 		CreatedAt: time.Now(),
 		UpdatedAt: time.Now(),
 		Password:  newUser.HashedPassword,
 	}
+	IDStr := strconv.Itoa(usr.ID)
+	i.store.Add(IDStr, usr)
 
-	i.store.Add(usr.ID.String(), usr)
-
-	if value, ok := i.store.Get(usr.ID.String()); ok {
+	if value, ok := i.store.Get(IDStr); ok {
 		if record, ok := value.(userRecord); ok {
 			return recordToUser(record), nil
 		}

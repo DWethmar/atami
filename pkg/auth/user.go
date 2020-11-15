@@ -2,8 +2,6 @@ package auth
 
 import (
 	"time"
-
-	"github.com/dwethmar/atami/pkg/model"
 )
 
 type hasUsername interface {
@@ -16,8 +14,8 @@ type hasEmail interface {
 
 // User struct declaration
 type User struct {
-	ID        model.UserID
-	UID       model.UserUID
+	ID        int
+	UID       string
 	Username  string
 	Email     string
 	CreatedAt time.Time
@@ -32,6 +30,15 @@ func (u User) GetUsername() string {
 // GetEmail return the email
 func (u User) GetEmail() string {
 	return u.Email
+}
+
+// Equal check if a user is equal
+func (u User) Equal(user User) bool {
+	return (u.ID == user.ID &&
+		u.UID == user.UID &&
+		u.Email == user.Email &&
+		u.CreatedAt.Equal(user.CreatedAt) &&
+		u.UpdatedAt.Equal(user.UpdatedAt))
 }
 
 // CreateUser struct declaration
@@ -62,15 +69,4 @@ func (u CreateUser) GetEmail() string {
 type Credentials struct {
 	Email    string
 	Password string
-}
-
-func toUser(user *User) *model.User {
-	return &model.User{
-		ID:        user.ID,
-		UID:       user.UID,
-		Username:  user.Username,
-		Email:     user.Email,
-		CreatedAt: user.CreatedAt,
-		UpdatedAt: user.UpdatedAt,
-	}
 }

@@ -2,8 +2,6 @@ package auth
 
 import (
 	"errors"
-
-	"github.com/dwethmar/atami/pkg/model"
 )
 
 var (
@@ -16,8 +14,8 @@ type FindRepository interface {
 	Find() ([]*User, error)
 	FindByEmail(email string) (*User, error)
 	FindByUsername(username string) (*User, error)
-	FindByID(ID model.UserID) (*User, error)
-	FindByUID(UID model.UserUID) (*User, error)
+	FindByID(ID int) (*User, error)
+	FindByUID(UID string) (*User, error)
 }
 
 // Finder searches messages.
@@ -26,54 +24,28 @@ type Finder struct {
 }
 
 // Find return a list of list items.
-func (m *Finder) Find() ([]*model.User, error) {
-	results, err := m.findRepo.Find()
-	if err != nil {
-		return nil, err
-	}
-
-	users := make([]*model.User, len(results))
-	for i, result := range results {
-		users[i] = toUser(result)
-	}
-
-	return users, nil
+func (m *Finder) Find() ([]*User, error) {
+	return m.findRepo.Find()
 }
 
 // FindByEmail search for user with email
-func (m *Finder) FindByEmail(email string) (*model.User, error) {
-	user, err := m.findRepo.FindByEmail(email)
-	if err != nil {
-		return nil, err
-	}
-	return toUser(user), nil
+func (m *Finder) FindByEmail(email string) (*User, error) {
+	return m.findRepo.FindByEmail(email)
 }
 
 // FindByUsername search for user with username
-func (m *Finder) FindByUsername(username string) (*model.User, error) {
-	user, err := m.findRepo.FindByUsername(username)
-	if err != nil {
-		return nil, err
-	}
-	return toUser(user), nil
+func (m *Finder) FindByUsername(username string) (*User, error) {
+	return m.findRepo.FindByUsername(username)
 }
 
 // FindByID search for user with provided ID
-func (m *Finder) FindByID(ID model.UserID) (*model.User, error) {
-	user, err := m.findRepo.FindByID(ID)
-	if err != nil {
-		return nil, err
-	}
-	return toUser(user), nil
+func (m *Finder) FindByID(ID int) (*User, error) {
+	return m.findRepo.FindByID(ID)
 }
 
 // FindByUID search for user with provided UID
-func (m *Finder) FindByUID(UID model.UserUID) (*model.User, error) {
-	user, err := m.findRepo.FindByUID(UID)
-	if err != nil {
-		return nil, err
-	}
-	return toUser(user), nil
+func (m *Finder) FindByUID(UID string) (*User, error) {
+	return m.findRepo.FindByUID(UID)
 }
 
 // NewFinder returns a new searcher

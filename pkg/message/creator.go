@@ -1,16 +1,15 @@
 package message
 
-import "github.com/dwethmar/atami/pkg/model"
-
 // NewMessage model
 type NewMessage struct {
-	Text      string
-	CreatedBy model.UserID
+	Text            string
+	CreatedByUserID int
 }
 
 // CreatorRepository defines a messsage listing repository
 type CreatorRepository interface {
-	Create(newMessage NewMessage) (*Message, error)
+	Create(newMessage NewMessage) (*Message, error) // return int
+	// add find repo and retrieve it.
 }
 
 // Creator creates messages.
@@ -19,12 +18,8 @@ type Creator struct {
 }
 
 // Create a new message
-func (m *Creator) Create(newMessage NewMessage) (*model.Message, error) {
-	message, err := m.createRepo.Create(newMessage)
-	if err != nil {
-		return nil, err
-	}
-	return ToMessage(message), nil
+func (m *Creator) Create(newMessage NewMessage) (*Message, error) {
+	return m.createRepo.Create(newMessage)
 }
 
 // NewCreator returns a new Listing

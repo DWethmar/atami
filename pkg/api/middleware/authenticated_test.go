@@ -8,7 +8,6 @@ import (
 	"time"
 
 	"github.com/dwethmar/atami/pkg/auth"
-	"github.com/dwethmar/atami/pkg/model"
 	"github.com/dwethmar/atami/pkg/service"
 	"github.com/stretchr/testify/assert"
 )
@@ -53,9 +52,9 @@ func TestAuthenticated(t *testing.T) {
 }
 
 func TestAuthenticatedContext(t *testing.T) {
-	user := &model.User{
-		ID:        model.UserID(1),
-		UID:       model.UserUID("abc123"),
+	user := &auth.User{
+		ID:        1,
+		UID:       "abc123",
 		Username:  "test_user",
 		CreatedAt: time.Now(),
 		UpdatedAt: time.Now(),

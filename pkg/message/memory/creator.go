@@ -2,34 +2,34 @@ package memory
 
 import (
 	"errors"
+	"strconv"
 	"time"
 
 	"github.com/dwethmar/atami/pkg/memstore"
 	"github.com/dwethmar/atami/pkg/message"
-	"github.com/dwethmar/atami/pkg/model"
 	"github.com/segmentio/ksuid"
 )
 
 // creatorRepository stores new messages
 type creatorRepository struct {
 	store *memstore.Store
-	newID model.MessageID
+	newID int
 }
 
 // Create new message
 func (i *creatorRepository) Create(newMessage message.NewMessage) (*message.Message, error) {
 	i.newID++
-	uid := model.MessageUID(ksuid.New().String())
 	msg := message.Message{
-		ID:        i.newID,
-		UID:       uid,
-		Text:      newMessage.Text,
-		CreatedAt: time.Now(),
-		CreatedBy: newMessage.CreatedBy,
+		ID:              i.newID,
+		UID:             ksuid.New().String(),
+		Text:            newMessage.Text,
+		CreatedAt:       time.Now(),
+		CreatedByUserID: newMessage.CreatedByUserID,
 	}
-	i.store.Add(msg.ID.String(), msg)
+	idStr := strconv.Itoa(msg.ID)
+	i.store.Add(idStr, msg)
 
-	if value, ok := i.store.Get(msg.ID.String()); ok {
+	if value, ok := i.store.Get(idStr); ok {
 		if msg, ok := value.(message.Message); ok {
 			return &msg, nil
 		}

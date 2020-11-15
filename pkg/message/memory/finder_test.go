@@ -6,24 +6,23 @@ import (
 
 	"github.com/dwethmar/atami/pkg/memstore"
 	"github.com/dwethmar/atami/pkg/message"
-	"github.com/dwethmar/atami/pkg/model"
 )
 
 func generateTestMessages(size int) []message.NewMessage {
 	messages := make([]message.NewMessage, size)
 	for i := 0; i < size; i++ {
 		messages[i] = message.NewMessage{
-			Text:      fmt.Sprintf("Lorum ipsum %v", i+1),
-			CreatedBy: model.UserID(1),
+			Text:            fmt.Sprintf("Lorum ipsum %v", i+1),
+			CreatedByUserID: 1,
 		}
 	}
 	return messages
 }
 
-func setup() (*message.Finder, []model.Message) {
+func setup() (*message.Finder, []message.Message) {
 	store := memstore.New()
 	service := NewService(store)
-	msgs := make([]model.Message, 100)
+	msgs := make([]message.Message, 100)
 	for i, newMsg := range generateTestMessages(100) {
 		if msg, err := service.Create(newMsg); err == nil {
 			msgs[i] = *msg
@@ -37,11 +36,11 @@ func setup() (*message.Finder, []model.Message) {
 
 func TestReadOne(t *testing.T) {
 	reader, _ := setup()
-	message.TestFindOne(t, reader, model.MessageID(1), model.Message{
-		ID:        1,
-		UID:       "",
-		Text:      "Lorum ipsum 1",
-		CreatedBy: model.UserID(1),
+	message.TestFindOne(t, reader, 1, message.Message{
+		ID:              1,
+		UID:             "",
+		Text:            "Lorum ipsum 1",
+		CreatedByUserID: 1,
 	})
 }
 

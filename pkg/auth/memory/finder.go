@@ -1,9 +1,10 @@
 package memory
 
 import (
+	"strconv"
+
 	"github.com/dwethmar/atami/pkg/auth"
 	"github.com/dwethmar/atami/pkg/memstore"
-	"github.com/dwethmar/atami/pkg/model"
 )
 
 // findRepository reads messages from memory
@@ -41,8 +42,8 @@ func (f findRepository) Find() ([]*auth.User, error) {
 }
 
 // FindByID get one message
-func (f findRepository) FindByID(ID model.UserID) (*auth.User, error) {
-	if result, ok := f.store.Get(ID.String()); ok {
+func (f findRepository) FindByID(ID int) (*auth.User, error) {
+	if result, ok := f.store.Get(strconv.Itoa(ID)); ok {
 		if record, ok := result.(userRecord); ok {
 			return recordToUser(record), nil
 		}
@@ -52,7 +53,7 @@ func (f findRepository) FindByID(ID model.UserID) (*auth.User, error) {
 }
 
 // FindByID get one message
-func (f findRepository) FindByUID(UID model.UserUID) (*auth.User, error) {
+func (f findRepository) FindByUID(UID string) (*auth.User, error) {
 	return filterList(f.store.List(), func(record userRecord) bool {
 		return UID == record.UID
 	})

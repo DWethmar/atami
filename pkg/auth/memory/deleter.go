@@ -1,9 +1,10 @@
 package memory
 
 import (
+	"strconv"
+
 	"github.com/dwethmar/atami/pkg/auth"
 	"github.com/dwethmar/atami/pkg/memstore"
-	"github.com/dwethmar/atami/pkg/model"
 )
 
 // deleterRepository deletes user from memory
@@ -12,8 +13,8 @@ type deleterRepository struct {
 }
 
 // Delete deletes one user
-func (i deleterRepository) Delete(ID model.UserID) error {
-	if i.store.Delete(ID.String()) {
+func (i deleterRepository) Delete(ID int) error {
+	if i.store.Delete(strconv.Itoa(ID)) {
 		return nil
 	}
 	return auth.ErrCouldNotDelete

@@ -9,7 +9,6 @@ import (
 
 	"github.com/dwethmar/atami/pkg/api/response"
 	"github.com/dwethmar/atami/pkg/auth"
-	"github.com/dwethmar/atami/pkg/model"
 )
 
 // NewUser struct definition
@@ -34,7 +33,7 @@ type Responds struct {
 	CreatedAt time.Time `json:"created_at"`
 }
 
-func toResponds(users []*model.User) []*Responds {
+func toResponds(users []*auth.User) []*Responds {
 	r := make([]*Responds, len(users))
 	for i, user := range users {
 		r[i] = toRespond(user)
@@ -42,18 +41,18 @@ func toResponds(users []*model.User) []*Responds {
 	return r
 }
 
-func toRespond(user *model.User) *Responds {
+func toRespond(user *auth.User) *Responds {
 	return &Responds{
-		UID:       user.UID.String(),
+		UID:       user.UID,
 		Username:  user.Username,
 		CreatedAt: user.CreatedAt,
 	}
 }
 
 // ListUsers handler
-func ListUsers(service auth.Service) http.HandlerFunc {
+func ListUsers(authService auth.Service) http.HandlerFunc {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		if users, err := service.Find(); err == nil {
+		if users, err := authService.Find(); err == nil {
 			response.SendJSON(w, r, toResponds(users), 200)
 		} else {
 			fmt.Printf("Error: %v \n", err)
@@ -63,7 +62,7 @@ func ListUsers(service auth.Service) http.HandlerFunc {
 }
 
 // Register handler handles the request to create new user
-func Register(service auth.Service) http.HandlerFunc {
+func Register(authService auth.Service) http.HandlerFunc {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 
 		var newUser = NewUser{}
@@ -80,12 +79,12 @@ func Register(service auth.Service) http.HandlerFunc {
 			Password: newUser.Password,
 		}
 
-		if err := service.ValidateNewUser(createUser); err != nil {
+		if err := authService.ValidateNewUser(createUser); err != nil {
 			response.SendBadRequestError(w, r, err)
 			return
 		}
 
-		user, err := service.Register(createUser)
+		user, err := authService.Register(createUser)
 
 		if err != nil || user == nil {
 			fmt.Printf("Error registering user: %v\n", err)

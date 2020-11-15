@@ -3,12 +3,11 @@ package auth
 import (
 	"testing"
 
-	"github.com/dwethmar/atami/pkg/model"
 	"github.com/stretchr/testify/assert"
 )
 
 // TestFindByID tests the find by id function.
-func TestFindByID(t *testing.T, finder *Finder, ID model.UserID) {
+func TestFindByID(t *testing.T, finder *Finder, ID int) {
 	m, err := finder.FindByID(ID)
 	assert.NoError(t, err)
 	assert.Equal(t, ID, m.ID)
@@ -16,12 +15,12 @@ func TestFindByID(t *testing.T, finder *Finder, ID model.UserID) {
 
 // TestUserNotFound tests the ReadOne function for a not found error.
 func TestUserNotFound(t *testing.T, finder *Finder) {
-	_, err := finder.FindByID(model.UserID(0))
+	_, err := finder.FindByID(0)
 	assert.Equal(t, ErrCouldNotFind, err)
 }
 
 // TestFind tests the ReadOne function.
-func TestFind(t *testing.T, finder *Finder, length int, users []model.User) {
+func TestFind(t *testing.T, finder *Finder, length int, users []User) {
 	list, err := finder.Find()
 
 	assert.Nil(t, err)

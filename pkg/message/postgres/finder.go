@@ -5,7 +5,6 @@ import (
 	"fmt"
 
 	"github.com/dwethmar/atami/pkg/message"
-	"github.com/dwethmar/atami/pkg/model"
 )
 
 var getMessages = fmt.Sprintf(`
@@ -50,7 +49,7 @@ func (i *findRepository) Find() ([]*message.Message, error) {
 			&entry.ID,
 			&entry.UID,
 			&entry.Text,
-			&entry.CreatedBy,
+			&entry.CreatedByUserID,
 			&entry.CreatedAt,
 		); err != nil {
 			return nil, err
@@ -67,13 +66,13 @@ func (i *findRepository) Find() ([]*message.Message, error) {
 }
 
 // FindByID get one message
-func (i *findRepository) FindByID(ID model.MessageID) (*message.Message, error) {
+func (i *findRepository) FindByID(ID int) (*message.Message, error) {
 	entry := &message.Message{}
 	if err := i.db.QueryRow(getMessageByID, ID).Scan(
 		&entry.ID,
 		&entry.UID,
 		&entry.Text,
-		&entry.CreatedBy,
+		&entry.CreatedByUserID,
 		&entry.CreatedAt,
 	); err != nil {
 		if err == sql.ErrNoRows {

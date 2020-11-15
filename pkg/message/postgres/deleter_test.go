@@ -7,7 +7,6 @@ import (
 
 	"github.com/dwethmar/atami/pkg/database"
 	"github.com/dwethmar/atami/pkg/message"
-	"github.com/dwethmar/atami/pkg/model"
 	"github.com/stretchr/testify/assert"
 )
 
@@ -17,8 +16,8 @@ func TestDelete(t *testing.T) {
 			db,
 		)
 		msg, err := creator.Create(message.NewMessage{
-			Text:      "Lorum ipsum",
-			CreatedBy: model.UserID(1),
+			Text:            "Lorum ipsum",
+			CreatedByUserID: 1,
 		})
 
 		if !assert.NoError(t, err) {

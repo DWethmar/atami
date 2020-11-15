@@ -7,7 +7,6 @@ import (
 
 	"github.com/dgrijalva/jwt-go"
 	"github.com/dwethmar/atami/pkg/config"
-	"github.com/dwethmar/atami/pkg/model"
 )
 
 // https://www.sohamkamani.com/golang/2019-01-01-jwt-authentication/
@@ -27,7 +26,7 @@ func getAccessSecret() ([]byte, error) {
 }
 
 // CreateToken creates a new authentication token
-func CreateToken(UID model.UserUID, username string, expiresOn int64) (*Details, error) {
+func CreateToken(UID string, username string, expiresOn int64) (*Details, error) {
 	td := &Details{}
 
 	td.AccessTokenExpires = expiresOn
@@ -36,7 +35,7 @@ func CreateToken(UID model.UserUID, username string, expiresOn int64) (*Details,
 	//Creating Access Token
 	claims := jwt.MapClaims{}
 	claims["username"] = username
-	claims["uid"] = UID.String()
+	claims["uid"] = UID
 	claims["exp"] = td.AccessTokenExpires
 	claims["iat"] = time.Now().Unix()
 

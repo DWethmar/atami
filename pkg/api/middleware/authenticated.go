@@ -10,7 +10,6 @@ import (
 	"github.com/dgrijalva/jwt-go"
 	"github.com/dwethmar/atami/pkg/api/response"
 	"github.com/dwethmar/atami/pkg/auth"
-	"github.com/dwethmar/atami/pkg/model"
 )
 
 type userCTXKeyType string
@@ -18,14 +17,14 @@ type userCTXKeyType string
 const userCTXKey userCTXKeyType = "userCTXKey"
 
 // WithUser puts the request ID into the current context.
-func WithUser(ctx context.Context, user *model.User) context.Context {
+func WithUser(ctx context.Context, user *auth.User) context.Context {
 	return context.WithValue(ctx, userCTXKey, user)
 }
 
 // UserFromContext returns the user UID from the context.
-func UserFromContext(ctx context.Context) (*model.User, error) {
+func UserFromContext(ctx context.Context) (*auth.User, error) {
 	value := ctx.Value(userCTXKey)
-	if user, ok := value.(*model.User); ok {
+	if user, ok := value.(*auth.User); ok {
 		return user, nil
 	}
 	return nil, errors.New("No user found in context")
@@ -44,17 +43,11 @@ func Authenticated(authService auth.Service) func(next http.Handler) http.Handle
 			}
 
 			tokenString := splitToken[1]
-			var UID model.UserUID
+			var UID string
 
 			if token, err := auth.VerifyToken(tokenString); err == nil && token.Valid {
 				if claims, ok := token.Claims.(jwt.MapClaims); ok && token.Valid {
-					UIDString, ok := claims["uid"].(string)
-					if ok {
-						UID = model.UserUID(UIDString)
-					} else {
-						response.SendUnauthorizedError(w, r, errors.New("UID not set"))
-						return
-					}
+					UID, _ = claims["uid"].(string)
 				}
 			} else {
 				response.SendUnauthorizedError(w, r, err)

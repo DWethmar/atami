@@ -6,7 +6,6 @@ import (
 
 	"github.com/dwethmar/atami/pkg/auth"
 	"github.com/dwethmar/atami/pkg/memstore"
-	"github.com/dwethmar/atami/pkg/model"
 )
 
 func generateTestUsers(size int) []auth.CreateUser {
@@ -21,10 +20,10 @@ func generateTestUsers(size int) []auth.CreateUser {
 	return users
 }
 
-func setup() (*auth.Finder, []model.User) {
+func setup() (*auth.Finder, []auth.User) {
 	store := memstore.New()
 	service := NewService(store)
-	users := make([]model.User, 100)
+	users := make([]auth.User, 100)
 	for i, testUser := range generateTestUsers(100) {
 		user, err := service.Register(testUser)
 		if err != nil {

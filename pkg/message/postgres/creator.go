@@ -6,7 +6,6 @@ import (
 	"time"
 
 	"github.com/dwethmar/atami/pkg/message"
-	"github.com/dwethmar/atami/pkg/model"
 	"github.com/segmentio/ksuid"
 )
 
@@ -35,9 +34,9 @@ func (i creatorRepository) Create(newMessage message.NewMessage) (*message.Messa
 
 	var messageID int
 	if err := stmt.QueryRow(
-		model.MessageUID(ksuid.New().String()),
+		ksuid.New().String(),
 		newMessage.Text,
-		newMessage.CreatedBy,
+		newMessage.CreatedByUserID,
 		time.Now().UTC(),
 	).Scan(&messageID); err != nil {
 		return nil, err
@@ -49,7 +48,7 @@ func (i creatorRepository) Create(newMessage message.NewMessage) (*message.Messa
 			&entry.ID,
 			&entry.UID,
 			&entry.Text,
-			&entry.CreatedBy,
+			&entry.CreatedByUserID,
 			&entry.CreatedAt,
 		); err != nil {
 			return nil, err
