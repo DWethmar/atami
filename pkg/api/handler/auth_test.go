@@ -1,7 +1,6 @@
 package handler
 
 import (
-	"bytes"
 	"encoding/json"
 	"net/http"
 	"net/http/httptest"
@@ -16,6 +15,13 @@ import (
 	"github.com/dwethmar/atami/pkg/service"
 	"github.com/stretchr/testify/assert"
 )
+
+// NewUser struct definition
+type NewUser struct {
+	Username string
+	Email    string
+	Password string
+}
 
 var users = []*auth.CreateUser{
 	{
@@ -72,12 +78,17 @@ func TestRegisterUser(t *testing.T) {
 	authService := service.NewAuthServiceMemory(store)
 	handler := http.HandlerFunc(Register(authService))
 
-	body, _ := json.Marshal(newUser)
-	req := httptest.NewRequest("POST", "/", bytes.NewBuffer(body))
+	form := url.Values{}
+	form.Add("email", newUser.Email)
+	form.Add("password", newUser.Password)
+	form.Add("username", newUser.Username)
+
+	req := httptest.NewRequest("POST", "/", strings.NewReader(form.Encode()))
+	req.Header.Set("Content-Type", "application/x-www-form-urlencoded")
 	rr := httptest.NewRecorder()
 	handler.ServeHTTP(rr, req)
 
-	assert.Equal(t, http.StatusCreated, rr.Code)
+	assert.Equal(t, http.StatusCreated, rr.Code, rr.Body.String())
 	assert.Equal(t, "application/json", rr.Header().Get("Content-Type"))
 
 	// Check the response body is what we expect.
@@ -123,12 +134,17 @@ func TestRegisterInvalidUser(t *testing.T) {
 	for i, r := range requests {
 		e := expectedErrors[i]
 
-		body, _ := json.Marshal(r)
-		req := httptest.NewRequest("POST", "/", bytes.NewBuffer(body))
+		form := url.Values{}
+		form.Add("email", r.Email)
+		form.Add("password", r.Password)
+		form.Add("username", r.Username)
+
+		req := httptest.NewRequest("POST", "/", strings.NewReader(form.Encode()))
+		req.Header.Set("Content-Type", "application/x-www-form-urlencoded")
 		rr := httptest.NewRecorder()
 		handler.ServeHTTP(rr, req)
 
-		assert.Equal(t, http.StatusBadRequest, rr.Code)
+		assert.Equal(t, http.StatusBadRequest, rr.Code, rr.Body.String())
 		assert.Equal(t, "application/json", rr.Header().Get("Content-Type"))
 
 		// Check the response body is what we expect.
@@ -139,7 +155,6 @@ func TestRegisterInvalidUser(t *testing.T) {
 		expected, _ := json.Marshal(e)
 		assert.Equal(t, string(expected), rr.Body.String())
 	}
-
 }
 
 func TestLogin(t *testing.T) {

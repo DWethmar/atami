@@ -1,7 +1,6 @@
 package handler
 
 import (
-	"encoding/json"
 	"errors"
 	"fmt"
 	"net/http"
@@ -11,13 +10,6 @@ import (
 	"github.com/dwethmar/atami/pkg/auth"
 	"github.com/dwethmar/atami/pkg/user"
 )
-
-// NewUser struct definition
-type NewUser struct {
-	Username string `json:"username"`
-	Email    string `json:"email"`
-	Password string `json:"password"`
-}
 
 type loginResponds struct {
 	AccessToken string `json:"access_token"`
@@ -66,18 +58,19 @@ func ListUsers(userService *user.Service) http.HandlerFunc {
 func Register(authService *auth.Service) http.HandlerFunc {
 
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		var newUser = NewUser{}
-		err := json.NewDecoder(r.Body).Decode(&newUser)
-		if err != nil {
-			fmt.Printf("Error decoding entry: %v\n", err)
-			response.SendBadRequestError(w, r, errors.New("Invalid input"))
+		if err := r.ParseForm(); err != nil {
+			fmt.Fprintf(w, "ParseForm() err: %v", err)
 			return
 		}
 
+		email := r.FormValue("email")
+		username := r.FormValue("username")
+		password := r.FormValue("password")
+
 		createUser := auth.CreateUser{
-			Username: newUser.Username,
-			Email:    newUser.Email,
-			Password: newUser.Password,
+			Username: username,
+			Email:    email,
+			Password: password,
 		}
 
 		if err := authService.ValidateNewUser(createUser); err != nil {
