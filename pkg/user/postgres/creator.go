@@ -15,13 +15,13 @@ import (
 var checkUniqueUsername = fmt.Sprintf(`
 SELECT 1
 FROM %s 
-WHERE username = $2 
+WHERE username = $1 
 LIMIT 1`, tableName)
 
 var checkUniqueEmail = fmt.Sprintf(`
 SELECT 1
 FROM %s 
-WHERE email = $2 
+WHERE email = $1
 LIMIT 1`, tableName)
 
 var insertUser = fmt.Sprintf(`
