@@ -31,7 +31,8 @@ func UserFromContext(ctx context.Context) (*auth.User, error) {
 }
 
 // Authenticated handles auth requests
-func Authenticated(authService auth.Service) func(next http.Handler) http.Handler {
+func Authenticated(authService *auth.Service) func(next http.Handler) http.Handler {
+
 	return func(next http.Handler) http.Handler {
 		fn := func(w http.ResponseWriter, r *http.Request) {
 			reqToken := r.Header.Get("Authorization")

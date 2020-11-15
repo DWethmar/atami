@@ -22,7 +22,7 @@ func generateTestMessages(size int) []message.NewMessage {
 }
 
 func setup(db *sql.DB) (*message.Finder, []message.Message) {
-	service := NewService(db)
+	service := New(db)
 	messages := make([]message.Message, 100)
 
 	for i, newMSG := range generateTestMessages(100) {

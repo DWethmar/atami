@@ -10,7 +10,7 @@ import (
 )
 
 // NewRegisterRouter returns the api routes handler
-func NewRegisterRouter(service auth.Service) http.Handler {
+func NewRegisterRouter(service *auth.Service) http.Handler {
 	r := chi.NewRouter()
 
 	r.Post("/", handler.Register(service))

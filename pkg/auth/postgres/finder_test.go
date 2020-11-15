@@ -23,7 +23,7 @@ func generateTestUsers(size int) []auth.CreateUser {
 }
 
 func setup(db *sql.DB) (*auth.Finder, []auth.User) {
-	service := NewService(db)
+	service := New(db)
 	users := make([]auth.User, 100)
 	for i, testUser := range generateTestUsers(100) {
 		user, err := service.Register(testUser)

@@ -1,4 +1,4 @@
-package auth
+package router
 
 import (
 	"fmt"
@@ -6,12 +6,13 @@ import (
 	"net/http/httptest"
 	"testing"
 
+	"github.com/dwethmar/atami/pkg/auth"
 	"github.com/stretchr/testify/assert"
 )
 
 // WithAuthorizationHeader test if handles authorization
-func WithAuthorizationHeader(req *http.Request, authService Service) error {
-	user, err := authService.Register(CreateUser{
+func WithAuthorizationHeader(req *http.Request, authService *auth.Service) error {
+	user, err := authService.Register(auth.CreateUser{
 		Username: "test",
 		Email:    "test@test.nl",
 		Password: "Test1234!@#$",
@@ -20,7 +21,7 @@ func WithAuthorizationHeader(req *http.Request, authService Service) error {
 		return err
 	}
 
-	accessToken, err := CreateToken(user.UID, user.Username, 4100760000)
+	accessToken, err := auth.CreateToken(user.UID, user.Username, 4100760000)
 	if err != nil {
 		return err
 	}

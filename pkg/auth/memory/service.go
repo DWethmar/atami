@@ -13,8 +13,8 @@ type service struct {
 	auth.Validator
 }
 
-// NewService creates a new user service
-func NewService(store *memstore.Store) auth.Service {
+// New creates a new user service
+func New(store *memstore.Store) *auth.Service {
 	var validator = auth.NewDefaultValidator()
 
 	a := NewAuthenticator(store)
@@ -22,11 +22,11 @@ func NewService(store *memstore.Store) auth.Service {
 	d := NewDeleter(store)
 	r := NewRegistrator(f, validator, store)
 
-	return &service{
-		Authenticator: *a,
-		Finder:        *f,
-		Deleter:       *d,
-		Registrator:   *r,
-		Validator:     *validator,
-	}
+	return auth.NewService(
+		*a,
+		*f,
+		*d,
+		*r,
+		*validator,
+	)
 }

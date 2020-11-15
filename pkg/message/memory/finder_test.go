@@ -21,7 +21,7 @@ func generateTestMessages(size int) []message.NewMessage {
 
 func setup() (*message.Finder, []message.Message) {
 	store := memstore.New()
-	service := NewService(store)
+	service := New(store)
 	msgs := make([]message.Message, 100)
 	for i, newMsg := range generateTestMessages(100) {
 		if msg, err := service.Create(newMsg); err == nil {

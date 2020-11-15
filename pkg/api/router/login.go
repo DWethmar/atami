@@ -9,7 +9,7 @@ import (
 )
 
 // NewLoginRouter creates a new login router
-func NewLoginRouter(authService auth.Service) http.Handler {
+func NewLoginRouter(authService *auth.Service) http.Handler {
 	r := chi.NewRouter()
 
 	r.Post("/", handler.Login(authService))

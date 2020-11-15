@@ -50,7 +50,7 @@ func toRespond(user *auth.User) *Responds {
 }
 
 // ListUsers handler
-func ListUsers(authService auth.Service) http.HandlerFunc {
+func ListUsers(authService *auth.Service) http.HandlerFunc {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		if users, err := authService.Find(); err == nil {
 			response.SendJSON(w, r, toResponds(users), 200)
@@ -62,9 +62,9 @@ func ListUsers(authService auth.Service) http.HandlerFunc {
 }
 
 // Register handler handles the request to create new user
-func Register(authService auth.Service) http.HandlerFunc {
-	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+func Register(authService *auth.Service) http.HandlerFunc {
 
+	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		var newUser = NewUser{}
 		err := json.NewDecoder(r.Body).Decode(&newUser)
 		if err != nil {
@@ -97,9 +97,9 @@ func Register(authService auth.Service) http.HandlerFunc {
 }
 
 // Login handles login requests
-func Login(authService auth.Service) http.HandlerFunc {
-	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+func Login(authService *auth.Service) http.HandlerFunc {
 
+	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		if err := r.ParseForm(); err != nil {
 			fmt.Fprintf(w, "ParseForm() err: %v", err)
 			return

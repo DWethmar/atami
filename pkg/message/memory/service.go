@@ -11,15 +11,15 @@ type service struct {
 	message.Creator
 }
 
-// NewService creates a new user service
-func NewService(store *memstore.Store) message.Service {
+// New creates a new user service
+func New(store *memstore.Store) *message.Service {
 	r := NewFinder(store)
 	d := NewDeleter(store)
 	c := NewCreator(store)
 
-	return &service{
-		Finder:  *r,
-		Deleter: *d,
-		Creator: *c,
-	}
+	return message.NewService(
+		*r,
+		*d,
+		*c,
+	)
 }

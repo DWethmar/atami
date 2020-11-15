@@ -22,7 +22,7 @@ func generateTestUsers(size int) []auth.CreateUser {
 
 func setup() (*auth.Finder, []auth.User) {
 	store := memstore.New()
-	service := NewService(store)
+	service := New(store)
 	users := make([]auth.User, 100)
 	for i, testUser := range generateTestUsers(100) {
 		user, err := service.Register(testUser)

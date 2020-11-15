@@ -12,7 +12,7 @@ import (
 )
 
 // NewMessageRouter creates new message router
-func NewMessageRouter(authService auth.Service, messageService message.Service) http.Handler {
+func NewMessageRouter(authService *auth.Service, messageService *message.Service) http.Handler {
 	r := chi.NewRouter()
 
 	logger := httplog.NewLogger("message", httplog.Options{})

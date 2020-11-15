@@ -5,7 +5,6 @@ import (
 	"net/http/httptest"
 	"testing"
 
-	"github.com/dwethmar/atami/pkg/auth"
 	"github.com/dwethmar/atami/pkg/service"
 	"github.com/stretchr/testify/assert"
 )
@@ -16,7 +15,7 @@ func TestMessageAuthenticated(t *testing.T) {
 	handler := NewMessageRouter(authService, messageService)
 
 	req := httptest.NewRequest("GET", "/", nil)
-	auth.WithAuthorizationHeader(req, authService)
+	WithAuthorizationHeader(req, authService)
 	rr := httptest.NewRecorder()
 	handler.ServeHTTP(rr, req)
 	assert.Equal(t, http.StatusOK, rr.Code, rr.Body.String())

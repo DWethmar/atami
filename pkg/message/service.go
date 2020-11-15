@@ -1,14 +1,6 @@
 package message
 
-// Service defines interations with users
-type Service interface {
-	FindByID(ID int) (*Message, error)
-	Find() ([]*Message, error)
-	Delete(ID int) error
-	Create(newMessage NewMessage) (*Message, error)
-}
-
-type service struct {
+type Service struct {
 	Finder
 	Deleter
 	Creator
@@ -19,8 +11,8 @@ func NewService(
 	r Finder,
 	d Deleter,
 	c Creator,
-) Service {
-	return &service{
+) *Service {
+	return &Service{
 		Finder:  r,
 		Deleter: d,
 		Creator: c,
