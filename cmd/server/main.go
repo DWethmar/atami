@@ -12,6 +12,8 @@ import (
 	"github.com/dwethmar/atami/pkg/service"
 
 	"github.com/go-chi/chi"
+
+	_ "github.com/lib/pq"
 )
 
 func main() {

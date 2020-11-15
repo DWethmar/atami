@@ -7,9 +7,22 @@ import (
 	"time"
 
 	"github.com/dwethmar/atami/pkg/user"
+	"github.com/lib/pq"
 
 	"github.com/segmentio/ksuid"
 )
+
+var checkUniqueUsername = fmt.Sprintf(`
+SELECT 1
+FROM %s 
+WHERE username = $2 
+LIMIT 1`, tableName)
+
+var checkUniqueEmail = fmt.Sprintf(`
+SELECT 1
+FROM %s 
+WHERE email = $2 
+LIMIT 1`, tableName)
 
 var insertUser = fmt.Sprintf(`
 INSERT INTO %s (
@@ -27,10 +40,60 @@ type creatorRepository struct {
 	db *sql.DB
 }
 
+func isUniqueUsername(db *sql.DB, username string) (bool, error) {
+	stmt, err := db.Prepare(checkUniqueUsername)
+	if err != nil {
+		return false, err
+	}
+	defer stmt.Close()
+
+	var result int
+	if err = stmt.QueryRow(
+		username,
+	).Scan(&result); err != nil {
+		return false, err
+	}
+
+	return result == 0, nil
+}
+
+func isUniqueEmail(db *sql.DB, email string) (bool, error) {
+	stmt, err := db.Prepare(checkUniqueEmail)
+	if err != nil {
+		return false, err
+	}
+	defer stmt.Close()
+
+	var result int
+	if err = stmt.QueryRow(
+		email,
+	).Scan(&result); err != nil {
+		return false, err
+	}
+
+	return result == 0, nil
+}
+
 // Create new user
 func (i *creatorRepository) Create(newUser user.CreateUser) (*user.User, error) {
 	if newUser.HashedPassword == "" {
 		return nil, user.ErrPwdNotSet
+	}
+
+	if unique, err := isUniqueUsername(i.db, newUser.Username); err == nil {
+		if !unique {
+			return nil, user.ErrUsernameAlreadyTaken
+		}
+	} else if err != nil {
+		return nil, err
+	}
+
+	if unique, err := isUniqueEmail(i.db, newUser.Email); err == nil {
+		if !unique {
+			return nil, user.ErrEmailAlreadyTaken
+		}
+	} else if err != nil {
+		return nil, err
 	}
 
 	uid := ksuid.New().String()
@@ -52,6 +115,9 @@ func (i *creatorRepository) Create(newUser user.CreateUser) (*user.User, error) 
 		now,
 		now,
 	).Scan(&userID); err != nil {
+		if err, ok := err.(*pq.Error); ok {
+			fmt.Println("pq error:", err.Code.Name())
+		}
 		return nil, err
 	}
 
