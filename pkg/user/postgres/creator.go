@@ -51,7 +51,9 @@ func isUniqueUsername(db *sql.DB, username string) (bool, error) {
 	if err = stmt.QueryRow(
 		username,
 	).Scan(&result); err != nil {
-		return false, err
+		if err != sql.ErrNoRows {
+			return false, err
+		}
 	}
 
 	return result == 0, nil
@@ -68,7 +70,9 @@ func isUniqueEmail(db *sql.DB, email string) (bool, error) {
 	if err = stmt.QueryRow(
 		email,
 	).Scan(&result); err != nil {
-		return false, err
+		if err != sql.ErrNoRows {
+			return false, err
+		}
 	}
 
 	return result == 0, nil
