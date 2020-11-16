@@ -7,15 +7,53 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
-type compareLength struct {
-	Text   string
-	Length int
+func TestFindHashtags(t *testing.T) {
+	tests := []struct {
+		Text     string
+		Hashtags []string
+	}{
+		{
+			"Test test #hashtag1 test test #hashtag2",
+			[]string{"hashtag1", "hashtag2"},
+		},
+		{
+			"#hashtag1 test test#hashtag2",
+			[]string{"hashtag1"},
+		},
+		{
+			"#💩 test test#hashtag2",
+			[]string{},
+		},
+		{
+			"#test#",
+			[]string{"test"},
+		},
+		{
+			"#test#test#hasttags",
+			[]string{"test"},
+		},
+	}
+
+	for _, test := range tests {
+		r := FindHashtags(test.Text)
+
+		fmt.Printf("expect: %d received: %d TXT: %s \n", len(test.Hashtags), len(r), test.Text)
+
+		if assert.Equal(t, len(test.Hashtags), len(r), test.Text) {
+			for i, hashtag := range test.Hashtags {
+				assert.Equal(t, test.Hashtags[i], hashtag, test.Text)
+			}
+		}
+	}
 }
 
 // ParseMessage return info about the text length
 // go test ./pkg/message/ -v
 func TestParse(t *testing.T) {
-	tests := []compareLength{
+	tests := []struct {
+		Text   string
+		Length int
+	}{
 		{
 			"👨‍👩‍👧‍👦",
 			7,

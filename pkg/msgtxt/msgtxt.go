@@ -1,6 +1,8 @@
 package msgtxt
 
 import (
+	"fmt"
+	"regexp"
 	"unicode/utf8"
 
 	"golang.org/x/text/unicode/norm"
@@ -19,6 +21,20 @@ https://developer.twitter.com/en/docs/tco
 type ParseResult struct {
 	NormalizedText   string
 	NormalizedLength int
+	Hashtags         []string
+}
+
+// FindHashtags finds hastgas in text
+func FindHashtags(txt string) []string {
+	hashtags := make([]string, 0)
+	var re = regexp.MustCompile(`\B\#\w\w+\b`)
+
+	for i, match := range re.FindAllString(txt, -1) {
+		fmt.Println(match, "found at index", i)
+		hashtags = append(hashtags, match)
+	}
+
+	return hashtags
 }
 
 // Parse return info about the text length
