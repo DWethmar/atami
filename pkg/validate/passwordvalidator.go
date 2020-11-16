@@ -10,7 +10,7 @@ var (
 	// PasswordMinimunLength default minimun length of the password
 	PasswordMinimunLength = 8
 	// PasswordMaximumLength default minimun length of the username
-	PasswordMaximumLength = 100
+	PasswordMaximumLength = 50
 	// ErrPasswordRequired error used when there is no username
 	ErrPasswordRequired = errors.New("password is required")
 	// ErrPasswordToShort error used when the username is to short
