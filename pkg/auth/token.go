@@ -29,7 +29,7 @@ type Details struct {
 func getAccessSecret() ([]byte, error) {
 	t := config.Load().AccessSecret
 	if t == "" {
-		return nil, errors.New("access token is not set")
+		return nil, errors.New("access secret is not set in env: ACCESS_SECRET")
 	}
 	return []byte(t), nil
 }

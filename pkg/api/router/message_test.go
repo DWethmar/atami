@@ -17,10 +17,12 @@ func TestMessageAuthenticated(t *testing.T) {
 	handler := NewMessageRouter(userService, messageService)
 
 	req := httptest.NewRequest("GET", "/", nil)
-	WithAuthorizationHeader(req, authService)
-	rr := httptest.NewRecorder()
-	handler.ServeHTTP(rr, req)
-	assert.Equal(t, http.StatusOK, rr.Code, rr.Body.String())
+
+	if err := WithAuthorizationHeader(req, authService); assert.NoError(t, err) {
+		rr := httptest.NewRecorder()
+		handler.ServeHTTP(rr, req)
+		assert.Equal(t, http.StatusOK, rr.Code, rr.Body.String())
+	}
 }
 
 func TestMessageUnauthenticated(t *testing.T) {

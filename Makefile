@@ -21,7 +21,7 @@ serve:
 
 test:
 	@echo running tests
-	$(GOTEST) ./...
+	ACCESS_SECRET=abcdefghijlk $(GOTEST) ./...
 
 test-with-db:
 	@echo running tests with database
