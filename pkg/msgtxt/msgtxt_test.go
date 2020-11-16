@@ -1,4 +1,4 @@
-package message
+package msgtxt
 
 import (
 	"fmt"
@@ -13,11 +13,12 @@ type compareLength struct {
 }
 
 // ParseMessage return info about the text length
-func TestParseMessage(t *testing.T) {
+// go test ./pkg/message/ -v
+func TestParse(t *testing.T) {
 	tests := []compareLength{
 		{
-			"👦",
-			1,
+			"👨‍👩‍👧‍👦",
+			7,
 		},
 		{
 			"Amélie",
@@ -39,11 +40,19 @@ func TestParseMessage(t *testing.T) {
 			"おはようございます。",
 			10,
 		},
+		{
+			"\u00F1",
+			1,
+		},
+		{
+			"'\u006E\u0303",
+			2,
+		},
 	}
 
 	for _, test := range tests {
-		r := ParseMessage(test.Text)
-		fmt.Printf("expect: %d received: %d TXT: %s \n", test.Length, r.WeightedLength, test.Text)
-		assert.Equal(t, test.Length, r.WeightedLength, fmt.Sprintf("B length: %d TXT: %s", r.WeightedLength, test.Text))
+		r := Parse(test.Text)
+		fmt.Printf("expect: %d received: %d TXT: %s \n", test.Length, r.NormalizedLength, test.Text)
+		assert.Equal(t, test.Length, r.NormalizedLength, fmt.Sprintf("B length: %d TXT: %s", r.NormalizedLength, test.Text))
 	}
 }

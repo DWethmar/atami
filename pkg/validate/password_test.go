@@ -16,7 +16,7 @@ func TestPasswords(t *testing.T) {
 		"8uFTV5H><r=L:N'm",
 		"J4pT3^5P':7Fg#KJXL`;>",
 		"@1Abcdef",
-		"K5&.,MSn2?%=E-9-&R}GqS#pCw7dp,qFL[m6@bRt!Jn[2Ayg*Me3Qg!W'dJBv_Um{jqa8!5#q8AP)UdxG.$@D%%+<2M,.(g>{/3C",
+		"K5&.,MSn2?%=E-9-&R}GqS#pCw7dp,qFL[m6@bRt!Jn2Ayg*Me",
 	}
 
 	for _, password := range validPasswords {

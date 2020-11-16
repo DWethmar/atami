@@ -11,9 +11,9 @@ var (
 	// MsgTxtMaximumLength default minimun length of the username
 	MsgTxtMaximumLength = 300
 	// ErrMsgTxtRequired error used when there is no text
-	ErrMsgTxtRequired = errors.New("email is required")
+	ErrMsgTxtRequired = errors.New("text is required")
 	// ErrMsgTxtInvalid error is the text is not valid
-	ErrMsgTxtInvalid = errors.New("email is invalid")
+	ErrMsgTxtInvalid = errors.New("text is invalid")
 	// ErrMsgTxtExceedMaxLength error when text exceed  max length
 	ErrMsgTxtExceedMaxLength = fmt.Errorf("message exceeds max length of %v", MsgTxtMaximumLength)
 	// ErrMsgTxtFailsMinLength error when text fails  max length
