@@ -11,10 +11,19 @@ type Message struct {
 	Text            string
 	CreatedByUserID int
 	CreatedAt       time.Time
+
+	user *User
 }
 
-// NewMessage model
-type NewMessage struct {
+// User output
+type User struct {
+	ID       int
+	UID      string
+	Username string
+}
+
+// CreateMessage model
+type CreateMessage struct {
 	Text            string
 	CreatedByUserID int
 }

@@ -2,7 +2,7 @@ package message
 
 // CreatorRepository defines a messsage listing repository
 type CreatorRepository interface {
-	Create(newMessage NewMessage) (*Message, error) // return int
+	Create(newMessage CreateMessage) (*Message, error) // return int
 }
 
 // Creator creates messages.
@@ -12,7 +12,7 @@ type Creator struct {
 }
 
 // Create a new message
-func (m *Creator) Create(newMessage NewMessage) (*Message, error) {
+func (m *Creator) Create(newMessage CreateMessage) (*Message, error) {
 	return m.createRepo.Create(newMessage)
 }
 

@@ -19,7 +19,8 @@ func NewMessageRouter(userService *user.Service, messageService *message.Service
 	r.Use(httplog.RequestLogger(logger))
 	r.Use(middleware.Authenticated(userService))
 
-	r.Get("/", handler.ListMessages())
+	r.Get("/", handler.ListMessages(messageService))
+	r.Post("/", handler.CreateMessages(messageService))
 
 	return r
 }

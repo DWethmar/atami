@@ -15,7 +15,7 @@ func TestDelete(t *testing.T) {
 		creator := NewCreator(
 			db,
 		)
-		msg, err := creator.Create(message.NewMessage{
+		msg, err := creator.Create(message.CreateMessage{
 			Text:            "Lorum ipsum",
 			CreatedByUserID: 1,
 		})

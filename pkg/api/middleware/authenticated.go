@@ -51,8 +51,7 @@ func Authenticated(userService *user.Service) func(next http.Handler) http.Handl
 					UID = claims.Subject
 				}
 			} else {
-				fmt.Print(err)
-				response.SendUnauthorizedError(w, r, errors.New("Invalid JWT Token 1"))
+				response.SendUnauthorizedError(w, r, errors.New("Invalid token"))
 				return
 			}
 
@@ -66,7 +65,7 @@ func Authenticated(userService *user.Service) func(next http.Handler) http.Handl
 					return
 				}
 			} else {
-				response.SendUnauthorizedError(w, r, errors.New("Invalid JWT Token 2"))
+				response.SendUnauthorizedError(w, r, errors.New("Invalid token"))
 			}
 		}
 		return http.HandlerFunc(fn)

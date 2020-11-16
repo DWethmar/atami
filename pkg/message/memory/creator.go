@@ -17,7 +17,7 @@ type creatorRepository struct {
 }
 
 // Create new message
-func (i *creatorRepository) Create(newMessage message.NewMessage) (*message.Message, error) {
+func (i *creatorRepository) Create(newMessage message.CreateMessage) (*message.Message, error) {
 	i.newID++
 	msg := message.Message{
 		ID:              i.newID,
