@@ -8,7 +8,7 @@
 ## TODO
 
 - [ ] Message endpoint - WIP
-- [ ] Rename CreatedOn in message to CreatedAt
+- [x] Rename CreatedOn in message to CreatedAt
 - [ ] Full text search for messages https://www.postgresql.org/docs/9.5/textsearch.html
 - [ ] Move create_at, updated_at  and ID(?) set logic to service. 
     - Later we can create a service that can insert data with old dates for testing.
