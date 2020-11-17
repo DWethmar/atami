@@ -19,7 +19,7 @@ func generateTestMessages(size int) []message.CreateMessage {
 	return messages
 }
 
-func setup() (*message.Finder, []message.Message) {
+func setup() (*memstore.Store, []message.Message) {
 	store := memstore.New()
 	service := New(store)
 	msgs := make([]message.Message, 100)
@@ -31,12 +31,12 @@ func setup() (*message.Finder, []message.Message) {
 			panic(1)
 		}
 	}
-	return NewFinder(store), msgs
+	return store, msgs
 }
 
 func TestReadOne(t *testing.T) {
-	reader, _ := setup()
-	message.TestFindOne(t, reader, 1, message.Message{
+	store, _ := setup()
+	message.TestFindOne(t, NewFinder(store), 1, message.Message{
 		ID:              1,
 		UID:             "",
 		Text:            "Lorum ipsum 1",
@@ -45,11 +45,12 @@ func TestReadOne(t *testing.T) {
 }
 
 func TestNotFound(t *testing.T) {
-	finder, _ := setup()
-	message.TestNotFound(t, finder)
+	store, _ := setup()
+	message.TestNotFound(t, NewFinder(store))
 }
 
-func TestReadAll(t *testing.T) {
-	finder, messages := setup()
-	message.TestFindAll(t, finder, 100, messages)
+func TestFindAll(t *testing.T) {
+	store, messages := setup()
+
+	message.TestFind(t, NewFinder(store), 100, messages)
 }

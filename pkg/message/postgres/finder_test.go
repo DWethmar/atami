@@ -52,10 +52,16 @@ func TestNotFound(t *testing.T) {
 	}))
 }
 
-func TestReadAll(t *testing.T) {
+func TestFindAll(t *testing.T) {
 	assert.NoError(t, database.WithTestDB(t, func(db *sql.DB) error {
-		finder, messages := setup(db)
-		message.TestFindAll(t, finder, 100, messages)
+		finder, m := setup(db)
+
+		// Reverse items because of the order by on created_at DESC
+		for i, j := 0, len(m)-1; i < j; i, j = i+1, j-1 {
+			m[i], m[j] = m[j], m[i]
+		}
+
+		message.TestFind(t, finder, 100, m)
 		return nil
 	}))
 }

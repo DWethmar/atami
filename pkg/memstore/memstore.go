@@ -1,9 +1,11 @@
 package memstore
 
 import (
+	"sort"
 	"sync"
 )
 
+// Store stores data in memory by key / value
 type Store struct {
 	entries map[string]interface{}
 	order   []string
@@ -59,6 +61,24 @@ func (h *Store) Delete(ID string) bool {
 	}
 
 	return ok
+}
+
+// Len gets number of entries
+func (h *Store) Len() int {
+	return len(h.order)
+}
+
+// FromIndex gets value by index
+func (h *Store) FromIndex(i int) (interface{}, bool) {
+	if i >= 0 && i < h.Len() {
+		return h.Get(h.order[i])
+	}
+	return nil, false
+}
+
+// Sort items in memory
+func (h *Store) Sort(less func(i, j int) bool) {
+	sort.SliceStable(h.order, less)
 }
 
 // New returns a new in memory repository.
