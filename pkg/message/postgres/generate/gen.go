@@ -23,7 +23,7 @@ import (
 // 	uid,
 // 	text,
 // 	created_by_user_id,
-// 	created_on
+// 	created_at
 // FROM %s
 // `, tableName)
 

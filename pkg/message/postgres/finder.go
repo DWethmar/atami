@@ -13,7 +13,7 @@ SELECT
 	uid,
 	text, 
 	created_by_user_id,
-	created_on
+	created_at
 FROM  %s 
 WHERE id = $1`, Table)
 

@@ -30,7 +30,7 @@ INSERT INTO %s (
 	username, 
 	email,
 	password,
-	created_on, 
+	created_at, 
 	updated_on
 )
 VALUES ($1, $2, $3, $4, $5, $6) RETURNING id`, tableName)

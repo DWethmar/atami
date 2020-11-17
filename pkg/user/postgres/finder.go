@@ -13,10 +13,10 @@ SELECT
 	uid,
 	username, 
 	email,
-	created_on, 
+	created_at, 
 	updated_on
 FROM %s
-ORDER BY created_on ASC
+ORDER BY created_at ASC
 `, tableName)
 
 var getUserByID = fmt.Sprintf(`
@@ -25,7 +25,7 @@ SELECT
 	uid,
 	username, 
 	email,
-	created_on, 
+	created_at, 
 	updated_on
 FROM %s
 WHERE id = $1
@@ -37,7 +37,7 @@ SELECT
 	uid,
 	username, 
 	email,
-	created_on, 
+	created_at, 
 	updated_on
 FROM %s
 WHERE uid = $1
@@ -50,7 +50,7 @@ SELECT
 	username, 
 	password, 
 	email,
-	created_on, 
+	created_at, 
 	updated_on
 FROM %s
 WHERE email = $1
@@ -62,7 +62,7 @@ SELECT
 	uid,
 	username, 
 	email,
-	created_on, 
+	created_at, 
 	updated_on
 FROM %s
 WHERE username = $1

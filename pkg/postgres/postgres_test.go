@@ -17,8 +17,8 @@ FROM public.message
 LEFT JOIN public.user ON public.user.id = public.message.created_by_user_id
 WHERE public.user.id >= 0
 OR username LIKE '%e%'
-AND public.user.created_on > '2014-02-01'
-GROUP BY public.user.id, public.user.created_on
+AND public.user.created_at > '2014-02-01'
+GROUP BY public.user.id, public.user.created_at
 HAVING username LIKE '%e%'
 ORDER BY id ASC, username DESC
 LIMIT 10
@@ -33,8 +33,8 @@ OFFSET 1`
 			Where: NewWhere().
 				And("public.user.id >= 0").
 				Or("username LIKE '%e%'").
-				And("public.user.created_on > '2014-02-01'"),
-			GroupBy: []string{"public.user.id", "public.user.created_on"},
+				And("public.user.created_at > '2014-02-01'"),
+			GroupBy: []string{"public.user.id", "public.user.created_at"},
 			Having: NewWhere().
 				And("username LIKE '%e%'"),
 			OrderBy: []string{"id ASC", "username DESC"},
