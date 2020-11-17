@@ -32,6 +32,12 @@ func TestFind(t *testing.T, finder *Finder, length int, messages []Message) {
 	assert.NoError(t, err)
 	if assert.Equal(t, length, len(list)) {
 		for i, message := range list {
+			assert.NotEmpty(t, messages[i].ID)
+			assert.NotEmpty(t, messages[i].UID)
+			assert.NotEmpty(t, messages[i].Text)
+			assert.NotEmpty(t, messages[i].CreatedByUserID)
+			assert.False(t, messages[i].CreatedAt.IsZero())
+
 			assert.Equal(t, messages[i].ID, message.ID)
 			assert.Equal(t, messages[i].UID, message.UID)
 			assert.Equal(t, messages[i].Text, message.Text)
