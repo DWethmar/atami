@@ -47,7 +47,7 @@ func (i *findRepository) Find() ([]*message.Message, error) {
 // FindByID get one message
 func (i *findRepository) FindByID(ID int) (*message.Message, error) {
 	entry := &message.Message{}
-	if err := i.db.QueryRow(getMessageByID, ID, 100, 0).Scan(
+	if err := i.db.QueryRow(getMessageByID, ID).Scan(
 		&entry.ID,
 		&entry.UID,
 		&entry.Text,

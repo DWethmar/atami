@@ -53,8 +53,10 @@ func Select(sq SelectQuery) string {
 		queryParts = append(queryParts, fmt.Sprintf(`HAVING %s`, sq.Having.String()))
 	}
 
-	orderByPart := fmt.Sprintf(`ORDER BY %s`, strings.Join(sq.OrderBy, ", "))
-	queryParts = append(queryParts, orderByPart)
+	if len(sq.OrderBy) > 0 {
+		orderByPart := fmt.Sprintf(`ORDER BY %s`, strings.Join(sq.OrderBy, ", "))
+		queryParts = append(queryParts, orderByPart)
+	}
 
 	if sq.Limit > 0 && sq.LimitStr == "" {
 		queryParts = append(queryParts, fmt.Sprintf(`LIMIT %d`, sq.Limit))
