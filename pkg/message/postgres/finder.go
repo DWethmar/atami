@@ -2,20 +2,9 @@ package postgres
 
 import (
 	"database/sql"
-	"fmt"
 
 	"github.com/dwethmar/atami/pkg/message"
 )
-
-var getMessageByID = fmt.Sprintf(`
-SELECT
-	id,
-	uid,
-	text, 
-	created_by_user_id,
-	created_at
-FROM  %s 
-WHERE id = $1`, Table)
 
 // findRepository reads messages from memory
 type findRepository struct {
@@ -58,7 +47,7 @@ func (i *findRepository) Find() ([]*message.Message, error) {
 // FindByID get one message
 func (i *findRepository) FindByID(ID int) (*message.Message, error) {
 	entry := &message.Message{}
-	if err := i.db.QueryRow(getMessageByID, ID).Scan(
+	if err := i.db.QueryRow(getMessageByID, ID, 100, 0).Scan(
 		&entry.ID,
 		&entry.UID,
 		&entry.Text,
