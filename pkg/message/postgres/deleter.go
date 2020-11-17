@@ -10,7 +10,7 @@ import (
 var deleteMessage = fmt.Sprintf(`
 DELETE FROM %s
 WHERE id = $1
-`, tableName)
+`, Table)
 
 // deleterRepository deletes user from memory
 type deleterRepository struct {

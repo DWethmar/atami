@@ -7,16 +7,6 @@ import (
 	"github.com/dwethmar/atami/pkg/message"
 )
 
-var getMessages = fmt.Sprintf(`
-SELECT
-	id,
-	uid,
-	text, 
-	created_by_user_id,
-	created_on
-FROM %s
-`, tableName)
-
 var getMessageByID = fmt.Sprintf(`
 SELECT
 	id,
@@ -25,7 +15,7 @@ SELECT
 	created_by_user_id,
 	created_on
 FROM  %s 
-WHERE id = $1`, tableName)
+WHERE id = $1`, Table)
 
 // findRepository reads messages from memory
 type findRepository struct {

@@ -13,7 +13,7 @@ type Where struct {
 }
 
 // And adds and condition
-func (w *Where) And(predicate string) {
+func (w *Where) And(predicate string) *Where {
 	var operator string
 	if len(w.conditions) > 0 {
 		operator = "AND"
@@ -22,10 +22,11 @@ func (w *Where) And(predicate string) {
 		operator,
 		predicate,
 	})
+	return w
 }
 
 // Or adds or condition
-func (w *Where) Or(predicate string) {
+func (w *Where) Or(predicate string) *Where {
 	var operator string
 	if len(w.conditions) > 0 {
 		operator = "OR"
@@ -34,6 +35,7 @@ func (w *Where) Or(predicate string) {
 		operator,
 		predicate,
 	})
+	return w
 }
 
 // String to string

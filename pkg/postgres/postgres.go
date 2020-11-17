@@ -1,59 +1,72 @@
 package postgres
 
 import (
-	"errors"
 	"fmt"
 	"strings"
 )
 
+// SelectQuery defines the fields to build a sql query
+type SelectQuery struct {
+	Cols      []string
+	From      string
+	Joins     *Join
+	Where     *Where
+	GroupBy   []string
+	Having    *Where
+	OrderBy   []string
+	Limit     int
+	LimitStr  string
+	Offset    int
+	OffsetStr string
+}
+
 // Select returns a select sql query
-func Select(
-	cols []string,
-	table string,
-	where *Where,
-	groupBy []string,
-	having *Where,
-	orderBy []string,
-	limit int,
-	offset int,
-) (string, error) {
+func Select(sq SelectQuery) string {
 	queryParts := []string{}
 
-	if len(cols) == 0 {
-		return "", errors.New("columns are required")
-	}
-	selectPart := fmt.Sprintf(`SELECT %s`, strings.Join(cols, ", "))
-	queryParts = append(queryParts, selectPart)
-
-	if table == "" {
-		return "", errors.New("table is required")
-	}
-	fromPart := fmt.Sprintf(`FROM %s`, table)
-	queryParts = append(queryParts, fromPart)
-
-	if where != nil {
-		queryParts = append(queryParts, fmt.Sprintf(`WHERE %s`, where.String()))
+	if len(sq.Cols) > 0 {
+		selectPart := fmt.Sprintf(`SELECT %s`, "\n\t"+strings.Join(sq.Cols, ", \n\t"))
+		queryParts = append(queryParts, selectPart)
+	} else {
+		queryParts = append(queryParts, "SELECT *")
 	}
 
-	if len(groupBy) > 0 {
-		groupByPart := fmt.Sprintf(`GROUP BY %s`, strings.Join(groupBy, ", "))
+	if sq.From != "" {
+		fromPart := fmt.Sprintf(`FROM %s`, sq.From)
+		queryParts = append(queryParts, fromPart)
+	}
+
+	if sq.Joins != nil {
+		queryParts = append(queryParts, sq.Joins.String())
+	}
+
+	if sq.Where != nil {
+		queryParts = append(queryParts, fmt.Sprintf(`WHERE %s`, sq.Where.String()))
+	}
+
+	if len(sq.GroupBy) > 0 {
+		groupByPart := fmt.Sprintf(`GROUP BY %s`, strings.Join(sq.GroupBy, ", "))
 		queryParts = append(queryParts, groupByPart)
 	}
 
-	if having != nil {
-		queryParts = append(queryParts, fmt.Sprintf(`HAVING %s`, having.String()))
+	if sq.Having != nil {
+		queryParts = append(queryParts, fmt.Sprintf(`HAVING %s`, sq.Having.String()))
 	}
 
-	orderByPart := fmt.Sprintf(`ORDER BY %s`, strings.Join(orderBy, ", "))
+	orderByPart := fmt.Sprintf(`ORDER BY %s`, strings.Join(sq.OrderBy, ", "))
 	queryParts = append(queryParts, orderByPart)
 
-	if limit > 0 {
-		queryParts = append(queryParts, fmt.Sprintf(`LIMIT %d`, limit))
+	if sq.Limit > 0 && sq.LimitStr == "" {
+		queryParts = append(queryParts, fmt.Sprintf(`LIMIT %d`, sq.Limit))
+	} else if sq.LimitStr != "" {
+		queryParts = append(queryParts, fmt.Sprintf(`LIMIT %s`, sq.LimitStr))
 	}
 
-	if offset > 0 {
-		queryParts = append(queryParts, fmt.Sprintf(`OFFSET %d`, offset))
+	if sq.Offset > 0 && sq.OffsetStr == "" {
+		queryParts = append(queryParts, fmt.Sprintf(`OFFSET %d`, sq.Offset))
+	} else if sq.OffsetStr != "" {
+		queryParts = append(queryParts, fmt.Sprintf(`OFFSET %s`, sq.OffsetStr))
 	}
 
-	return strings.Join(queryParts, "\n"), nil
+	return strings.Join(queryParts, "\n")
 }

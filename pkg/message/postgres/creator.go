@@ -16,7 +16,7 @@ INSERT INTO %s (
 	created_by_user_id,
 	created_on
 )
-VALUES ($1, $2, $3, $4) RETURNING id`, tableName)
+VALUES ($1, $2, $3, $4) RETURNING id`, Table)
 
 // creatorRepository stores new messages
 type creatorRepository struct {

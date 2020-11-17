@@ -7,8 +7,8 @@ CREATE TABLE public.user
     username VARCHAR (15) NOT NULL UNIQUE,
     email VARCHAR (254) NOT NULL UNIQUE,
     password TEXT NOT NULL,
-    created_on timestamp NOT NULL,
-    updated_on timestamp NOT NULL
+    created_at timestamp NOT NULL,
+    updated_at timestamp NOT NULL
 );
 
 CREATE TABLE public.message
@@ -17,7 +17,7 @@ CREATE TABLE public.message
     uid VARCHAR (36) NOT NULL UNIQUE,
     text TEXT NOT NULL,
     created_by_user_id integer REFERENCES public.user (id) ON DELETE CASCADE,
-    created_on timestamp NOT NULL
+    created_at timestamp NOT NULL
 );
 
 COMMIT;
