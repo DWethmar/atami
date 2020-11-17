@@ -17,16 +17,6 @@ import (
 	"github.com/dwethmar/atami/pkg/postgres"
 )
 
-// var getMessages = fmt.Sprintf(`
-// SELECT
-// 	id,
-// 	uid,
-// 	text,
-// 	created_by_user_id,
-// 	created_at
-// FROM %s
-// `, tableName)
-
 var queries = map[string]string{
 	"getMessages": postgres.Select(
 		postgres.SelectQuery{
@@ -34,6 +24,19 @@ var queries = map[string]string{
 			From:      schema.Table,
 			Joins:     nil,
 			Where:     nil,
+			GroupBy:   []string{},
+			Having:    nil,
+			OrderBy:   []string{fmt.Sprintf("%s DESC", schema.ColCreatedAt)},
+			LimitStr:  "$1",
+			OffsetStr: "$2",
+		},
+	),
+	"getMessageByID": postgres.Select(
+		postgres.SelectQuery{
+			Cols:      schema.SelectCols,
+			From:      schema.Table,
+			Joins:     nil,
+			Where:     postgres.NewWhere().And("id = $1"),
 			GroupBy:   []string{},
 			Having:    nil,
 			OrderBy:   []string{fmt.Sprintf("%s DESC", schema.ColCreatedAt)},

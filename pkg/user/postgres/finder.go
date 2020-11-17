@@ -14,7 +14,7 @@ SELECT
 	username, 
 	email,
 	created_at, 
-	updated_on
+	updated_at
 FROM %s
 ORDER BY created_at ASC
 `, tableName)
@@ -26,7 +26,7 @@ SELECT
 	username, 
 	email,
 	created_at, 
-	updated_on
+	updated_at
 FROM %s
 WHERE id = $1
 LIMIT 1`, tableName)
@@ -38,7 +38,7 @@ SELECT
 	username, 
 	email,
 	created_at, 
-	updated_on
+	updated_at
 FROM %s
 WHERE uid = $1
 LIMIT 1`, tableName)
@@ -51,7 +51,7 @@ SELECT
 	password, 
 	email,
 	created_at, 
-	updated_on
+	updated_at
 FROM %s
 WHERE email = $1
 LIMIT 1`, tableName)
@@ -63,7 +63,7 @@ SELECT
 	username, 
 	email,
 	created_at, 
-	updated_on
+	updated_at
 FROM %s
 WHERE username = $1
 LIMIT 1`, tableName)
