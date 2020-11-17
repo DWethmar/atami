@@ -11,11 +11,22 @@ func TestFindOne(t *testing.T, finder *Finder, ID int, message Message) {
 	m, err := finder.FindByID(ID)
 	assert.NoError(t, err)
 
+	assert.NotEmpty(t, message.ID)
+	assert.NotEmpty(t, message.UID)
+	assert.NotEmpty(t, message.Text)
+	assert.NotEmpty(t, message.CreatedByUserID)
+	assert.False(t, message.CreatedAt.IsZero())
+
 	if assert.NotNil(t, m) {
+		assert.NotEmpty(t, m.ID)
+		assert.NotEmpty(t, m.UID)
+		assert.NotEmpty(t, m.Text)
+		assert.NotEmpty(t, m.CreatedByUserID)
+		assert.False(t, m.CreatedAt.IsZero())
+
 		assert.Equal(t, message.ID, m.ID)
 		assert.Equal(t, message.Text, m.Text)
 		assert.Equal(t, message.CreatedByUserID, m.CreatedByUserID)
-		assert.False(t, m.CreatedAt.IsZero())
 	}
 }
 

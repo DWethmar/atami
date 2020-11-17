@@ -3,6 +3,7 @@ package memory
 import (
 	"fmt"
 	"testing"
+	"time"
 
 	"github.com/dwethmar/atami/pkg/memstore"
 	"github.com/dwethmar/atami/pkg/message"
@@ -34,13 +35,14 @@ func setup() (*memstore.Store, []message.Message) {
 	return store, msgs
 }
 
-func TestReadOne(t *testing.T) {
+func TestFindOne(t *testing.T) {
 	store, _ := setup()
 	message.TestFindOne(t, NewFinder(store), 1, message.Message{
 		ID:              1,
-		UID:             "",
+		UID:             "abcdef",
 		Text:            "Lorum ipsum 1",
 		CreatedByUserID: 1,
+		CreatedAt:       time.Now(),
 	})
 }
 
