@@ -5,7 +5,7 @@ INSERT INTO public.user (
 	username, 
 	email,
 	password,
-	created_on, 
+	created_at, 
 	updated_on
 )
 VALUES (
@@ -22,7 +22,7 @@ INSERT INTO public.user (
 	username, 
 	email,
 	password,
-	created_on, 
+	created_at, 
 	updated_on
 )
 VALUES (
