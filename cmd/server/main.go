@@ -20,21 +20,17 @@ func main() {
 	fmt.Println("Staring server")
 
 	c := config.LoadEnvFile()
-	if err := c.Valid(); err != nil {
-		panic(err)
-	}
+	err := c.Valid()
+	die(err)
 
 	dataSource := database.GetPostgresConnectionString(c)
 
 	db, err := database.Connect(c.DBDriverName, dataSource)
-	if err != nil {
-		panic(err)
-	}
+	die(err)
 	defer db.Close()
 
-	if err := database.RunMigrations(db, c.DBName, c.MigrationFiles, c.DBMigrationVersion); err != nil {
-		panic(err)
-	}
+	err = database.RunMigrations(db, c.DBName, c.MigrationFiles, c.DBMigrationVersion)
+	die(err)
 
 	userService := service.NewUserServicePostgres(db)
 	authService := service.NewAuthServicePostgres(db)
@@ -50,4 +46,10 @@ func main() {
 
 	log.Printf("Serving on :8080")
 	log.Fatal(srv.ListenAndServe())
+}
+
+func die(err error) {
+	if err != nil {
+		log.Fatal(err)
+	}
 }
