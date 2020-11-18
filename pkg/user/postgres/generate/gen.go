@@ -38,7 +38,7 @@ var queries = []struct {
 			qb.SelectQuery{
 				From:  schema.Table,
 				Cols:  []string{"1"},
-				Where: qb.NewWhere().And(fmt.Sprintf("%s = $1", schema.ColID)),
+				Where: qb.NewWhere().And(fmt.Sprintf("%s = $1", schema.ColUsername)),
 				Limit: 1,
 			},
 		),
