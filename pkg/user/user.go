@@ -44,9 +44,9 @@ func (u User) Equal(user User) bool {
 
 // CreateUser struct declaration
 type CreateUser struct {
-	Username       string
-	Email          string
-	HashedPassword string // refactor to just password. package user shouldn't care how the pwd is hashed.
+	Username string
+	Email    string
+	Password string
 }
 
 // GetUsername return the username

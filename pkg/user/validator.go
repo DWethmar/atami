@@ -51,7 +51,7 @@ func (v Validator) ValidateUser(user User) error {
 func (v Validator) ValidateCreateUser(createUser CreateUser) error {
 	err := errValidate{}
 
-	if createUser.HashedPassword == "" {
+	if createUser.Password == "" {
 		return ErrPwdNotSet
 	}
 

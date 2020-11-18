@@ -15,9 +15,9 @@ func TestDelete(t *testing.T) {
 		creator := NewCreator(db)
 
 		u, err := creator.Create(user.CreateUser{
-			Username:       "username",
-			Email:          "username@test.com",
-			HashedPassword: "Test1234!@#$",
+			Username: "username",
+			Email:    "username@test.com",
+			Password: "Test1234!@#$",
 		})
 
 		if !assert.NoError(t, err) {

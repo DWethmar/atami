@@ -13,9 +13,9 @@ func TestCreate(t *testing.T) {
 	assert.NoError(t, database.WithTestDB(t, func(db *sql.DB) error {
 		creator := NewCreator(db)
 		user.TestCreator(t, creator, user.CreateUser{
-			Username:       "username",
-			Email:          "test@test.nl",
-			HashedPassword: "!Test123",
+			Username: "username",
+			Email:    "test@test.nl",
+			Password: "!Test123",
 		})
 		return nil
 	}))
@@ -24,9 +24,9 @@ func TestCreate(t *testing.T) {
 func TestDuplicateUsername(t *testing.T) {
 	assert.NoError(t, database.WithTestDB(t, func(db *sql.DB) error {
 		newUser := user.CreateUser{
-			Username:       "username",
-			Email:          "test@test.nl",
-			HashedPassword: "!Test123",
+			Username: "username",
+			Email:    "test@test.nl",
+			Password: "!Test123",
 		}
 		creator := NewCreator(db)
 		user.TestDuplicateUsername(t, creator, newUser)
@@ -37,9 +37,9 @@ func TestDuplicateUsername(t *testing.T) {
 func TestDuplicateEmail(t *testing.T) {
 	assert.NoError(t, database.WithTestDB(t, func(db *sql.DB) error {
 		newUser := user.CreateUser{
-			Username:       "username",
-			Email:          "test@test.nl",
-			HashedPassword: "!Test123",
+			Username: "username",
+			Email:    "test@test.nl",
+			Password: "!Test123",
 		}
 		creator := NewCreator(db)
 		user.TestDuplicateEmail(t, creator, newUser)

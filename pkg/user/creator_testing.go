@@ -46,9 +46,9 @@ func TestDuplicateEmail(t *testing.T, creator *Creator, newUser CreateUser) {
 // TestEmptyPassword test if the correct error is returned
 func TestEmptyPassword(t *testing.T, creator *Creator) {
 	_, err := creator.Create(CreateUser{
-		Username:       "wow",
-		Email:          "test@test.nl",
-		HashedPassword: "",
+		Username: "wow",
+		Email:    "test@test.nl",
+		Password: "",
 	})
 	assert.EqualError(t, err, ErrPwdNotSet.Error())
 }

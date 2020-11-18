@@ -14,9 +14,9 @@ func generateTestUsers(size int) []user.CreateUser {
 	users := make([]user.CreateUser, size)
 	for i := 0; i < size; i++ {
 		users[i] = user.CreateUser{
-			Username:       fmt.Sprintf("username_%d", i+1),
-			Email:          fmt.Sprintf("test-%d@test.com", i+1),
-			HashedPassword: fmt.Sprintf("abcdef1234!@#$ABCD-%d", i+1),
+			Username: fmt.Sprintf("username_%d", i+1),
+			Email:    fmt.Sprintf("test-%d@test.com", i+1),
+			Password: fmt.Sprintf("abcdef1234!@#$ABCD-%d", i+1),
 		}
 	}
 	return users

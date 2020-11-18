@@ -20,7 +20,7 @@ type creatorRepository struct {
 
 // Create new user
 func (i *creatorRepository) Create(newUser user.CreateUser) (*user.User, error) {
-	if newUser.HashedPassword == "" {
+	if newUser.Password == "" {
 		return nil, user.ErrPwdNotSet
 	}
 
@@ -50,7 +50,7 @@ func (i *creatorRepository) Create(newUser user.CreateUser) (*user.User, error) 
 		Email:     newUser.Email,
 		CreatedAt: time.Now(),
 		UpdatedAt: time.Now(),
-		Password:  newUser.HashedPassword,
+		Password:  newUser.Password,
 	}
 	IDStr := strconv.Itoa(usr.ID)
 	i.store.Add(IDStr, usr)

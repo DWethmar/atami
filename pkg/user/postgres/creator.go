@@ -80,7 +80,7 @@ func isUniqueEmail(db *sql.DB, email string) (bool, error) {
 
 // Create new user
 func (i *creatorRepository) Create(newUser user.CreateUser) (*user.User, error) {
-	if newUser.HashedPassword == "" {
+	if newUser.Password == "" {
 		return nil, user.ErrPwdNotSet
 	}
 
@@ -115,7 +115,7 @@ func (i *creatorRepository) Create(newUser user.CreateUser) (*user.User, error) 
 		uid,
 		newUser.Username,
 		newUser.Email,
-		newUser.HashedPassword,
+		newUser.Password,
 		now,
 		now,
 	).Scan(&userID); err != nil {
