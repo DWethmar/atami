@@ -2,15 +2,9 @@ package postgres
 
 import (
 	"database/sql"
-	"fmt"
 
 	"github.com/dwethmar/atami/pkg/message"
 )
-
-var deleteMessage = fmt.Sprintf(`
-DELETE FROM %s
-WHERE id = $1
-`, Table)
 
 // deleterRepository deletes user from memory
 type deleterRepository struct {

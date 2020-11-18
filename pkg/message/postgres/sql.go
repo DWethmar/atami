@@ -3,8 +3,8 @@
 
 package postgres
 
-// getMessages sql query
-var getMessages = `SELECT 
+// selectMessages sql query
+var selectMessages = `SELECT
 	message.id,
 	message.uid,
 	message.text,
@@ -15,12 +15,31 @@ ORDER BY message.created_at DESC
 LIMIT $1
 OFFSET $2`
 
-// getMessageByID sql query
-var getMessageByID = `SELECT 
+// selectMessageByID sql query
+var selectMessageByID = `SELECT
 	message.id,
 	message.uid,
 	message.text,
 	message.created_by_user_id,
 	message.created_at
 FROM public.message
+WHERE id = $1`
+
+// insertMessage sql query
+var insertMessage = `INSERT INTO public.message
+(
+	message.uid,
+	message.text,
+	message.created_by_user_id,
+	message.created_at
+)
+VALUES (
+	'$1',
+	'$2',
+	'$3',
+	'$4'
+)`
+
+// deleteMessage sql query
+var deleteMessage = `DELETE FROM public.message
 WHERE id = $1`

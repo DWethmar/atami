@@ -22,7 +22,7 @@ var queries = []struct {
 	Query string
 }{
 	{
-		"getMessages",
+		"selectMessages",
 		querybuilder.Select(
 			querybuilder.SelectQuery{
 				Cols:      schema.SelectCols,
@@ -38,7 +38,7 @@ var queries = []struct {
 		),
 	},
 	{
-		"getMessageByID",
+		"selectMessageByID",
 		querybuilder.Select(
 			querybuilder.SelectQuery{
 				Cols:    schema.SelectCols,
@@ -50,6 +50,32 @@ var queries = []struct {
 				OrderBy: []string{},
 				Limit:   0,
 				Offset:  0,
+			},
+		),
+	},
+	{
+		"insertMessage",
+		querybuilder.Insert(
+			querybuilder.InsertQuery{
+				Into: schema.Table,
+				Cols: []string{
+					schema.ColUID,
+					schema.ColText,
+					schema.ColCreatedByUserID,
+					schema.ColCreatedAt,
+				},
+				Values: []interface{}{
+					"$1", "$2", "$3", "$4",
+				},
+			},
+		),
+	},
+	{
+		"deleteMessage",
+		querybuilder.Delete(
+			querybuilder.DeleteQuery{
+				From:  schema.Table,
+				Where: querybuilder.NewWhere().And("id = $1"),
 			},
 		),
 	},

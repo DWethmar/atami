@@ -69,7 +69,8 @@ SELECT
 	created_at,
 	updated_at
 FROM public.user
-WHERE id = 1`
+WHERE id = 1
+RETURNING id`
 
 	received := Insert(
 		InsertQuery{
@@ -94,6 +95,7 @@ WHERE id = 1`
 				From:  "public.user",
 				Where: NewWhere().And("id = 1"),
 			},
+			Returning: []string{"id"},
 		},
 	)
 
