@@ -9,15 +9,6 @@ import (
 	"github.com/segmentio/ksuid"
 )
 
-var insertUser = fmt.Sprintf(`
-INSERT INTO %s (
-	uid,
-	text, 
-	created_by_user_id,
-	created_at
-)
-VALUES ($1, $2, $3, $4) RETURNING id`, Table)
-
 // creatorRepository stores new messages
 type creatorRepository struct {
 	db *sql.DB
@@ -26,7 +17,7 @@ type creatorRepository struct {
 // Create new message
 func (i creatorRepository) Create(newMessage message.CreateMessage) (*message.Message, error) {
 
-	stmt, err := i.db.Prepare(insertUser)
+	stmt, err := i.db.Prepare(insertMessage)
 	if err != nil {
 		return nil, err
 	}
@@ -44,7 +35,7 @@ func (i creatorRepository) Create(newMessage message.CreateMessage) (*message.Me
 
 	if messageID != 0 {
 		entry := &message.Message{}
-		if err := i.db.QueryRow(getMessageByID, messageID).Scan(
+		if err := i.db.QueryRow(selectMessageByID, messageID).Scan(
 			&entry.ID,
 			&entry.UID,
 			&entry.Text,

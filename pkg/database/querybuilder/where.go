@@ -1,4 +1,4 @@
-package postgres
+package querybuilder
 
 import "strings"
 

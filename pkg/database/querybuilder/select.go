@@ -1,4 +1,4 @@
-package postgres
+package querybuilder
 
 import (
 	"fmt"
@@ -25,7 +25,7 @@ func Select(sq SelectQuery) string {
 	queryParts := []string{}
 
 	if len(sq.Cols) > 0 {
-		selectPart := fmt.Sprintf(`SELECT %s`, "\n\t"+strings.Join(sq.Cols, ", \n\t"))
+		selectPart := fmt.Sprintf(`SELECT%s`, "\n\t"+strings.Join(sq.Cols, ",\n\t"))
 		queryParts = append(queryParts, selectPart)
 	} else {
 		queryParts = append(queryParts, "SELECT *")

@@ -10,8 +10,8 @@ var (
 	ColID = "message.id"
 	// ColUID table Column
 	ColUID = "message.uid"
-	// Coltext table Column
-	Coltext = "message.text"
+	// ColText table Column
+	ColText = "message.text"
 	// ColCreatedByUserID table Column
 	ColCreatedByUserID = "message.created_by_user_id"
 	// ColCreatedAt table Column
@@ -22,7 +22,7 @@ var (
 var SelectCols = []string{
 	ColID,
 	ColUID,
-	Coltext,
+	ColText,
 	ColCreatedByUserID,
 	ColCreatedAt,
 }
