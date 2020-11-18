@@ -1,4 +1,4 @@
-package postgres
+package querybuilder
 
 import (
 	"fmt"
@@ -11,7 +11,7 @@ import (
 func TestSelect(t *testing.T) {
 	expect :=
 		`SELECT 
-	public.user.id, 
+	public.user.id,
 	username
 FROM public.message
 LEFT JOIN public.user ON public.user.id = public.message.created_by_user_id

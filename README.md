@@ -7,6 +7,7 @@
 
 ## TODO
 
+- [ ] Migrate sql queries to pkg/postgres (maybe rename to querybuilder)
 - [ ] Message endpoint - WIP
 - [x] Rename CreatedOn in message to CreatedAt
 - [ ] Etag
