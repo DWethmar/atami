@@ -38,7 +38,8 @@ VALUES (
 	$2,
 	$3,
 	$4
-)`
+)
+RETURNING id`
 
 // deleteMessage sql query
 var deleteMessage = `DELETE FROM public.message

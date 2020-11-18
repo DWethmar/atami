@@ -41,10 +41,12 @@ var queries = []struct {
 		"selectMessageByID",
 		querybuilder.Select(
 			querybuilder.SelectQuery{
-				Cols:    schema.SelectCols,
-				From:    schema.Table,
-				Joins:   nil,
-				Where:   querybuilder.NewWhere().And("id = $1"),
+				Cols:  schema.SelectCols,
+				From:  schema.Table,
+				Joins: nil,
+				Where: querybuilder.NewWhere().And(
+					fmt.Sprintf("%s = $1", schema.ColID),
+				),
 				GroupBy: []string{},
 				Having:  nil,
 				OrderBy: []string{},
@@ -67,7 +69,7 @@ var queries = []struct {
 				Values: []interface{}{
 					"$1", "$2", "$3", "$4",
 				},
-				Returning: []string{"id"},
+				Returning: []string{schema.ColID},
 			},
 		),
 	},
@@ -75,9 +77,10 @@ var queries = []struct {
 		"deleteMessage",
 		querybuilder.Delete(
 			querybuilder.DeleteQuery{
-				From:  schema.Table,
-				Where: querybuilder.NewWhere().And("id = $1"),
-			},
+				From: schema.Table,
+				Where: querybuilder.NewWhere().And(
+					fmt.Sprintf("%s = $1", schema.ColID),
+				)},
 		),
 	},
 }
