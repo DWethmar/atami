@@ -125,7 +125,7 @@ func Login(authService *auth.Service, userService *user.Service) http.HandlerFun
 			return
 		}
 
-		user, err := userService.FindByEmail(email, false)
+		user, err := userService.FindByEmail(email)
 		if err != nil || user == nil {
 			fmt.Printf("error while retrieving user: %v\n", err)
 			response.SendServerError(w, r)

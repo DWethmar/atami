@@ -20,7 +20,7 @@ func (m *Authenticator) Authenticate(credentials Credentials) (bool, error) {
 		return false, ErrPasswordRequired
 	}
 
-	usr, err := m.finder.FindByEmail(credentials.Email, true)
+	usr, err := m.finder.FindByEmailWithPassword(credentials.Email)
 	if err != nil {
 		if err != user.ErrCouldNotFind {
 			return false, err

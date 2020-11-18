@@ -17,17 +17,6 @@ import (
 	"github.com/dwethmar/atami/pkg/user/postgres/schema"
 )
 
-// var insertUser = fmt.Sprintf(`
-// INSERT INTO %s (
-// 	uid,
-// 	username,
-// 	email,
-// 	password,
-// 	created_at,
-// 	updated_at
-// )
-// VALUES ($1, $2, $3, $4, $5, $6) RETURNING id`, tableName)
-
 var queries = []struct {
 	Name  string
 	Query string
@@ -71,6 +60,94 @@ var queries = []struct {
 					"$1", "$2", "$3", "$4", "$5", "$6",
 				},
 				Returning: []string{schema.ColID},
+			},
+		),
+	},
+	{
+		"deleteUser",
+		qb.Delete(
+			qb.DeleteQuery{
+				From: schema.Table,
+				Where: qb.NewWhere().And(
+					fmt.Sprintf("%s = $1", schema.ColID),
+				)},
+		),
+	},
+	{
+		"selectUsers",
+		qb.Select(
+			qb.SelectQuery{
+				From:    schema.Table,
+				Cols:    schema.SelectCols,
+				OrderBy: []string{"created_at ASC"},
+			},
+		),
+	},
+	{
+		"selectUserByID",
+		qb.Select(
+			qb.SelectQuery{
+				From: schema.Table,
+				Cols: schema.SelectCols,
+				Where: qb.NewWhere().And(
+					fmt.Sprintf("%s = $1", schema.ColID),
+				),
+				Limit: 1,
+			},
+		),
+	},
+	{
+		"selectUserByUID",
+		qb.Select(
+			qb.SelectQuery{
+				From: schema.Table,
+				Cols: schema.SelectCols,
+				Where: qb.NewWhere().And(
+					fmt.Sprintf("%s = $1", schema.ColUID),
+				),
+				Limit: 1,
+			},
+		),
+	},
+	{
+		"selectUserByEmail",
+		qb.Select(
+			qb.SelectQuery{
+				From: schema.Table,
+				Cols: schema.SelectCols,
+				Where: qb.NewWhere().And(
+					fmt.Sprintf("%s = $1", schema.ColEmail),
+				),
+				Limit: 1,
+			},
+		),
+	},
+	{
+		"selectUserByEmailWithPassword",
+		qb.Select(
+			qb.SelectQuery{
+				From: schema.Table,
+				Cols: append(
+					schema.SelectCols,
+					fmt.Sprintf("user.%s", schema.ColPassword),
+				),
+				Where: qb.NewWhere().And(
+					fmt.Sprintf("%s = $1", schema.ColEmail),
+				),
+				Limit: 1,
+			},
+		),
+	},
+	{
+		"selectUserByUsername",
+		qb.Select(
+			qb.SelectQuery{
+				From: schema.Table,
+				Cols: schema.SelectCols,
+				Where: qb.NewWhere().And(
+					fmt.Sprintf("%s = $1", schema.ColUsername),
+				),
+				Limit: 1,
 			},
 		),
 	},

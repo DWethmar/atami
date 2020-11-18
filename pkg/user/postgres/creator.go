@@ -86,7 +86,7 @@ func (i *creatorRepository) Create(newUser user.CreateUser) (*user.User, error) 
 
 	if userID != 0 {
 		entry := &user.User{}
-		if err := i.db.QueryRow(getUserByID, userID).Scan(
+		if err := i.db.QueryRow(selectUserByID, userID).Scan(
 			&entry.ID,
 			&entry.UID,
 			&entry.Username,

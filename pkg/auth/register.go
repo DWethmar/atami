@@ -33,7 +33,7 @@ func (m *Registrator) Register(newUser CreateUser) (*user.User, error) {
 		return nil, err
 	}
 
-	if usr, err := m.finder.FindByEmail(newUser.Email, false); usr != nil && err == nil {
+	if usr, err := m.finder.FindByEmail(newUser.Email); usr != nil && err == nil {
 		return nil, ErrEmailAlreadyTaken
 	} else if err != nil && err != user.ErrCouldNotFind {
 		return nil, err

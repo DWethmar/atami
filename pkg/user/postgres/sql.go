@@ -36,3 +36,79 @@ VALUES (
 	$6
 )
 RETURNING id`
+
+// deleteUser sql query
+var deleteUser = `DELETE FROM public.user
+WHERE id = $1`
+
+// selectUsers sql query
+var selectUsers = `SELECT
+	user.id,
+	user.uid,
+	user.username,
+	user.email,
+	user.created_at,
+	user.updated_at
+FROM public.user
+ORDER BY created_at ASC`
+
+// selectUserByID sql query
+var selectUserByID = `SELECT
+	user.id,
+	user.uid,
+	user.username,
+	user.email,
+	user.created_at,
+	user.updated_at
+FROM public.user
+WHERE id = $1
+LIMIT 1`
+
+// selectUserByUID sql query
+var selectUserByUID = `SELECT
+	user.id,
+	user.uid,
+	user.username,
+	user.email,
+	user.created_at,
+	user.updated_at
+FROM public.user
+WHERE uid = $1
+LIMIT 1`
+
+// selectUserByEmail sql query
+var selectUserByEmail = `SELECT
+	user.id,
+	user.uid,
+	user.username,
+	user.email,
+	user.created_at,
+	user.updated_at
+FROM public.user
+WHERE email = $1
+LIMIT 1`
+
+// selectUserByEmailWithPassword sql query
+var selectUserByEmailWithPassword = `SELECT
+	user.id,
+	user.uid,
+	user.username,
+	user.email,
+	user.created_at,
+	user.updated_at,
+	user.password
+FROM public.user
+WHERE email = $1
+LIMIT 1`
+
+// selectUserByUsername sql query
+var selectUserByUsername = `SELECT
+	user.id,
+	user.uid,
+	user.username,
+	user.email,
+	user.created_at,
+	user.updated_at
+FROM public.user
+WHERE username = $1
+LIMIT 1`

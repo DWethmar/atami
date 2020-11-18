@@ -26,11 +26,10 @@ var (
 
 // SelectCols are the default selected columns
 var SelectCols = []string{
-	fmt.Sprintf("message.%s", ColID),
-	fmt.Sprintf("message.%s", ColUID),
-	fmt.Sprintf("message.%s", ColUsername),
-	fmt.Sprintf("message.%s", ColEmail),
-	fmt.Sprintf("message.%s", ColPassword),
-	fmt.Sprintf("message.%s", ColCreatedAt),
-	fmt.Sprintf("message.%s", ColUpdatedAt),
+	fmt.Sprintf("user.%s", ColID),
+	fmt.Sprintf("user.%s", ColUID),
+	fmt.Sprintf("user.%s", ColUsername),
+	fmt.Sprintf("user.%s", ColEmail),
+	fmt.Sprintf("user.%s", ColCreatedAt),
+	fmt.Sprintf("user.%s", ColUpdatedAt),
 }

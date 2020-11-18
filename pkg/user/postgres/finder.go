@@ -2,71 +2,9 @@ package postgres
 
 import (
 	"database/sql"
-	"fmt"
 
 	"github.com/dwethmar/atami/pkg/user"
 )
-
-var getUsers = fmt.Sprintf(`
-SELECT
-	id,  
-	uid,
-	username, 
-	email,
-	created_at, 
-	updated_at
-FROM %s
-ORDER BY created_at ASC
-`, tableName)
-
-var getUserByID = fmt.Sprintf(`
-SELECT
-	id,  
-	uid,
-	username, 
-	email,
-	created_at, 
-	updated_at
-FROM %s
-WHERE id = $1
-LIMIT 1`, tableName)
-
-var getUserByUID = fmt.Sprintf(`
-SELECT
-	id,  
-	uid,
-	username, 
-	email,
-	created_at, 
-	updated_at
-FROM %s
-WHERE uid = $1
-LIMIT 1`, tableName)
-
-var getUserByEmail = fmt.Sprintf(`
-SELECT
-	id,  
-	uid,
-	username, 
-	password, 
-	email,
-	created_at, 
-	updated_at
-FROM %s
-WHERE email = $1
-LIMIT 1`, tableName)
-
-var getUserByUsername = fmt.Sprintf(`
-SELECT
-	id,  
-	uid,
-	username, 
-	email,
-	created_at, 
-	updated_at
-FROM %s
-WHERE username = $1
-LIMIT 1`, tableName)
 
 // findRepository reads messages from memory
 type findRepository struct {
@@ -75,7 +13,7 @@ type findRepository struct {
 
 // FindAll get multiple messages
 func (f findRepository) Find() ([]*user.User, error) {
-	rows, err := f.db.Query(getUsers)
+	rows, err := f.db.Query(selectUsers)
 
 	if err != nil {
 		return nil, err
@@ -111,7 +49,7 @@ func (f findRepository) Find() ([]*user.User, error) {
 // FindByID get one message by ID
 func (f findRepository) FindByID(ID int) (*user.User, error) {
 	entry := &user.User{}
-	if err := f.db.QueryRow(getUserByID, ID).Scan(
+	if err := f.db.QueryRow(selectUserByID, ID).Scan(
 		&entry.ID,
 		&entry.UID,
 		&entry.Username,
@@ -130,7 +68,7 @@ func (f findRepository) FindByID(ID int) (*user.User, error) {
 // FindByUID get one message by UID
 func (f findRepository) FindByUID(UID string) (*user.User, error) {
 	entry := &user.User{}
-	if err := f.db.QueryRow(getUserByUID, UID).Scan(
+	if err := f.db.QueryRow(selectUserByUID, UID).Scan(
 		&entry.ID,
 		&entry.UID,
 		&entry.Username,
@@ -147,16 +85,35 @@ func (f findRepository) FindByUID(UID string) (*user.User, error) {
 }
 
 // FindByEmail func
-func (f *findRepository) FindByEmail(email string, includePwd bool) (*user.User, error) {
+func (f *findRepository) FindByEmail(email string) (*user.User, error) {
 	entry := &user.User{}
-	if err := f.db.QueryRow(getUserByEmail, email).Scan(
+	if err := f.db.QueryRow(selectUserByEmail, email).Scan(
 		&entry.ID,
 		&entry.UID,
 		&entry.Username,
-		&entry.Password,
 		&entry.Email,
 		&entry.CreatedAt,
 		&entry.UpdatedAt,
+	); err != nil {
+		if err == sql.ErrNoRows {
+			return nil, user.ErrCouldNotFind
+		}
+		return nil, err
+	}
+	return entry, nil
+}
+
+// FindByEmailWithPassword func
+func (f *findRepository) FindByEmailWithPassword(email string) (*user.User, error) {
+	entry := &user.User{}
+	if err := f.db.QueryRow(selectUserByEmailWithPassword, email).Scan(
+		&entry.ID,
+		&entry.UID,
+		&entry.Username,
+		&entry.Email,
+		&entry.CreatedAt,
+		&entry.UpdatedAt,
+		&entry.Password,
 	); err != nil {
 		if err == sql.ErrNoRows {
 			return nil, user.ErrCouldNotFind
@@ -169,7 +126,7 @@ func (f *findRepository) FindByEmail(email string, includePwd bool) (*user.User,
 // FindByEmail func
 func (f *findRepository) FindByUsername(username string) (*user.User, error) {
 	entry := &user.User{}
-	if err := f.db.QueryRow(getUserByUsername, username).Scan(
+	if err := f.db.QueryRow(selectUserByUsername, username).Scan(
 		&entry.ID,
 		&entry.UID,
 		&entry.Username,

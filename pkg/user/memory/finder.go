@@ -47,14 +47,27 @@ func (f findRepository) FindByUID(UID string) (*user.User, error) {
 }
 
 // FindByEmail func
-func (f *findRepository) FindByEmail(email string, includePwd bool) (*user.User, error) {
+func (f *findRepository) FindByEmail(email string) (*user.User, error) {
 	for _, item := range f.store.List() {
 		if record, ok := item.(userRecord); ok {
 			if record.Email == email {
 				usr := recordToUser(record)
-				if includePwd {
-					usr.Password = record.Password
-				}
+				return usr, nil
+			}
+		} else {
+			return nil, errCouldNotParse
+		}
+	}
+	return nil, user.ErrCouldNotFind
+}
+
+// FindByEmailWithPassword func
+func (f *findRepository) FindByEmailWithPassword(email string) (*user.User, error) {
+	for _, item := range f.store.List() {
+		if record, ok := item.(userRecord); ok {
+			if record.Email == email {
+				usr := recordToUser(record)
+				usr.Password = record.Password
 				return usr, nil
 			}
 		} else {

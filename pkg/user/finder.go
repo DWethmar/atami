@@ -12,7 +12,8 @@ var (
 // FindRepository defines a messsage listing repository
 type FindRepository interface {
 	Find() ([]*User, error)
-	FindByEmail(email string, includePwd bool) (*User, error)
+	FindByEmail(email string) (*User, error)
+	FindByEmailWithPassword(email string) (*User, error)
 	FindByUsername(username string) (*User, error)
 	FindByID(ID int) (*User, error)
 	FindByUID(UID string) (*User, error)
@@ -29,8 +30,13 @@ func (m *Finder) Find() ([]*User, error) {
 }
 
 // FindByEmail search for user with email
-func (m *Finder) FindByEmail(email string, includePwd bool) (*User, error) {
-	return m.findRepo.FindByEmail(email, includePwd)
+func (m *Finder) FindByEmail(email string) (*User, error) {
+	return m.findRepo.FindByEmail(email)
+}
+
+// FindByEmailWithPassword search for user with email and set password
+func (m *Finder) FindByEmailWithPassword(email string) (*User, error) {
+	return m.findRepo.FindByEmailWithPassword(email)
 }
 
 // FindByUsername search for user with username

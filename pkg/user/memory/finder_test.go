@@ -55,6 +55,11 @@ func TestFindByEmail(t *testing.T) {
 	user.TestFindByEmail(t, finder, "test-44@test.com")
 }
 
+func TestFindByEmailWithPassword(t *testing.T) {
+	finder, _ := setup()
+	user.TestFindByEmailWithPassword(t, finder, "test-44@test.com")
+}
+
 func TestFindByUsername(t *testing.T) {
 	finder, _ := setup()
 	user.TestFindByUsername(t, finder, "username_44")

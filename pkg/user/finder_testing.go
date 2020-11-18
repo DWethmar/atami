@@ -33,10 +33,21 @@ func TestFind(t *testing.T, finder *Finder, length int, users []User) {
 
 // TestFindByEmail tests the search function.
 func TestFindByEmail(t *testing.T, finder *Finder, email string) {
-	result, err := finder.FindByEmail(email, false)
+	result, err := finder.FindByEmail(email)
 	assert.NoError(t, err)
 	if assert.NotNil(t, result) {
 		assert.Equal(t, email, result.Email)
+		assert.Empty(t, result.Password)
+	}
+}
+
+// TestFindByEmailWithPassword tests the search function.
+func TestFindByEmailWithPassword(t *testing.T, finder *Finder, email string) {
+	result, err := finder.FindByEmailWithPassword(email)
+	assert.NoError(t, err)
+	if assert.NotNil(t, result) {
+		assert.Equal(t, email, result.Email)
+		assert.NotEmpty(t, result.Password)
 	}
 }
 
@@ -46,5 +57,6 @@ func TestFindByUsername(t *testing.T, finder *Finder, username string) {
 	assert.NoError(t, err)
 	if assert.NotNil(t, result) {
 		assert.Equal(t, username, result.Username)
+		assert.Empty(t, result.Password)
 	}
 }
