@@ -38,7 +38,7 @@ func Insert(iq InsertQuery) string {
 			case float32:
 				valuesParts = append(valuesParts, fmt.Sprintf("%d", v))
 			case string:
-				valuesParts = append(valuesParts, fmt.Sprintf("'%s'", v))
+				valuesParts = append(valuesParts, fmt.Sprintf("%s", v))
 			case interface{}:
 				valuesParts = append(valuesParts, fmt.Sprintf("'%v'", v))
 			}

@@ -34,10 +34,10 @@ var insertMessage = `INSERT INTO public.message
 	created_at
 )
 VALUES (
-	'$1',
-	'$2',
-	'$3',
-	'$4'
+	$1,
+	$2,
+	$3,
+	$4
 )`
 
 // deleteMessage sql query
