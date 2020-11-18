@@ -6,19 +6,19 @@ package postgres
 // selectUsernameUniqueCheck sql query
 var selectUsernameUniqueCheck = `SELECT
 	1
-FROM public.user
+FROM public.users
 WHERE username = $1
 LIMIT 1`
 
 // selectEmailUniqueCheck sql query
 var selectEmailUniqueCheck = `SELECT
 	1
-FROM public.user
+FROM public.users
 WHERE email = $1
 LIMIT 1`
 
 // insertUser sql query
-var insertUser = `INSERT INTO public.user
+var insertUser = `INSERT INTO public.users
 (
 	uid,
 	username,
@@ -38,77 +38,77 @@ VALUES (
 RETURNING id`
 
 // deleteUser sql query
-var deleteUser = `DELETE FROM public.user
+var deleteUser = `DELETE FROM public.users
 WHERE id = $1`
 
 // selectUsers sql query
 var selectUsers = `SELECT
-	user.id,
-	user.uid,
-	user.username,
-	user.email,
-	user.created_at,
-	user.updated_at
-FROM public.user
+	users.id,
+	users.uid,
+	users.username,
+	users.email,
+	users.created_at,
+	users.updated_at
+FROM public.users
 ORDER BY created_at ASC`
 
 // selectUserByID sql query
 var selectUserByID = `SELECT
-	user.id,
-	user.uid,
-	user.username,
-	user.email,
-	user.created_at,
-	user.updated_at
-FROM public.user
+	users.id,
+	users.uid,
+	users.username,
+	users.email,
+	users.created_at,
+	users.updated_at
+FROM public.users
 WHERE id = $1
 LIMIT 1`
 
 // selectUserByUID sql query
 var selectUserByUID = `SELECT
-	user.id,
-	user.uid,
-	user.username,
-	user.email,
-	user.created_at,
-	user.updated_at
-FROM public.user
+	users.id,
+	users.uid,
+	users.username,
+	users.email,
+	users.created_at,
+	users.updated_at
+FROM public.users
 WHERE uid = $1
 LIMIT 1`
 
 // selectUserByEmail sql query
 var selectUserByEmail = `SELECT
-	user.id,
-	user.uid,
-	user.username,
-	user.email,
-	user.created_at,
-	user.updated_at
-FROM public.user
+	users.id,
+	users.uid,
+	users.username,
+	users.email,
+	users.created_at,
+	users.updated_at
+FROM public.users
 WHERE email = $1
 LIMIT 1`
 
 // selectUserByEmailWithPassword sql query
 var selectUserByEmailWithPassword = `SELECT
-	user.id,
-	user.uid,
-	user.username,
-	user.email,
-	user.created_at,
-	user.updated_at,
+	users.id,
+	users.uid,
+	users.username,
+	users.email,
+	users.created_at,
+	users.updated_at,
 	user.password
-FROM public.user
+FROM public.users
 WHERE email = $1
 LIMIT 1`
 
 // selectUserByUsername sql query
 var selectUserByUsername = `SELECT
-	user.id,
-	user.uid,
-	user.username,
-	user.email,
-	user.created_at,
-	user.updated_at
-FROM public.user
+	users.id,
+	users.uid,
+	users.username,
+	users.email,
+	users.created_at,
+	users.updated_at
+FROM public.users
 WHERE username = $1
 LIMIT 1`

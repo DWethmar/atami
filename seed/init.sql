@@ -1,6 +1,6 @@
 BEGIN;
 
-INSERT INTO public.user (
+INSERT INTO public.users (
 	uid,
 	username, 
 	email,
@@ -17,7 +17,7 @@ VALUES (
     '2020-11-13 15:33:00.972651'
 );
 
-INSERT INTO public.user (
+INSERT INTO public.users (
 	uid,
 	username, 
 	email,
