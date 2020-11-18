@@ -11,7 +11,7 @@ var selectMessages = `SELECT
 	message.created_by_user_id,
 	message.created_at
 FROM public.message
-ORDER BY message.created_at DESC
+ORDER BY created_at DESC
 LIMIT $1
 OFFSET $2`
 
@@ -28,10 +28,10 @@ WHERE id = $1`
 // insertMessage sql query
 var insertMessage = `INSERT INTO public.message
 (
-	message.uid,
-	message.text,
-	message.created_by_user_id,
-	message.created_at
+	uid,
+	text,
+	created_by_user_id,
+	created_at
 )
 VALUES (
 	'$1',

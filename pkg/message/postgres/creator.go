@@ -17,7 +17,7 @@ type creatorRepository struct {
 // Create new message
 func (i creatorRepository) Create(newMessage message.CreateMessage) (*message.Message, error) {
 
-	stmt, err := i.db.Prepare(insertMessage)
+	stmt, err := i.db.Prepare(insertMessage) // TODO refactor to .Query?
 	if err != nil {
 		return nil, err
 	}

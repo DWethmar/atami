@@ -1,5 +1,7 @@
 package schema
 
+import "fmt"
+
 var (
 	// Table is the database tablename
 	Table = "public.message"
@@ -7,22 +9,22 @@ var (
 
 var (
 	// ColID table Column
-	ColID = "message.id"
+	ColID = "id"
 	// ColUID table Column
-	ColUID = "message.uid"
+	ColUID = "uid"
 	// ColText table Column
-	ColText = "message.text"
+	ColText = "text"
 	// ColCreatedByUserID table Column
-	ColCreatedByUserID = "message.created_by_user_id"
+	ColCreatedByUserID = "created_by_user_id"
 	// ColCreatedAt table Column
-	ColCreatedAt = "message.created_at"
+	ColCreatedAt = "created_at"
 )
 
 // SelectCols are the default selected columns
 var SelectCols = []string{
-	ColID,
-	ColUID,
-	ColText,
-	ColCreatedByUserID,
-	ColCreatedAt,
+	fmt.Sprintf("message.%s", ColID),
+	fmt.Sprintf("message.%s", ColUID),
+	fmt.Sprintf("message.%s", ColText),
+	fmt.Sprintf("message.%s", ColCreatedByUserID),
+	fmt.Sprintf("message.%s", ColCreatedAt),
 }
