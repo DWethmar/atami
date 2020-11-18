@@ -12,69 +12,34 @@ import (
 	"github.com/segmentio/ksuid"
 )
 
-var checkUniqueUsername = fmt.Sprintf(`
-SELECT 1
-FROM %s 
-WHERE username = $1 
-LIMIT 1`, tableName)
-
-var checkUniqueEmail = fmt.Sprintf(`
-SELECT 1
-FROM %s 
-WHERE email = $1
-LIMIT 1`, tableName)
-
-var insertUser = fmt.Sprintf(`
-INSERT INTO %s (
-	uid,
-	username, 
-	email,
-	password,
-	created_at, 
-	updated_at
-)
-VALUES ($1, $2, $3, $4, $5, $6) RETURNING id`, tableName)
-
 // createRepository stores new messages
 type creatorRepository struct {
 	db *sql.DB
 }
 
 func isUniqueUsername(db *sql.DB, username string) (bool, error) {
-	stmt, err := db.Prepare(checkUniqueUsername)
-	if err != nil {
-		return false, err
-	}
-	defer stmt.Close()
-
 	var result int
-	if err = stmt.QueryRow(
+	if err := db.QueryRow(
+		selectUsernameUniqueCheck,
 		username,
 	).Scan(&result); err != nil {
 		if err != sql.ErrNoRows {
 			return false, err
 		}
 	}
-
 	return result == 0, nil
 }
 
 func isUniqueEmail(db *sql.DB, email string) (bool, error) {
-	stmt, err := db.Prepare(checkUniqueEmail)
-	if err != nil {
-		return false, err
-	}
-	defer stmt.Close()
-
 	var result int
-	if err = stmt.QueryRow(
+	if err := db.QueryRow(
+		selectEmailUniqueCheck,
 		email,
 	).Scan(&result); err != nil {
 		if err != sql.ErrNoRows {
 			return false, err
 		}
 	}
-
 	return result == 0, nil
 }
 
@@ -101,17 +66,11 @@ func (i *creatorRepository) Create(newUser user.CreateUser) (*user.User, error) 
 	}
 
 	uid := ksuid.New().String()
-
-	stmt, err := i.db.Prepare(insertUser)
-	if err != nil {
-		return nil, err
-	}
-	defer stmt.Close()
-
 	now := time.Now().UTC()
 
 	var userID int
-	if err = stmt.QueryRow(
+	if err := i.db.QueryRow(
+		insertUser,
 		uid,
 		newUser.Username,
 		newUser.Email,

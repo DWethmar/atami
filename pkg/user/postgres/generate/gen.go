@@ -14,73 +14,64 @@ import (
 	"time"
 
 	qb "github.com/dwethmar/atami/pkg/database/querybuilder"
-	"github.com/dwethmar/atami/pkg/message/postgres/schema"
+	"github.com/dwethmar/atami/pkg/user/postgres/schema"
 )
+
+// var insertUser = fmt.Sprintf(`
+// INSERT INTO %s (
+// 	uid,
+// 	username,
+// 	email,
+// 	password,
+// 	created_at,
+// 	updated_at
+// )
+// VALUES ($1, $2, $3, $4, $5, $6) RETURNING id`, tableName)
 
 var queries = []struct {
 	Name  string
 	Query string
 }{
 	{
-		"selectMessages",
+		"selectUsernameUniqueCheck",
 		qb.Select(
 			qb.SelectQuery{
-				Cols:      schema.SelectCols,
-				From:      schema.Table,
-				Joins:     nil,
-				Where:     nil,
-				GroupBy:   []string{},
-				Having:    nil,
-				OrderBy:   []string{fmt.Sprintf("%s DESC", schema.ColCreatedAt)},
-				LimitStr:  "$1",
-				OffsetStr: "$2",
-			},
-		),
-	},
-	{
-		"selectMessageByID",
-		qb.Select(
-			qb.SelectQuery{
-				Cols:  schema.SelectCols,
 				From:  schema.Table,
-				Joins: nil,
-				Where: qb.NewWhere().And(
-					fmt.Sprintf("%s = $1", schema.ColID),
-				),
-				GroupBy: []string{},
-				Having:  nil,
-				OrderBy: []string{},
-				Limit:   0,
-				Offset:  0,
+				Cols:  []string{"1"},
+				Where: qb.NewWhere().And(fmt.Sprintf("%s = $1", schema.ColID)),
+				Limit: 1,
 			},
 		),
 	},
 	{
-		"insertMessage",
+		"selectEmailUniqueCheck",
+		qb.Select(
+			qb.SelectQuery{
+				From:  schema.Table,
+				Cols:  []string{"1"},
+				Where: qb.NewWhere().And(fmt.Sprintf("%s = $1", schema.ColEmail)),
+				Limit: 1,
+			},
+		),
+	},
+	{
+		"insertUser",
 		qb.Insert(
 			qb.InsertQuery{
 				Into: schema.Table,
 				Cols: []string{
 					schema.ColUID,
-					schema.ColText,
-					schema.ColCreatedByUserID,
+					schema.ColUsername,
+					schema.ColEmail,
+					schema.ColPassword,
 					schema.ColCreatedAt,
+					schema.ColUpdatedAt,
 				},
 				Values: []interface{}{
-					"$1", "$2", "$3", "$4",
+					"$1", "$2", "$3", "$4", "$5", "$6",
 				},
 				Returning: []string{schema.ColID},
 			},
-		),
-	},
-	{
-		"deleteMessage",
-		qb.Delete(
-			qb.DeleteQuery{
-				From: schema.Table,
-				Where: qb.NewWhere().And(
-					fmt.Sprintf("%s = $1", schema.ColID),
-				)},
 		),
 	},
 }
