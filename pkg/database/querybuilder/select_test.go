@@ -10,7 +10,7 @@ import (
 // Select returns a select sql query
 func TestSelect(t *testing.T) {
 	expect :=
-		`SELECT 
+		`SELECT
 	public.user.id,
 	username
 FROM public.message
