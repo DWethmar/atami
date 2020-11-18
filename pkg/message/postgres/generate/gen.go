@@ -67,6 +67,7 @@ var queries = []struct {
 				Values: []interface{}{
 					"$1", "$2", "$3", "$4",
 				},
+				Returning: []string{"id"},
 			},
 		),
 	},
