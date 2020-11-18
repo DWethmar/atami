@@ -7,7 +7,7 @@ package postgres
 var selectUsernameUniqueCheck = `SELECT
 	1
 FROM public.user
-WHERE id = $1
+WHERE username = $1
 LIMIT 1`
 
 // selectEmailUniqueCheck sql query
