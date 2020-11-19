@@ -16,15 +16,9 @@ type creatorRepository struct {
 
 // Create new message
 func (i creatorRepository) Create(newMessage message.CreateMessage) (*message.Message, error) {
-
-	stmt, err := i.db.Prepare(insertMessage) // TODO refactor to .Query?
-	if err != nil {
-		return nil, err
-	}
-	defer stmt.Close()
-
 	var messageID int
-	if err := stmt.QueryRow(
+	if err := queryRowInsertMessage(
+		i.db,
 		ksuid.New().String(),
 		newMessage.Text,
 		newMessage.CreatedByUserID,

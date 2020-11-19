@@ -3,6 +3,12 @@
 
 package postgres
 
+import (
+	"database/sql"
+
+	"time"
+)
+
 // selectMessages sql query
 var selectMessages = `SELECT
 	message.id,
@@ -15,6 +21,10 @@ ORDER BY created_at DESC
 LIMIT $1
 OFFSET $2`
 
+func querySelectMessages(db *sql.DB, limit int, offset int) (*sql.Rows, error) {
+	return db.Query(selectMessages, limit, offset)
+}
+
 // selectMessageByID sql query
 var selectMessageByID = `SELECT
 	message.id,
@@ -24,6 +34,18 @@ var selectMessageByID = `SELECT
 	message.created_at
 FROM public.message
 WHERE id = $1`
+
+func queryRowSelectMessageByID(db *sql.DB, ID int) *sql.Row {
+	return db.QueryRow(selectMessageByID, ID)
+}
+
+// deleteMessage sql query
+var deleteMessage = `DELETE FROM public.message
+WHERE id = $1`
+
+func execDeleteMessage(db *sql.DB, ID int) (sql.Result, error) {
+	return db.Exec(deleteMessage, ID)
+}
 
 // insertMessage sql query
 var insertMessage = `INSERT INTO public.message
@@ -41,6 +63,6 @@ VALUES (
 )
 RETURNING id`
 
-// deleteMessage sql query
-var deleteMessage = `DELETE FROM public.message
-WHERE id = $1`
+func queryRowInsertMessage(db *sql.DB, UID string, text string, CreatedByUserID int, createdAt time.Time) *sql.Row {
+	return db.QueryRow(insertMessage, UID, text, CreatedByUserID, createdAt)
+}
