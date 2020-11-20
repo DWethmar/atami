@@ -56,11 +56,11 @@ func Select(sq SelectQuery) string {
 		queryParts = append(queryParts, orderByPart)
 	}
 
-	if sq.Limit == "" {
+	if sq.Limit != "" {
 		queryParts = append(queryParts, fmt.Sprintf(`LIMIT %s`, sq.Limit))
 	}
 
-	if sq.Offset == "" {
+	if sq.Offset != "" {
 		queryParts = append(queryParts, fmt.Sprintf(`OFFSET %s`, sq.Offset))
 	}
 
