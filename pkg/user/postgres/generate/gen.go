@@ -113,15 +113,16 @@ func main() {
 					qb.SelectQuery{
 						From:  schema.Table,
 						Cols:  []string{"1"},
-						Where: qb.NewWhere().And(fmt.Sprintf("%s = $1", schema.ColEmail)),
+						Where: qb.NewWhere().And(fmt.Sprintf("%s = $1", schema.ColID)),
 						Limit: strconv.Itoa(1),
+						Returning: []string{"id"}
 					},
 				),
 				QueryType: qg.QueryRow,
 				FuncArgs: []qg.FuncArg{
 					{
-						Name: "email",
-						Type: "string",
+						Name: "ID",
+						Type: "int",
 					},
 				},
 			},
