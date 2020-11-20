@@ -13,7 +13,7 @@ type findRepository struct {
 
 // FindAll get multiple messages
 func (f findRepository) Find() ([]*user.User, error) {
-	rows, err := f.db.Query(selectUsers)
+	rows, err := f.db.Query(selectUsers, 100, 0)
 
 	if err != nil {
 		return nil, err

@@ -109,13 +109,11 @@ func main() {
 
 			{
 				QueryName: "deleteUser",
-				SQL: qb.Select(
-					qb.SelectQuery{
-						From:  schema.Table,
-						Cols:  []string{"1"},
-						Where: qb.NewWhere().And(fmt.Sprintf("%s = $1", schema.ColID)),
-						Limit: strconv.Itoa(1),
-						Returning: []string{"id"}
+				SQL: qb.Delete(
+					qb.DeleteQuery{
+						From:      schema.Table,
+						Where:     qb.NewWhere().And(fmt.Sprintf("%s = $1", schema.ColID)),
+						Returning: []string{"id"},
 					},
 				),
 				QueryType: qg.QueryRow,
@@ -131,8 +129,8 @@ func main() {
 				QueryName: "selectUsers",
 				SQL: qb.Select(
 					qb.SelectQuery{
-						From:    schema.Table,
 						Cols:    schema.SelectCols,
+						From:    schema.Table,
 						OrderBy: []string{"created_at ASC"},
 						Limit:   "$1",
 						Offset:  "$2",
