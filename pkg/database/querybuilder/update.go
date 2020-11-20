@@ -5,10 +5,16 @@ import (
 	"strings"
 )
 
+// UpdateCol specifies what updates
+type UpdateCol struct {
+	name  string
+	value interface{}
+}
+
 // UpdateQuery defines the fields to build a update sql query
 type UpdateQuery struct {
 	Table     string
-	Set       map[string]interface{}
+	Set       []UpdateCol
 	From      *SelectQuery
 	FromAs    string
 	Where     *Where
@@ -27,22 +33,13 @@ func Update(uq UpdateQuery) string {
 	if len(uq.Set) > 0 {
 		setParts := []string{}
 
-		for column, v := range uq.Set {
-			switch v.(type) {
-			case int:
-				setParts = append(setParts, fmt.Sprintf("%s = %d", column, v))
-			case float32:
-				setParts = append(setParts, fmt.Sprintf("%s = %d", column, v))
-			case string:
-				setParts = append(setParts, fmt.Sprintf("%s = %s", column, v))
-			case interface{}:
-				setParts = append(setParts, fmt.Sprintf("%s = %v", column, v))
-			}
+		for _, v := range uq.Set {
+			setParts = append(setParts, fmt.Sprintf("%s = %v", v.name, v.value))
 		}
 
 		queryParts = append(
 			queryParts,
-			fmt.Sprintf(`SET %s`, "\n\t"+strings.Join(setParts, ",\n\t")+"\n"),
+			fmt.Sprintf(`SET%s`, "\n\t"+strings.Join(setParts, ",\n\t")),
 		)
 	}
 

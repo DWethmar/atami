@@ -16,20 +16,19 @@ SET
 	password = 'p@ssw0rd',
 	created_at = '2020-11-13 15:33:00.972651',
 	updated_at = '2020-11-13 15:33:00.972651'
-)
 WHERE id = 1
 RETURNING id`
 
 	received := Update(
 		UpdateQuery{
 			Table: "public.user",
-			Set: map[string]interface{}{
-				"uid":        "'abcd0987'",
-				"email":      "'updated_test@test.com'",
-				"username":   "'updated_usr'",
-				"password":   "'p@ssw0rd'",
-				"created_at": "'2020-11-13 15:33:00.972651'",
-				"updated_at": "'2020-11-13 15:33:00.972651'",
+			Set: []UpdateCol{
+				{"uid", "'abcd0987'"},
+				{"email", "'updated_test@test.com'"},
+				{"username", "'updated_usr'"},
+				{"password", "'p@ssw0rd'"},
+				{"created_at", "'2020-11-13 15:33:00.972651'"},
+				{"updated_at", "'2020-11-13 15:33:00.972651'"},
 			},
 			Where:     NewWhere().And("id = 1"),
 			Returning: []string{"id"},

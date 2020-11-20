@@ -32,16 +32,7 @@ func Insert(iq InsertQuery) string {
 		valuesParts := []string{}
 
 		for _, v := range iq.Values {
-			switch v.(type) {
-			case int:
-				valuesParts = append(valuesParts, fmt.Sprintf("%d", v))
-			case float32:
-				valuesParts = append(valuesParts, fmt.Sprintf("%d", v))
-			case string:
-				valuesParts = append(valuesParts, fmt.Sprintf("%s", v))
-			case interface{}:
-				valuesParts = append(valuesParts, fmt.Sprintf("'%v'", v))
-			}
+			valuesParts = append(valuesParts, fmt.Sprintf("%v", v))
 		}
 
 		queryParts = append(
