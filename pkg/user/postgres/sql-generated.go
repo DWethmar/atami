@@ -14,7 +14,7 @@ var selectUsernameUniqueCheck = `SELECT
 	1
 FROM public.users
 WHERE username = $1
-OFFSET `
+LIMIT 1`
 
 func queryRowSelectUsernameUniqueCheck(
 	db *sql.DB,
@@ -31,7 +31,7 @@ var selectEmailUniqueCheck = `SELECT
 	1
 FROM public.users
 WHERE email = $1
-OFFSET `
+LIMIT 1`
 
 func queryRowSelectEmailUniqueCheck(
 	db *sql.DB,
@@ -88,7 +88,7 @@ var deleteUser = `SELECT
 	1
 FROM public.users
 WHERE email = $1
-OFFSET `
+LIMIT 1`
 
 func queryRowDeleteUser(
 	db *sql.DB,
@@ -109,7 +109,9 @@ var selectUsers = `SELECT
 	users.created_at,
 	users.updated_at
 FROM public.users
-ORDER BY created_at ASC`
+ORDER BY created_at ASC
+LIMIT $1
+OFFSET $2`
 
 func querySelectUsers(
 	db *sql.DB,
@@ -133,7 +135,7 @@ var selectUserByID = `SELECT
 	users.updated_at
 FROM public.users
 WHERE id = $1
-OFFSET `
+LIMIT 1`
 
 func querySelectUserByID(
 	db *sql.DB,
@@ -155,7 +157,7 @@ var selectUserByUID = `SELECT
 	users.updated_at
 FROM public.users
 WHERE uid = $1
-OFFSET `
+LIMIT 1`
 
 func querySelectUserByUID(
 	db *sql.DB,
@@ -177,7 +179,7 @@ var selectUserByEmail = `SELECT
 	users.updated_at
 FROM public.users
 WHERE email = $1
-OFFSET `
+LIMIT 1`
 
 func querySelectUserByEmail(
 	db *sql.DB,
@@ -200,7 +202,7 @@ var selectUserByEmailWithPassword = `SELECT
 	password
 FROM public.users
 WHERE email = $1
-OFFSET `
+LIMIT 1`
 
 func querySelectUserByEmailWithPassword(
 	db *sql.DB,
@@ -222,7 +224,7 @@ var selectUserByUsername = `SELECT
 	users.updated_at
 FROM public.users
 WHERE username = $1
-OFFSET `
+LIMIT 1`
 
 func querySelectUserByUsername(
 	db *sql.DB,

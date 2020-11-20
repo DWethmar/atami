@@ -17,7 +17,9 @@ var selectMessages = `SELECT
 	message.created_by_user_id,
 	message.created_at
 FROM public.message
-ORDER BY created_at DESC`
+ORDER BY created_at DESC
+LIMIT $1
+OFFSET $2`
 
 func querySelectMessages(
 	db *sql.DB,
@@ -39,9 +41,7 @@ var selectMessageByID = `SELECT
 	message.created_by_user_id,
 	message.created_at
 FROM public.message
-WHERE id = $1
-LIMIT 
-OFFSET `
+WHERE id = $1`
 
 func queryRowSelectMessageByID(
 	db *sql.DB,
