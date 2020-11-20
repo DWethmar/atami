@@ -84,19 +84,16 @@ func queryRowInsertUser(
 }
 
 // deleteUser sql query
-var deleteUser = `SELECT
-	1
-FROM public.users
-WHERE email = $1
-LIMIT 1`
+var deleteUser = `DELETE FROM public.users
+WHERE id = $1`
 
-func queryRowDeleteUser(
+func execDeleteUser(
 	db *sql.DB,
-	email string,
-) *sql.Row {
-	return db.QueryRow(
+	ID int,
+) (sql.Result, error) {
+	return db.Exec(
 		deleteUser,
-		email,
+		ID,
 	)
 }
 

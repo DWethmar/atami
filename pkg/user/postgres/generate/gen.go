@@ -111,9 +111,8 @@ func main() {
 				QueryName: "deleteUser",
 				SQL: qb.Delete(
 					qb.DeleteQuery{
-						From:      schema.Table,
-						Where:     qb.NewWhere().And(fmt.Sprintf("%s = $1", schema.ColID)),
-						Returning: []string{"id"},
+						From:  schema.Table,
+						Where: qb.NewWhere().And(fmt.Sprintf("%s = $1", schema.ColID)),
 					},
 				),
 				QueryType: qg.Exec,
