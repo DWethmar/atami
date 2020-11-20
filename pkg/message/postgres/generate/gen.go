@@ -23,18 +23,17 @@ func main() {
 				QueryName: "selectMessages",
 				SQL: qb.Select(
 					qb.SelectQuery{
-						Cols:      schema.SelectCols,
-						From:      schema.Table,
-						Joins:     nil,
-						Where:     nil,
-						GroupBy:   []string{},
-						Having:    nil,
-						OrderBy:   []string{fmt.Sprintf("%s DESC", schema.ColCreatedAt)},
-						LimitStr:  "$1",
-						OffsetStr: "$2",
+						Cols:    schema.SelectCols,
+						From:    schema.Table,
+						Joins:   nil,
+						Where:   nil,
+						GroupBy: []string{},
+						Having:  nil,
+						OrderBy: []string{fmt.Sprintf("%s DESC", schema.ColCreatedAt)},
+						Limit:   "$1",
+						Offset:  "$2",
 					},
 				),
-				FuncName:  "querySelectMessages",
 				QueryType: qg.Query,
 				FuncArgs: []qg.FuncArg{
 					{
@@ -60,11 +59,10 @@ func main() {
 						GroupBy: []string{},
 						Having:  nil,
 						OrderBy: []string{},
-						Limit:   0,
-						Offset:  0,
+						Limit:   "",
+						Offset:  "",
 					},
 				),
-				FuncName:  "queryRowSelectMessageByID",
 				QueryType: qg.QueryRow,
 				FuncArgs: []qg.FuncArg{
 					{
@@ -82,7 +80,6 @@ func main() {
 							fmt.Sprintf("%s = $1", schema.ColID),
 						)},
 				),
-				FuncName:  "execDeleteMessage",
 				QueryType: qg.Exec,
 				FuncArgs: []qg.FuncArg{
 					{
@@ -108,7 +105,6 @@ func main() {
 						Returning: []string{schema.ColID},
 					},
 				),
-				FuncName:  "queryRowInsertMessage",
 				QueryType: qg.QueryRow,
 				FuncArgs: []qg.FuncArg{
 					{

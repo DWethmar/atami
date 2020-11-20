@@ -7,17 +7,15 @@ import (
 
 // SelectQuery defines the fields to build a sql query
 type SelectQuery struct {
-	Cols      []string
-	From      string
-	Joins     *Join
-	Where     *Where
-	GroupBy   []string
-	Having    *Where
-	OrderBy   []string
-	Limit     int
-	LimitStr  string
-	Offset    int
-	OffsetStr string
+	Cols    []string
+	From    string
+	Joins   *Join
+	Where   *Where
+	GroupBy []string
+	Having  *Where
+	OrderBy []string
+	Limit   string
+	Offset  string
 }
 
 // Select returns a select sql query
@@ -58,16 +56,12 @@ func Select(sq SelectQuery) string {
 		queryParts = append(queryParts, orderByPart)
 	}
 
-	if sq.Limit > 0 && sq.LimitStr == "" {
-		queryParts = append(queryParts, fmt.Sprintf(`LIMIT %d`, sq.Limit))
-	} else if sq.LimitStr != "" {
-		queryParts = append(queryParts, fmt.Sprintf(`LIMIT %s`, sq.LimitStr))
+	if sq.Limit == "" {
+		queryParts = append(queryParts, fmt.Sprintf(`LIMIT %s`, sq.Limit))
 	}
 
-	if sq.Offset > 0 && sq.OffsetStr == "" {
-		queryParts = append(queryParts, fmt.Sprintf(`OFFSET %d`, sq.Offset))
-	} else if sq.OffsetStr != "" {
-		queryParts = append(queryParts, fmt.Sprintf(`OFFSET %s`, sq.OffsetStr))
+	if sq.Offset == "" {
+		queryParts = append(queryParts, fmt.Sprintf(`OFFSET %s`, sq.Offset))
 	}
 
 	return strings.Join(queryParts, "\n")

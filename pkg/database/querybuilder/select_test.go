@@ -2,6 +2,7 @@ package querybuilder
 
 import (
 	"fmt"
+	"strconv"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
@@ -38,8 +39,8 @@ OFFSET 1`
 			Having: NewWhere().
 				And("username LIKE '%e%'"),
 			OrderBy: []string{"id ASC", "username DESC"},
-			Limit:   10,
-			Offset:  1,
+			Limit:   strconv.Itoa(10),
+			Offset:  strconv.Itoa(1),
 		},
 	)
 

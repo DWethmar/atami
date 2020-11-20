@@ -17,12 +17,18 @@ var selectMessages = `SELECT
 	message.created_by_user_id,
 	message.created_at
 FROM public.message
-ORDER BY created_at DESC
-LIMIT $1
-OFFSET $2`
+ORDER BY created_at DESC`
 
-func querySelectMessages(db *sql.DB, limit int, offset int) (*sql.Rows, error) {
-	return db.Query(selectMessages, limit, offset)
+func querySelectMessages(
+	db *sql.DB,
+	limit int,
+	offset int,
+) (*sql.Rows, error) {
+	return db.Query(
+		selectMessages,
+		limit,
+		offset,
+	)
 }
 
 // selectMessageByID sql query
@@ -33,18 +39,32 @@ var selectMessageByID = `SELECT
 	message.created_by_user_id,
 	message.created_at
 FROM public.message
-WHERE id = $1`
+WHERE id = $1
+LIMIT 
+OFFSET `
 
-func queryRowSelectMessageByID(db *sql.DB, ID int) *sql.Row {
-	return db.QueryRow(selectMessageByID, ID)
+func queryRowSelectMessageByID(
+	db *sql.DB,
+	ID int,
+) *sql.Row {
+	return db.QueryRow(
+		selectMessageByID,
+		ID,
+	)
 }
 
 // deleteMessage sql query
 var deleteMessage = `DELETE FROM public.message
 WHERE id = $1`
 
-func execDeleteMessage(db *sql.DB, ID int) (sql.Result, error) {
-	return db.Exec(deleteMessage, ID)
+func execDeleteMessage(
+	db *sql.DB,
+	ID int,
+) (sql.Result, error) {
+	return db.Exec(
+		deleteMessage,
+		ID,
+	)
 }
 
 // insertMessage sql query
@@ -63,6 +83,18 @@ VALUES (
 )
 RETURNING id`
 
-func queryRowInsertMessage(db *sql.DB, UID string, text string, CreatedByUserID int, createdAt time.Time) *sql.Row {
-	return db.QueryRow(insertMessage, UID, text, CreatedByUserID, createdAt)
+func queryRowInsertMessage(
+	db *sql.DB,
+	UID string,
+	text string,
+	CreatedByUserID int,
+	createdAt time.Time,
+) *sql.Row {
+	return db.QueryRow(
+		insertMessage,
+		UID,
+		text,
+		CreatedByUserID,
+		createdAt,
+	)
 }

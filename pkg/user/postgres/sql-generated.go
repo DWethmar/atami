@@ -3,19 +3,45 @@
 
 package postgres
 
+import (
+	"database/sql"
+
+	"time"
+)
+
 // selectUsernameUniqueCheck sql query
 var selectUsernameUniqueCheck = `SELECT
 	1
 FROM public.users
 WHERE username = $1
-LIMIT 1`
+OFFSET `
+
+func queryRowSelectUsernameUniqueCheck(
+	db *sql.DB,
+	username string,
+) *sql.Row {
+	return db.QueryRow(
+		selectUsernameUniqueCheck,
+		username,
+	)
+}
 
 // selectEmailUniqueCheck sql query
 var selectEmailUniqueCheck = `SELECT
 	1
 FROM public.users
 WHERE email = $1
-LIMIT 1`
+OFFSET `
+
+func queryRowSelectEmailUniqueCheck(
+	db *sql.DB,
+	email string,
+) *sql.Row {
+	return db.QueryRow(
+		selectEmailUniqueCheck,
+		email,
+	)
+}
 
 // insertUser sql query
 var insertUser = `INSERT INTO public.users
@@ -37,9 +63,42 @@ VALUES (
 )
 RETURNING id`
 
+func queryRowInsertUser(
+	db *sql.DB,
+	UID string,
+	username string,
+	email string,
+	password string,
+	createdAt time.Time,
+	updateddAt time.Time,
+) *sql.Row {
+	return db.QueryRow(
+		insertUser,
+		UID,
+		username,
+		email,
+		password,
+		createdAt,
+		updateddAt,
+	)
+}
+
 // deleteUser sql query
-var deleteUser = `DELETE FROM public.users
-WHERE id = $1`
+var deleteUser = `SELECT
+	1
+FROM public.users
+WHERE email = $1
+OFFSET `
+
+func queryRowDeleteUser(
+	db *sql.DB,
+	email string,
+) *sql.Row {
+	return db.QueryRow(
+		deleteUser,
+		email,
+	)
+}
 
 // selectUsers sql query
 var selectUsers = `SELECT
@@ -52,6 +111,18 @@ var selectUsers = `SELECT
 FROM public.users
 ORDER BY created_at ASC`
 
+func querySelectUsers(
+	db *sql.DB,
+	limit int,
+	offset int,
+) (*sql.Rows, error) {
+	return db.Query(
+		selectUsers,
+		limit,
+		offset,
+	)
+}
+
 // selectUserByID sql query
 var selectUserByID = `SELECT
 	users.id,
@@ -62,7 +133,17 @@ var selectUserByID = `SELECT
 	users.updated_at
 FROM public.users
 WHERE id = $1
-LIMIT 1`
+OFFSET `
+
+func querySelectUserByID(
+	db *sql.DB,
+	ID int,
+) (*sql.Rows, error) {
+	return db.Query(
+		selectUserByID,
+		ID,
+	)
+}
 
 // selectUserByUID sql query
 var selectUserByUID = `SELECT
@@ -74,7 +155,17 @@ var selectUserByUID = `SELECT
 	users.updated_at
 FROM public.users
 WHERE uid = $1
-LIMIT 1`
+OFFSET `
+
+func querySelectUserByUID(
+	db *sql.DB,
+	UID string,
+) (*sql.Rows, error) {
+	return db.Query(
+		selectUserByUID,
+		UID,
+	)
+}
 
 // selectUserByEmail sql query
 var selectUserByEmail = `SELECT
@@ -86,7 +177,17 @@ var selectUserByEmail = `SELECT
 	users.updated_at
 FROM public.users
 WHERE email = $1
-LIMIT 1`
+OFFSET `
+
+func querySelectUserByEmail(
+	db *sql.DB,
+	email string,
+) (*sql.Rows, error) {
+	return db.Query(
+		selectUserByEmail,
+		email,
+	)
+}
 
 // selectUserByEmailWithPassword sql query
 var selectUserByEmailWithPassword = `SELECT
@@ -96,10 +197,20 @@ var selectUserByEmailWithPassword = `SELECT
 	users.email,
 	users.created_at,
 	users.updated_at,
-	user.password
+	password
 FROM public.users
 WHERE email = $1
-LIMIT 1`
+OFFSET `
+
+func querySelectUserByEmailWithPassword(
+	db *sql.DB,
+	email string,
+) (*sql.Rows, error) {
+	return db.Query(
+		selectUserByEmailWithPassword,
+		email,
+	)
+}
 
 // selectUserByUsername sql query
 var selectUserByUsername = `SELECT
@@ -111,4 +222,14 @@ var selectUserByUsername = `SELECT
 	users.updated_at
 FROM public.users
 WHERE username = $1
-LIMIT 1`
+OFFSET `
+
+func querySelectUserByUsername(
+	db *sql.DB,
+	username string,
+) (*sql.Rows, error) {
+	return db.Query(
+		selectUserByUsername,
+		username,
+	)
+}

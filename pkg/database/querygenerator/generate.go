@@ -32,7 +32,6 @@ type FuncArg struct {
 type GenTask struct {
 	QueryName string
 	SQL       string
-	FuncName  string
 	FuncArgs  []FuncArg
 	QueryType QueryType
 }
@@ -65,18 +64,36 @@ import (
 // {{ .QueryName }} sql query
 var {{ .QueryName }} = ` + "`" + `{{ .SQL }}` + "`" + `
 {{ if eq .QueryType.String  "Exec" }}
-func {{.FuncName}}(db *sql.DB{{ JoinFuncArgs .FuncArgs -}}) (sql.Result, error) {
-	return db.Exec({{ .QueryName }}{{ JoinQueryArgs .FuncArgs -}})
+func exec{{.QueryName | Title}}(
+	db *sql.DB,
+	{{ JoinFuncArgs .FuncArgs -}}
+) (sql.Result, error) {
+	return db.Exec(
+		{{ .QueryName }},
+		{{ JoinQueryArgs .FuncArgs }}
+	)
 }
 {{ end }}
 {{ if eq .QueryType.String  "QueryRow" }}
-func {{.FuncName}}(db *sql.DB{{ JoinFuncArgs .FuncArgs -}}) *sql.Row  {
-	return db.QueryRow({{ .QueryName }}{{ JoinQueryArgs .FuncArgs -}})
+func queryRow{{.QueryName | Title}}(
+	db *sql.DB,
+	{{ JoinFuncArgs .FuncArgs -}}
+) *sql.Row  {
+	return db.QueryRow(
+		{{ .QueryName }},
+		{{ JoinQueryArgs .FuncArgs }}
+	)
 }
 {{ end }}
 {{ if eq .QueryType.String  "Query" }}
-func {{.FuncName}}(db *sql.DB{{ JoinFuncArgs .FuncArgs -}}) (*sql.Rows, error) {
-	return db.Query({{ .QueryName }}{{ JoinQueryArgs .FuncArgs -}})
+func query{{.QueryName | Title}}(
+	db *sql.DB,
+	{{ JoinFuncArgs .FuncArgs -}}
+) (*sql.Rows, error) {
+	return db.Query(
+		{{ .QueryName }},
+		{{ JoinQueryArgs .FuncArgs }}
+	)
 }
 {{ end }}
 {{ end }}
@@ -91,7 +108,7 @@ func JoinFuncArgs(attrs []FuncArg) string {
 	for _, a := range attrs {
 		joinedAttrs = append(joinedAttrs, fmt.Sprintf("%s %s", a.Name, a.Type))
 	}
-	return ", " + strings.Join(joinedAttrs, ", ")
+	return strings.Join(joinedAttrs, ",\n") + ",\n"
 }
 
 // JoinQueryArgs nice
@@ -103,7 +120,7 @@ func JoinQueryArgs(attrs []FuncArg) string {
 	for _, k := range attrs {
 		keys = append(keys, k.Name)
 	}
-	return ", " + strings.Join(keys, ", ")
+	return strings.Join(keys, ",\n") + ",\n"
 }
 
 var packageTemplate = template.Must(
@@ -111,6 +128,7 @@ var packageTemplate = template.Must(
 		Funcs(template.FuncMap{
 			"JoinFuncArgs":  JoinFuncArgs,
 			"JoinQueryArgs": JoinQueryArgs,
+			"Title":         strings.Title,
 		}).
 		Parse(t),
 )
@@ -131,8 +149,8 @@ func Generate(fileOut string, imports []string, queries []*GenTask) {
 	})
 
 	p, err := format.Source(buf.Bytes())
-
 	die(err)
+
 	f.Write(p)
 }
 
