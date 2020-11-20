@@ -116,7 +116,7 @@ func main() {
 						Returning: []string{"id"},
 					},
 				),
-				QueryType: qg.QueryRow,
+				QueryType: qg.Exec,
 				FuncArgs: []qg.FuncArg{
 					{
 						Name: "ID",
