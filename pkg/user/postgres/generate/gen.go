@@ -42,7 +42,7 @@ func main() {
 						Type: "string",
 					},
 				},
-				MapFunc:    "mapUniqueCheck",
+				MapFunc:    "mapIsUniqueCheck",
 				ReturnType: "bool",
 			},
 
@@ -63,7 +63,7 @@ func main() {
 						Type: "string",
 					},
 				},
-				MapFunc:    "mapUniqueCheck",
+				MapFunc:    "mapIsUniqueCheck",
 				ReturnType: "bool",
 			},
 

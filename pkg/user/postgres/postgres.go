@@ -27,11 +27,8 @@ func defaultMap(row Row) (*user.User, error) {
 	return e, nil
 }
 
-func mapUniqueCheck(row Row) (bool, error) {
-	if sql.ErrNoRows == row.Err() {
-		return true, nil
-	}
-	return false, row.Err()
+func mapIsUniqueCheck(row Row) (bool, error) {
+	return sql.ErrNoRows == row.Err(), row.Err()
 }
 
 func mapWithPassword(row Row) (*user.User, error) {

@@ -25,7 +25,7 @@ WHERE username = $1
 LIMIT 1`
 
 func mapSelectUsernameUniqueCheck(row Row) (bool, error) {
-	return mapUniqueCheck(row)
+	return mapIsUniqueCheck(row)
 }
 
 func queryRowSelectUsernameUniqueCheck(
@@ -46,7 +46,7 @@ WHERE email = $1
 LIMIT 1`
 
 func mapSelectEmailUniqueCheck(row Row) (bool, error) {
-	return mapUniqueCheck(row)
+	return mapIsUniqueCheck(row)
 }
 
 func queryRowSelectEmailUniqueCheck(
