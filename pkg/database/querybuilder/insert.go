@@ -48,7 +48,7 @@ func Insert(iq InsertQuery) string {
 	if len(iq.Returning) > 0 {
 		queryParts = append(
 			queryParts,
-			fmt.Sprintf(`RETURNING %s`, strings.Join(iq.Returning, ",")),
+			fmt.Sprintf(`RETURNING %s`, strings.Join(iq.Returning, ", ")),
 		)
 	}
 

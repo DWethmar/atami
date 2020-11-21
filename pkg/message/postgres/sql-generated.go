@@ -7,7 +7,14 @@ import (
 	"database/sql"
 
 	"time"
+
+	"github.com/dwethmar/atami/pkg/message"
 )
+
+// Row needs to be implemented in the the map function.
+type Row interface {
+	Scan(dest ...interface{}) error
+}
 
 // selectMessages sql query
 var selectMessages = `SELECT
@@ -21,16 +28,36 @@ ORDER BY created_at DESC
 LIMIT $1
 OFFSET $2`
 
+func mapSelectMessages(row Row) (*message.Message, error) {
+	return defaultMap(row)
+}
+
 func querySelectMessages(
 	db *sql.DB,
 	limit int,
 	offset int,
-) (*sql.Rows, error) {
-	return db.Query(
+) ([]*message.Message, error) {
+	rows, err := db.Query(
 		selectMessages,
 		limit,
 		offset,
 	)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	entries := make([]*message.Message, 0)
+	for rows.Next() {
+		if entry, err := mapSelectMessages(rows); err == nil {
+			entries = append(entries, entry)
+		} else {
+			return nil, err
+		}
+	}
+	if err = rows.Err(); err != nil {
+		return nil, err
+	}
+	return entries, nil
 }
 
 // selectMessageByID sql query
@@ -43,14 +70,18 @@ var selectMessageByID = `SELECT
 FROM public.message
 WHERE id = $1`
 
+func mapSelectMessageByID(row Row) (*message.Message, error) {
+	return defaultMap(row)
+}
+
 func queryRowSelectMessageByID(
 	db *sql.DB,
 	ID int,
-) *sql.Row {
-	return db.QueryRow(
+) (*message.Message, error) {
+	return mapSelectMessageByID(db.QueryRow(
 		selectMessageByID,
 		ID,
-	)
+	))
 }
 
 // deleteMessage sql query
@@ -81,7 +112,11 @@ VALUES (
 	$3,
 	$4
 )
-RETURNING id`
+RETURNING message.id, message.uid, message.text, message.created_by_user_id, message.created_at`
+
+func mapInsertMessage(row Row) (*message.Message, error) {
+	return defaultMap(row)
+}
 
 func queryRowInsertMessage(
 	db *sql.DB,
@@ -89,12 +124,12 @@ func queryRowInsertMessage(
 	text string,
 	CreatedByUserID int,
 	createdAt time.Time,
-) *sql.Row {
-	return db.QueryRow(
+) (*message.Message, error) {
+	return mapInsertMessage(db.QueryRow(
 		insertMessage,
 		UID,
 		text,
 		CreatedByUserID,
 		createdAt,
-	)
+	))
 }

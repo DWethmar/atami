@@ -7,7 +7,14 @@ import (
 	"database/sql"
 
 	"time"
+
+	"github.com/dwethmar/atami/pkg/user"
 )
+
+// Row needs to be implemented in the the map function.
+type Row interface {
+	Scan(dest ...interface{}) error
+}
 
 // selectUsernameUniqueCheck sql query
 var selectUsernameUniqueCheck = `SELECT
@@ -16,14 +23,18 @@ FROM public.users
 WHERE username = $1
 LIMIT 1`
 
+func mapSelectUsernameUniqueCheck(row Row) (bool, error) {
+	return mapUniqueCheck(row)
+}
+
 func queryRowSelectUsernameUniqueCheck(
 	db *sql.DB,
 	username string,
-) *sql.Row {
-	return db.QueryRow(
+) (bool, error) {
+	return mapSelectUsernameUniqueCheck(db.QueryRow(
 		selectUsernameUniqueCheck,
 		username,
-	)
+	))
 }
 
 // selectEmailUniqueCheck sql query
@@ -33,14 +44,18 @@ FROM public.users
 WHERE email = $1
 LIMIT 1`
 
+func mapSelectEmailUniqueCheck(row Row) (bool, error) {
+	return mapUniqueCheck(row)
+}
+
 func queryRowSelectEmailUniqueCheck(
 	db *sql.DB,
 	email string,
-) *sql.Row {
-	return db.QueryRow(
+) (bool, error) {
+	return mapSelectEmailUniqueCheck(db.QueryRow(
 		selectEmailUniqueCheck,
 		email,
-	)
+	))
 }
 
 // insertUser sql query
@@ -61,7 +76,11 @@ VALUES (
 	$5,
 	$6
 )
-RETURNING id`
+RETURNING users.id, users.uid, users.username, users.email, users.created_at, users.updated_at`
+
+func mapInsertUser(row Row) (*user.User, error) {
+	return defaultMap(row)
+}
 
 func queryRowInsertUser(
 	db *sql.DB,
@@ -71,8 +90,8 @@ func queryRowInsertUser(
 	password string,
 	createdAt time.Time,
 	updateddAt time.Time,
-) *sql.Row {
-	return db.QueryRow(
+) (*user.User, error) {
+	return mapInsertUser(db.QueryRow(
 		insertUser,
 		UID,
 		username,
@@ -80,7 +99,7 @@ func queryRowInsertUser(
 		password,
 		createdAt,
 		updateddAt,
-	)
+	))
 }
 
 // deleteUser sql query
@@ -110,16 +129,36 @@ ORDER BY created_at ASC
 LIMIT $1
 OFFSET $2`
 
+func mapSelectUsers(row Row) (*user.User, error) {
+	return defaultMap(row)
+}
+
 func querySelectUsers(
 	db *sql.DB,
 	limit int,
 	offset int,
-) (*sql.Rows, error) {
-	return db.Query(
+) ([]*user.User, error) {
+	rows, err := db.Query(
 		selectUsers,
 		limit,
 		offset,
 	)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	entries := make([]*user.User, 0)
+	for rows.Next() {
+		if entry, err := mapSelectUsers(rows); err == nil {
+			entries = append(entries, entry)
+		} else {
+			return nil, err
+		}
+	}
+	if err = rows.Err(); err != nil {
+		return nil, err
+	}
+	return entries, nil
 }
 
 // selectUserByID sql query
@@ -134,14 +173,18 @@ FROM public.users
 WHERE id = $1
 LIMIT 1`
 
-func querySelectUserByID(
+func mapSelectUserByID(row Row) (*user.User, error) {
+	return defaultMap(row)
+}
+
+func queryRowSelectUserByID(
 	db *sql.DB,
 	ID int,
-) (*sql.Rows, error) {
-	return db.Query(
+) (*user.User, error) {
+	return mapSelectUserByID(db.QueryRow(
 		selectUserByID,
 		ID,
-	)
+	))
 }
 
 // selectUserByUID sql query
@@ -156,14 +199,18 @@ FROM public.users
 WHERE uid = $1
 LIMIT 1`
 
-func querySelectUserByUID(
+func mapSelectUserByUID(row Row) (*user.User, error) {
+	return defaultMap(row)
+}
+
+func queryRowSelectUserByUID(
 	db *sql.DB,
 	UID string,
-) (*sql.Rows, error) {
-	return db.Query(
+) (*user.User, error) {
+	return mapSelectUserByUID(db.QueryRow(
 		selectUserByUID,
 		UID,
-	)
+	))
 }
 
 // selectUserByEmail sql query
@@ -178,14 +225,18 @@ FROM public.users
 WHERE email = $1
 LIMIT 1`
 
-func querySelectUserByEmail(
+func mapSelectUserByEmail(row Row) (*user.User, error) {
+	return defaultMap(row)
+}
+
+func queryRowSelectUserByEmail(
 	db *sql.DB,
 	email string,
-) (*sql.Rows, error) {
-	return db.Query(
+) (*user.User, error) {
+	return mapSelectUserByEmail(db.QueryRow(
 		selectUserByEmail,
 		email,
-	)
+	))
 }
 
 // selectUserByEmailWithPassword sql query
@@ -201,14 +252,18 @@ FROM public.users
 WHERE email = $1
 LIMIT 1`
 
-func querySelectUserByEmailWithPassword(
+func mapSelectUserByEmailWithPassword(row Row) (*user.User, error) {
+	return mapWithPassword(row)
+}
+
+func queryRowSelectUserByEmailWithPassword(
 	db *sql.DB,
 	email string,
-) (*sql.Rows, error) {
-	return db.Query(
+) (*user.User, error) {
+	return mapSelectUserByEmailWithPassword(db.QueryRow(
 		selectUserByEmailWithPassword,
 		email,
-	)
+	))
 }
 
 // selectUserByUsername sql query
@@ -223,12 +278,16 @@ FROM public.users
 WHERE username = $1
 LIMIT 1`
 
-func querySelectUserByUsername(
+func mapSelectUserByUsername(row Row) (*user.User, error) {
+	return defaultMap(row)
+}
+
+func queryRowSelectUserByUsername(
 	db *sql.DB,
 	username string,
-) (*sql.Rows, error) {
-	return db.Query(
+) (*user.User, error) {
+	return mapSelectUserByUsername(db.QueryRow(
 		selectUserByUsername,
 		username,
-	)
+	))
 }

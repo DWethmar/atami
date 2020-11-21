@@ -18,11 +18,15 @@ import (
 func main() {
 	qg.Generate(
 		"sql-generated.go",
-		[]string{"time"},
-		[]*qg.GenTask{
+		"postgres",
+		[]string{
+			"time",
+			"github.com/dwethmar/atami/pkg/user",
+		},
+		[]*qg.GenerateQuery{
 
 			{
-				QueryName: "selectUsernameUniqueCheck",
+				Name: "selectUsernameUniqueCheck",
 				SQL: qb.Select(
 					qb.SelectQuery{
 						From:  schema.Table,
@@ -38,10 +42,12 @@ func main() {
 						Type: "string",
 					},
 				},
+				MapFunc:    "mapUniqueCheck",
+				ReturnType: "bool",
 			},
 
 			{
-				QueryName: "selectEmailUniqueCheck",
+				Name: "selectEmailUniqueCheck",
 				SQL: qb.Select(
 					qb.SelectQuery{
 						From:  schema.Table,
@@ -57,10 +63,12 @@ func main() {
 						Type: "string",
 					},
 				},
+				MapFunc:    "mapUniqueCheck",
+				ReturnType: "bool",
 			},
 
 			{
-				QueryName: "insertUser",
+				Name: "insertUser",
 				SQL: qb.Insert(
 					qb.InsertQuery{
 						Into: schema.Table,
@@ -75,7 +83,7 @@ func main() {
 						Values: []interface{}{
 							"$1", "$2", "$3", "$4", "$5", "$6",
 						},
-						Returning: []string{schema.ColID},
+						Returning: schema.SelectCols,
 					},
 				),
 				QueryType: qg.QueryRow,
@@ -105,10 +113,12 @@ func main() {
 						Type: "time.Time",
 					},
 				},
+				MapFunc:    "defaultMap",
+				ReturnType: "*user.User",
 			},
 
 			{
-				QueryName: "deleteUser",
+				Name: "deleteUser",
 				SQL: qb.Delete(
 					qb.DeleteQuery{
 						From:  schema.Table,
@@ -122,10 +132,12 @@ func main() {
 						Type: "int",
 					},
 				},
+				MapFunc:    "defaultMap",
+				ReturnType: "*user.User",
 			},
 
 			{
-				QueryName: "selectUsers",
+				Name: "selectUsers",
 				SQL: qb.Select(
 					qb.SelectQuery{
 						Cols:    schema.SelectCols,
@@ -146,10 +158,12 @@ func main() {
 						Type: "int",
 					},
 				},
+				MapFunc:    "defaultMap",
+				ReturnType: "*user.User",
 			},
 
 			{
-				QueryName: "selectUserByID",
+				Name: "selectUserByID",
 				SQL: qb.Select(
 					qb.SelectQuery{
 						From: schema.Table,
@@ -160,17 +174,19 @@ func main() {
 						Limit: strconv.Itoa(1),
 					},
 				),
-				QueryType: qg.Query,
+				QueryType: qg.QueryRow,
 				FuncArgs: []qg.FuncArg{
 					{
 						Name: "ID",
 						Type: "int",
 					},
 				},
+				MapFunc:    "defaultMap",
+				ReturnType: "*user.User",
 			},
 
 			{
-				QueryName: "selectUserByUID",
+				Name: "selectUserByUID",
 				SQL: qb.Select(
 					qb.SelectQuery{
 						From: schema.Table,
@@ -181,17 +197,19 @@ func main() {
 						Limit: strconv.Itoa(1),
 					},
 				),
-				QueryType: qg.Query,
+				QueryType: qg.QueryRow,
 				FuncArgs: []qg.FuncArg{
 					{
 						Name: "UID",
 						Type: "string",
 					},
 				},
+				MapFunc:    "defaultMap",
+				ReturnType: "*user.User",
 			},
 
 			{
-				QueryName: "selectUserByEmail",
+				Name: "selectUserByEmail",
 				SQL: qb.Select(
 					qb.SelectQuery{
 						From: schema.Table,
@@ -202,17 +220,19 @@ func main() {
 						Limit: strconv.Itoa(1),
 					},
 				),
-				QueryType: qg.Query,
+				QueryType: qg.QueryRow,
 				FuncArgs: []qg.FuncArg{
 					{
 						Name: "email",
 						Type: "string",
 					},
 				},
+				MapFunc:    "defaultMap",
+				ReturnType: "*user.User",
 			},
 
 			{
-				QueryName: "selectUserByEmailWithPassword",
+				Name: "selectUserByEmailWithPassword",
 				SQL: qb.Select(
 					qb.SelectQuery{
 						From: schema.Table,
@@ -223,17 +243,19 @@ func main() {
 						Limit: strconv.Itoa(1),
 					},
 				),
-				QueryType: qg.Query,
+				QueryType: qg.QueryRow,
 				FuncArgs: []qg.FuncArg{
 					{
 						Name: "email",
 						Type: "string",
 					},
 				},
+				MapFunc:    "mapWithPassword",
+				ReturnType: "*user.User",
 			},
 
 			{
-				QueryName: "selectUserByUsername",
+				Name: "selectUserByUsername",
 				SQL: qb.Select(
 					qb.SelectQuery{
 						From: schema.Table,
@@ -244,13 +266,15 @@ func main() {
 						Limit: strconv.Itoa(1),
 					},
 				),
-				QueryType: qg.Query,
+				QueryType: qg.QueryRow,
 				FuncArgs: []qg.FuncArg{
 					{
 						Name: "username",
 						Type: "string",
 					},
 				},
+				MapFunc:    "defaultMap",
+				ReturnType: "*user.User",
 			},
 		})
 }

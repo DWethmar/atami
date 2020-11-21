@@ -17,10 +17,14 @@ import (
 func main() {
 	qg.Generate(
 		"sql-generated.go",
-		[]string{"time"},
-		[]*qg.GenTask{
+		"postgres",
+		[]string{
+			"time",
+			"github.com/dwethmar/atami/pkg/message",
+		},
+		[]*qg.GenerateQuery{
 			{
-				QueryName: "selectMessages",
+				Name: "selectMessages",
 				SQL: qb.Select(
 					qb.SelectQuery{
 						Cols:    schema.SelectCols,
@@ -45,9 +49,11 @@ func main() {
 						Type: "int",
 					},
 				},
+				MapFunc:    "defaultMap",
+				ReturnType: "*message.Message",
 			},
 			{
-				QueryName: "selectMessageByID",
+				Name: "selectMessageByID",
 				SQL: qb.Select(
 					qb.SelectQuery{
 						Cols:  schema.SelectCols,
@@ -70,9 +76,11 @@ func main() {
 						Type: "int",
 					},
 				},
+				MapFunc:    "defaultMap",
+				ReturnType: "*message.Message",
 			},
 			{
-				QueryName: "deleteMessage",
+				Name: "deleteMessage",
 				SQL: qb.Delete(
 					qb.DeleteQuery{
 						From: schema.Table,
@@ -87,9 +95,11 @@ func main() {
 						Type: "int",
 					},
 				},
+				MapFunc:    "defaultMap",
+				ReturnType: "*message.Message",
 			},
 			{
-				QueryName: "insertMessage",
+				Name: "insertMessage",
 				SQL: qb.Insert(
 					qb.InsertQuery{
 						Into: schema.Table,
@@ -102,7 +112,7 @@ func main() {
 						Values: []interface{}{
 							"$1", "$2", "$3", "$4",
 						},
-						Returning: []string{schema.ColID},
+						Returning: schema.SelectCols,
 					},
 				),
 				QueryType: qg.QueryRow,
@@ -124,6 +134,8 @@ func main() {
 						Type: "time.Time",
 					},
 				},
+				MapFunc:    "defaultMap",
+				ReturnType: "*message.Message",
 			},
 		})
 }

@@ -13,7 +13,7 @@ type deleterRepository struct {
 
 // Delete deletes one user
 func (i deleterRepository) Delete(ID int) error {
-	r, err := i.db.Exec(deleteUser, ID)
+	r, err := execDeleteUser(i.db, ID)
 	if err != nil {
 		return err
 	}

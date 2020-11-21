@@ -1,6 +1,10 @@
 package postgres
 
-import "errors"
+import (
+	"errors"
+
+	"github.com/dwethmar/atami/pkg/message"
+)
 
 //go:generate go run ./generate/gen.go
 
@@ -10,24 +14,16 @@ var (
 	errCouldNotParse = errors.New("could not parse user")
 )
 
-var (
-	// ColID table Column
-	ColID = "message.id"
-	// ColUID table Column
-	ColUID = "message.uid"
-	// Coltext table Column
-	Coltext = "message.text"
-	// ColCreatedByUserID table Column
-	ColCreatedByUserID = "message.created_by_user_id"
-	// ColCreatedAt table Column
-	ColCreatedAt = "message.created_at"
-)
-
-// SelectCols are the default selected columns
-var SelectCols = []string{
-	ColID,
-	ColUID,
-	Coltext,
-	ColCreatedByUserID,
-	ColCreatedAt,
+func defaultMap(row Row) (*message.Message, error) {
+	e := &message.Message{}
+	if err := row.Scan(
+		&e.ID,
+		&e.UID,
+		&e.Text,
+		&e.CreatedByUserID,
+		&e.CreatedAt,
+	); err != nil {
+		return nil, err
+	}
+	return e, nil
 }

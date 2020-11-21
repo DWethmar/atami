@@ -2,7 +2,6 @@ package postgres
 
 import (
 	"database/sql"
-	"fmt"
 	"time"
 
 	"github.com/dwethmar/atami/pkg/message"
@@ -16,32 +15,17 @@ type creatorRepository struct {
 
 // Create new message
 func (i creatorRepository) Create(newMessage message.CreateMessage) (*message.Message, error) {
-	var messageID int
-	if err := queryRowInsertMessage(
+	msg, err := queryRowInsertMessage(
 		i.db,
 		ksuid.New().String(),
 		newMessage.Text,
 		newMessage.CreatedByUserID,
 		time.Now().UTC(),
-	).Scan(&messageID); err != nil {
+	)
+	if err != nil {
 		return nil, err
 	}
-
-	if messageID != 0 {
-		entry := &message.Message{}
-		if err := i.db.QueryRow(selectMessageByID, messageID).Scan(
-			&entry.ID,
-			&entry.UID,
-			&entry.Text,
-			&entry.CreatedByUserID,
-			&entry.CreatedAt,
-		); err != nil {
-			return nil, err
-		}
-		return entry, nil
-	}
-
-	return nil, fmt.Errorf("could not create message with id %v", messageID)
+	return msg, nil
 }
 
 // NewCreator creates new messages creator.
