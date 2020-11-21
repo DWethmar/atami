@@ -14,6 +14,7 @@ import (
 // Row needs to be implemented in the the map function.
 type Row interface {
 	Scan(dest ...interface{}) error
+	Err() error
 }
 
 // selectMessages sql query
