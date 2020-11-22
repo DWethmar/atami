@@ -289,6 +289,7 @@ func TestRefreshWithExpiredToken(t *testing.T) {
 	req.Header.Set("Content-Type", "application/x-www-form-urlencoded")
 	req.AddCookie(createRefreshCookie(
 		time.Now().Add(time.Hour*2),
+		"localhost",
 		refreshToken,
 	))
 
