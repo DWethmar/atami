@@ -11,10 +11,11 @@
 - [x] Refresh token
 - [ ] Message endpoint - WIP
 - [x] Rename CreatedOn in message to CreatedAt
+- [ ] Pagination + Default result object
 - [ ] Etag
-- [ ] Api versioning: https://restfulapi.net/versioning/
+- [x] Api versioning: https://restfulapi.net/versioning/
 - [ ] Full text search for messages https://www.postgresql.org/docs/9.5/textsearch.html
-- [ ] Move create_at, updated_at  and ID(?) set logic to service. 
+- [ ] Move create_at, updated_at  and UID(?) set logic to service. 
     - Later we can create a service that can insert data with old dates for testing.
 - [ ] create Channel? Or other name
 - [ ] Verify email for users
