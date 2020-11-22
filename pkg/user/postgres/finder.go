@@ -14,7 +14,7 @@ type findRepository struct {
 
 // FindAll get multiple messages
 func (f findRepository) Find() ([]*user.User, error) {
-	return querySelectUsers(f.db, 100, 0)
+	return querySelectUsers(f.db, 200, 0)
 }
 
 // FindByID get one message by ID
