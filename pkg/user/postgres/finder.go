@@ -3,7 +3,6 @@ package postgres
 import (
 	"database/sql"
 
-	"github.com/dwethmar/atami/pkg/message"
 	"github.com/dwethmar/atami/pkg/user"
 )
 
@@ -22,7 +21,7 @@ func (f findRepository) FindByID(ID int) (*user.User, error) {
 	u, err := queryRowSelectUserByID(f.db, ID)
 	if err != nil {
 		if err == sql.ErrNoRows {
-			return nil, message.ErrCouldNotFind
+			return nil, user.ErrCouldNotFind
 		}
 		return nil, err
 	}
@@ -34,7 +33,7 @@ func (f findRepository) FindByUID(UID string) (*user.User, error) {
 	u, err := queryRowSelectUserByUID(f.db, UID)
 	if err != nil {
 		if err == sql.ErrNoRows {
-			return nil, message.ErrCouldNotFind
+			return nil, user.ErrCouldNotFind
 		}
 		return nil, err
 	}
@@ -46,7 +45,7 @@ func (f *findRepository) FindByEmail(email string) (*user.User, error) {
 	u, err := queryRowSelectUserByEmail(f.db, email)
 	if err != nil {
 		if err == sql.ErrNoRows {
-			return nil, message.ErrCouldNotFind
+			return nil, user.ErrCouldNotFind
 		}
 		return nil, err
 	}
@@ -58,7 +57,7 @@ func (f *findRepository) FindByEmailWithPassword(email string) (*user.User, erro
 	u, err := queryRowSelectUserByEmailWithPassword(f.db, email)
 	if err != nil {
 		if err == sql.ErrNoRows {
-			return nil, message.ErrCouldNotFind
+			return nil, user.ErrCouldNotFind
 		}
 		return nil, err
 	}
@@ -70,7 +69,7 @@ func (f *findRepository) FindByUsername(username string) (*user.User, error) {
 	u, err := queryRowSelectUserByUsername(f.db, username)
 	if err != nil {
 		if err == sql.ErrNoRows {
-			return nil, message.ErrCouldNotFind
+			return nil, user.ErrCouldNotFind
 		}
 		return nil, err
 	}
