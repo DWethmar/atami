@@ -7,13 +7,11 @@
 
 ## TODO
 
-- [ ] Migrate sql queries to pkg/postgres (maybe rename to querybuilder)
+- [x] Migrate sql queries to pkg/postgres (maybe rename to querybuilder)
+- [x] Refresh token
 - [ ] Message endpoint - WIP
 - [x] Rename CreatedOn in message to CreatedAt
 - [ ] Etag
-- [ ] Rename services: (?)
-    - [ ] UserService -> Users
-    - [ ] MessageService -> Messages
 - [ ] Api versioning: https://restfulapi.net/versioning/
 - [ ] Full text search for messages https://www.postgresql.org/docs/9.5/textsearch.html
 - [ ] Move create_at, updated_at  and ID(?) set logic to service. 
@@ -26,3 +24,6 @@
 - [ ] Keep track of sessions?
     - max 100 - sessions and delete older ones if exceeding the max.
 - [ ] maybe check how many logins are done for a single user.
+- [ ] Rename services: (?)
+    - [ ] UserService -> Users
+    - [ ] MessageService -> Messages

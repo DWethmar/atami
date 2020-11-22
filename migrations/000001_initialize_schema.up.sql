@@ -1,6 +1,6 @@
 BEGIN;
 
-CREATE TABLE public.users
+CREATE TABLE public.app_user
 (
     id SERIAL PRIMARY KEY,
     uid VARCHAR (36) NOT NULL UNIQUE,
@@ -16,7 +16,7 @@ CREATE TABLE public.message
     id SERIAL PRIMARY KEY,
     uid VARCHAR (36) NOT NULL UNIQUE,
     text TEXT NOT NULL,
-    created_by_user_id integer REFERENCES public.users (id) ON DELETE CASCADE,
+    created_by_user_id integer REFERENCES public.app_user (id) ON DELETE CASCADE,
     created_at timestamp NOT NULL
 );
 

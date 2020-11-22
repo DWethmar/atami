@@ -21,12 +21,12 @@ func WithAuthorizationHeader(req *http.Request, authService *auth.Service) error
 		return err
 	}
 
-	accessToken, err := auth.CreateToken(user.UID, user.Username, 4100760000)
+	accessToken, err := auth.CreateAccessToken(user.UID, user.Username, 4100760000)
 	if err != nil {
 		return err
 	}
 
-	req.Header.Add("Authorization", fmt.Sprintf("Bearer %s", accessToken.AccessToken))
+	req.Header.Add("Authorization", fmt.Sprintf("Bearer %s", accessToken))
 	return nil
 }
 

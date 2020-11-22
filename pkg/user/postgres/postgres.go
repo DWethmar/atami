@@ -6,10 +6,6 @@ import (
 
 //go:generate go run ./generate/gen.go
 
-var (
-	tableName = "public.user"
-)
-
 func defaultMap(row Row) (*user.User, error) {
 	e := &user.User{}
 	if err := row.Scan(

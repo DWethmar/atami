@@ -3,10 +3,9 @@ package main
 import (
 	"fmt"
 	"log"
-	"net/http"
 
 	"github.com/dwethmar/atami/pkg/api"
-	"github.com/dwethmar/atami/pkg/api/router"
+	"github.com/dwethmar/atami/pkg/api/beta/router"
 	"github.com/dwethmar/atami/pkg/config"
 	"github.com/dwethmar/atami/pkg/database"
 	"github.com/dwethmar/atami/pkg/service"
@@ -20,8 +19,7 @@ func main() {
 	fmt.Println("Staring server")
 
 	c := config.LoadEnvFile()
-	err := c.Valid()
-	die(err)
+	die(c.Valid())
 
 	dataSource := database.GetPostgresConnectionString(c)
 
@@ -37,15 +35,12 @@ func main() {
 	messageService := service.NewMessageServicePostgres(db)
 
 	handler := chi.NewRouter()
-	handler.Mount("/auth", router.NewAuthRouter(authService, userService))
-	handler.Mount("/messages", router.NewMessageRouter(userService, messageService))
+	handler.Mount("/beta/auth", router.NewAuthRouter(authService, userService))
+	handler.Mount("/beta/messages", router.NewMessageRouter(userService, messageService))
 
-	api := api.NewAPI(api.NewAPI(handler))
-	srv := &http.Server{Addr: ":8080", Handler: api}
-	defer srv.Close()
-
-	log.Printf("Serving on :8080")
-	log.Fatal(srv.ListenAndServe())
+	srv, err := api.NewServer(":8080", handler)
+	die(err)
+	srv.Start()
 }
 
 func die(err error) {

@@ -3,7 +3,7 @@ package router
 import (
 	"net/http"
 
-	"github.com/dwethmar/atami/pkg/api/handler"
+	"github.com/dwethmar/atami/pkg/api/beta/handler"
 	"github.com/dwethmar/atami/pkg/api/middleware"
 	"github.com/dwethmar/atami/pkg/message"
 	"github.com/dwethmar/atami/pkg/user"

@@ -8,6 +8,7 @@ import (
 	"os"
 	"strings"
 	"testing"
+	"time"
 
 	"github.com/dwethmar/atami/pkg/api/response"
 	"github.com/dwethmar/atami/pkg/auth"
@@ -187,5 +188,119 @@ func TestLogin(t *testing.T) {
 		responds := loginResponds{}
 		assert.NoError(t, json.Unmarshal(rr.Body.Bytes(), &responds))
 		assert.NotEmpty(t, responds.AccessToken)
+	}
+}
+
+func TestRefresh(t *testing.T) {
+	os.Setenv("ACCESS_SECRET", "abc")
+	store := memstore.New()
+	userService, store := service.NewUserServiceMemory()
+	authService := service.NewAuthServiceMemory(store)
+
+	user, err := authService.Register(auth.CreateUser{
+		Username: "test_username",
+		Email:    "test@test.com",
+		Password: "test123!@#ABC",
+	})
+	assert.NoError(t, err)
+
+	handler := http.HandlerFunc(Refresh(authService, userService))
+
+	refreshToken, err := auth.CreateRefreshToken(
+		user.UID,
+		"abcdefg",
+		time.Now().Add(time.Hour*1).Unix(),
+	)
+	assert.NoError(t, err)
+
+	req := httptest.NewRequest("POST", "/beta/auth/refresh", nil)
+	req.Header.Set("Content-Type", "application/x-www-form-urlencoded")
+	req.AddCookie(createRefreshCookie(
+		time.Now().Add(time.Hour*2),
+		"localhost",
+		refreshToken,
+	))
+
+	rr := httptest.NewRecorder()
+	handler.ServeHTTP(rr, req)
+
+	if assert.Equal(t, http.StatusOK, rr.Code, rr.Body.String()) {
+		assert.Equal(t, "application/json", rr.Header().Get("Content-Type"))
+		// Check the response body is what we expect.
+		responds := loginResponds{}
+		assert.NoError(t, json.Unmarshal(rr.Body.Bytes(), &responds))
+		assert.NotEmpty(t, responds.AccessToken)
+
+		token, err := auth.VerifyAccessToken(responds.AccessToken)
+		assert.NoError(t, err)
+		assert.NotEmpty(t, token)
+
+		claims, ok := token.Claims.(*auth.CustomClaims)
+		if assert.True(t, ok) {
+			assert.Equal(t, "abcdefg", claims.SessionID)
+		}
+	}
+}
+
+func TestInvalidRefresh(t *testing.T) {
+	os.Setenv("ACCESS_SECRET", "abc")
+	store := memstore.New()
+	userService, store := service.NewUserServiceMemory()
+	authService := service.NewAuthServiceMemory(store)
+
+	handler := http.HandlerFunc(Refresh(authService, userService))
+
+	req := httptest.NewRequest("POST", "/beta/auth/refresh", nil)
+	req.Header.Set("Content-Type", "application/x-www-form-urlencoded")
+
+	rr := httptest.NewRecorder()
+	handler.ServeHTTP(rr, req)
+	assert.Equal(t, http.StatusBadRequest, rr.Code, rr.Body.String())
+
+	responds := response.ErrorResponds{}
+	assert.NoError(t, json.Unmarshal(rr.Body.Bytes(), &responds))
+	assert.Equal(t, "Bad Request", responds.Error)
+	assert.Equal(t, "", responds.Message)
+}
+
+func TestRefreshWithExpiredToken(t *testing.T) {
+	os.Setenv("ACCESS_SECRET", "abc")
+	store := memstore.New()
+	userService, store := service.NewUserServiceMemory()
+	authService := service.NewAuthServiceMemory(store)
+
+	user, err := authService.Register(auth.CreateUser{
+		Username: "test_username",
+		Email:    "test@test.com",
+		Password: "test123!@#ABC",
+	})
+	assert.NoError(t, err)
+
+	handler := http.HandlerFunc(Refresh(authService, userService))
+
+	refreshToken, err := auth.CreateRefreshToken(
+		user.UID,
+		"abcdefg",
+		667184461,
+	)
+	assert.NoError(t, err)
+
+	req := httptest.NewRequest("POST", "/beta/auth/refresh", nil)
+	req.Header.Set("Content-Type", "application/x-www-form-urlencoded")
+	req.AddCookie(createRefreshCookie(
+		time.Now().Add(time.Hour*2),
+		refreshToken,
+	))
+
+	rr := httptest.NewRecorder()
+	handler.ServeHTTP(rr, req)
+
+	if assert.Equal(t, http.StatusBadRequest, rr.Code, rr.Body.String()) {
+		assert.Equal(t, "application/json", rr.Header().Get("Content-Type"))
+		// Check the response body is what we expect.
+		responds := response.ErrorResponds{}
+		assert.NoError(t, json.Unmarshal(rr.Body.Bytes(), &responds))
+		assert.Equal(t, "Bad Request", responds.Error)
+		assert.Equal(t, "token is expired", responds.Message)
 	}
 }

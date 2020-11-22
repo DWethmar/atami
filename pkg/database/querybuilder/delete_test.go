@@ -8,12 +8,12 @@ import (
 )
 
 func TestDelete(t *testing.T) {
-	expect := `DELETE FROM public.user
+	expect := `DELETE FROM public.users
 WHERE id = 1`
 
 	received := Delete(
 		DeleteQuery{
-			From:  "public.user",
+			From:  "public.users",
 			Where: NewWhere().And("id = 1"),
 		},
 	)

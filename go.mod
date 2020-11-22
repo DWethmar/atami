@@ -11,6 +11,7 @@ require (
 	github.com/lib/pq v1.3.0
 	github.com/segmentio/ksuid v1.0.3
 	github.com/stretchr/testify v1.6.1
+	go.uber.org/zap v1.10.0
 	golang.org/x/crypto v0.0.0-20201112155050-0c6587e931a9
 	golang.org/x/text v0.3.3
 )

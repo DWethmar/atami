@@ -27,7 +27,7 @@ func TestAuthenticated(t *testing.T) {
 		return
 	}
 
-	token, err := auth.CreateToken(user.UID, user.Username, 4100760000)
+	accessToken, err := auth.CreateAccessToken(user.UID, user.Username, 4100760000)
 	if !assert.NoError(t, err) {
 		return
 	}
@@ -47,7 +47,7 @@ func TestAuthenticated(t *testing.T) {
 	handlerToTest := middleware(nextHandler)
 
 	req := httptest.NewRequest("GET", "/", nil)
-	req.Header.Add("Authorization", fmt.Sprintf("Bearer %s", token.AccessToken))
+	req.Header.Add("Authorization", fmt.Sprintf("Bearer %s", accessToken))
 
 	rr := httptest.NewRecorder()
 	handlerToTest.ServeHTTP(rr, req)

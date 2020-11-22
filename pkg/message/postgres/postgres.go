@@ -9,8 +9,6 @@ import (
 //go:generate go run ./generate/gen.go
 
 var (
-	// Table is the database tablename
-	Table            = "public.message"
 	errCouldNotParse = errors.New("could not parse user")
 )
 

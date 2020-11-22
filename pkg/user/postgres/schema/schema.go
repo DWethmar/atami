@@ -4,7 +4,7 @@ import "fmt"
 
 var (
 	// Table is the database tablename
-	Table = "public.users"
+	Table = "public.app_user"
 )
 
 var (
@@ -26,10 +26,10 @@ var (
 
 // SelectCols are the default selected columns
 var SelectCols = []string{
-	fmt.Sprintf("users.%s", ColID),
-	fmt.Sprintf("users.%s", ColUID),
-	fmt.Sprintf("users.%s", ColUsername),
-	fmt.Sprintf("users.%s", ColEmail),
-	fmt.Sprintf("users.%s", ColCreatedAt),
-	fmt.Sprintf("users.%s", ColUpdatedAt),
+	fmt.Sprintf("app_user.%s", ColID),
+	fmt.Sprintf("app_user.%s", ColUID),
+	fmt.Sprintf("app_user.%s", ColUsername),
+	fmt.Sprintf("app_user.%s", ColEmail),
+	fmt.Sprintf("app_user.%s", ColCreatedAt),
+	fmt.Sprintf("app_user.%s", ColUpdatedAt),
 }

@@ -46,7 +46,7 @@ func Authenticated(userService *user.Service) func(next http.Handler) http.Handl
 			tokenString := splitToken[1]
 			var UID string
 
-			if token, err := auth.VerifyToken(tokenString); err == nil && token.Valid {
+			if token, err := auth.VerifyAccessToken(tokenString); err == nil && token.Valid {
 				if claims, ok := token.Claims.(*auth.CustomClaims); ok && token.Valid {
 					UID = claims.Subject
 				}

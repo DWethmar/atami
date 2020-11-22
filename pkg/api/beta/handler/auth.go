@@ -4,6 +4,7 @@ import (
 	"errors"
 	"fmt"
 	"net/http"
+	"strconv"
 	"time"
 
 	"github.com/dwethmar/atami/pkg/api/response"
@@ -13,10 +14,6 @@ import (
 
 type loginResponds struct {
 	AccessToken string `json:"access_token"`
-}
-
-func newExpirationDate() int64 {
-	return time.Now().Add(time.Minute * 15).Unix()
 }
 
 // Responds struct declaration
@@ -90,6 +87,19 @@ func Register(authService *auth.Service) http.HandlerFunc {
 	})
 }
 
+func createRefreshCookie(expires time.Time, domain, token string) *http.Cookie {
+	return &http.Cookie{
+		Name:     "refresh_token",
+		Value:    token,
+		Domain:   domain,
+		Path:     "/beta/auth/refresh",
+		Expires:  expires,
+		HttpOnly: true,
+		MaxAge:   90000,
+		Secure:   false,
+	}
+}
+
 // Login handles login requests
 func Login(authService *auth.Service, userService *user.Service) http.HandlerFunc {
 
@@ -132,15 +142,82 @@ func Login(authService *auth.Service, userService *user.Service) http.HandlerFun
 			return
 		}
 
-		details, err := auth.CreateToken(user.UID, user.Username, newExpirationDate())
-		if err != nil || details.AccessToken == "" {
+		session := strconv.FormatInt(time.Now().UnixNano(), 10)
+
+		accessTokenDuration := time.Minute * 15
+		accessToken, err := auth.CreateAccessToken(user.UID, session, time.Now().Add(accessTokenDuration).Unix())
+		if err != nil || accessToken == "" {
+			fmt.Printf("Error creating access token: %v\n", err)
+			response.SendServerError(w, r)
+			return
+		}
+
+		refreshTokenDuration := time.Hour * 730
+		refreshToken, err := auth.CreateRefreshToken(user.UID, session, time.Now().Add(refreshTokenDuration).Unix())
+		if err != nil || accessToken == "" {
+			fmt.Printf("Error creating refresh token: %v\n", err)
+			response.SendServerError(w, r)
+			return
+		}
+
+		cookie := createRefreshCookie(
+			time.Now().Add(refreshTokenDuration),
+			"localhost",
+			refreshToken,
+		)
+		http.SetCookie(w, cookie)
+
+		response.SendJSON(w, r, loginResponds{
+			AccessToken: accessToken,
+		}, http.StatusOK)
+	})
+}
+
+// Refresh handles refresh requests
+func Refresh(authService *auth.Service, userService *user.Service) http.HandlerFunc {
+
+	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+
+		cookie, err := r.Cookie("refresh_token")
+		if err != nil {
+			response.SendBadRequestError(w, r, errors.New(""))
+			return
+		}
+
+		refreshToken := cookie.Value
+		token, err := auth.VerifyRefreshToken(refreshToken)
+		if err != nil {
+			response.SendBadRequestError(w, r, err)
+			return
+		}
+
+		claims, ok := token.Claims.(*auth.CustomClaims)
+		if !ok {
+			response.SendBadRequestError(w, r, errors.New("could not read token"))
+			return
+		}
+
+		user, err := userService.FindByUID(claims.Subject)
+		if err != nil || user == nil {
+			fmt.Printf("error while retrieving user: %v\n", err)
+			response.SendServerError(w, r)
+			return
+		}
+
+		accessTokenDuration := time.Minute * 15
+		accessToken, err := auth.CreateAccessToken(
+			user.UID,
+			claims.SessionID,
+			time.Now().Add(accessTokenDuration).Unix(),
+		)
+		if err != nil || accessToken == "" {
 			fmt.Printf("Error creating token: %v\n", err)
 			response.SendServerError(w, r)
 			return
 		}
 
 		response.SendJSON(w, r, loginResponds{
-			AccessToken: details.AccessToken,
+			AccessToken: accessToken,
 		}, http.StatusOK)
 	})
 }

@@ -1,21 +1,44 @@
 <html>
-    <head>
-        <title>Login</title>
-        <style>
 
-        </style>
-    </head>
-    <body>
-        <div class="login">
-            <form method="POST" action="http://localhost:8080/login">
-                <div>
-                    <input type="email" value="" placeholder="email" />
-                </div>
-                <div>
-                    <input type="password" value="" placeholder="password" />
-                </div>
-                <input type="submit" />
-            </form>
-        </div>
-    </body>
+<head>
+    <title>Login</title>
+    <style>
+
+    </style>
+</head>
+
+<body>
+    <div class="login">
+        <form method="POST" action="http://localhost:8080/login">
+            <div>
+                <input type="email" value="" placeholder="email" />
+            </div>
+            <div>
+                <input type="password" value="" placeholder="password" />
+            </div>
+            <input type="submit" />
+        </form>
+    </div>
+    <script>
+        window.onload=function() {
+            function processForm(e) {
+                if (e.preventDefault) e.preventDefault();
+
+                /* do what you want with the form */
+
+                // You must return false to prevent the default form behavior
+                alert("anus");
+                return false;
+            }
+
+            var form = document.getElementById('my-form');
+            if (form.attachEvent) {
+                form.attachEvent("submit", processForm);
+            } else {
+                form.addEventListener("submit", processForm);
+            }
+        }
+    </script>
+</body>
+
 </html>

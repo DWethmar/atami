@@ -16,14 +16,9 @@ var ErrExpiredToken = errors.New("token is expired")
 
 // CustomClaims adds soem fields to the standard claims
 type CustomClaims struct {
-	SessionID int64 `json:"sid,omitempty"`
+	SessionID    string `json:"sid,omitempty"`
+	AllowRefresh string `json:"ref,omitempty"`
 	jwt.StandardClaims
-}
-
-// Details contains details about a generated token
-type Details struct {
-	AccessToken        string
-	AccessTokenExpires int64
 }
 
 func getAccessSecret() ([]byte, error) {
@@ -34,39 +29,56 @@ func getAccessSecret() ([]byte, error) {
 	return []byte(t), nil
 }
 
-// CreateToken creates a new authentication token
-func CreateToken(UID string, username string, expiresOn int64) (*Details, error) {
-	td := &Details{}
-
-	td.AccessTokenExpires = expiresOn
-
+// CreateAccessToken creates a new authentication token
+func CreateAccessToken(UID string, session string, expiresOn int64) (string, error) {
 	var err error
-	claims := CustomClaims{
-		SessionID: time.Now().Unix(),
-	}
-	claims.StandardClaims = jwt.StandardClaims{
-		Subject:   UID,
-		ExpiresAt: td.AccessTokenExpires,
-		IssuedAt:  time.Now().Unix(),
-	}
 
 	accessSecret, err := getAccessSecret()
 	if err != nil {
-		return nil, err
+		return "", err
+	}
+
+	claims := CustomClaims{
+		SessionID:    session,
+		AllowRefresh: "0",
+	}
+
+	claims.StandardClaims = jwt.StandardClaims{
+		Subject:   UID,
+		ExpiresAt: expiresOn,
+		IssuedAt:  time.Now().Unix(),
 	}
 
 	at := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)
-
-	td.AccessToken, err = at.SignedString([]byte(accessSecret))
-	if err != nil {
-		return nil, err
-	}
-
-	return td, nil
+	return at.SignedString([]byte(accessSecret))
 }
 
-// VerifyToken verifies the token
-func VerifyToken(tokenString string) (*jwt.Token, error) {
+// CreateRefreshToken creates a new authentication token
+func CreateRefreshToken(UID string, session string, expiresOn int64) (string, error) {
+	var err error
+
+	accessSecret, err := getAccessSecret()
+	if err != nil {
+		return "", err
+	}
+
+	claims := CustomClaims{
+		SessionID:    session,
+		AllowRefresh: "1",
+	}
+
+	claims.StandardClaims = jwt.StandardClaims{
+		Subject:   UID,
+		ExpiresAt: expiresOn,
+		IssuedAt:  time.Now().Unix(),
+	}
+
+	at := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)
+	return at.SignedString([]byte(accessSecret))
+}
+
+// VerifyAccessToken verifies the access token
+func VerifyAccessToken(tokenString string) (*jwt.Token, error) {
 	var claims CustomClaims
 	return jwt.ParseWithClaims(tokenString, &claims, func(token *jwt.Token) (interface{}, error) {
 		//Make sure that the token method conform to "SigningMethodHMAC"
@@ -78,8 +90,37 @@ func VerifyToken(tokenString string) (*jwt.Token, error) {
 			return nil, ErrExpiredToken
 		}
 
-		if claims.SessionID == 0 {
+		if claims.SessionID == "" {
 			return nil, errors.New("empty session ID")
+		}
+
+		if claims.AllowRefresh == "1" {
+			return nil, errors.New("token is no access token")
+		}
+
+		return getAccessSecret()
+	})
+}
+
+// VerifyRefreshToken verifies the refresh token
+func VerifyRefreshToken(tokenString string) (*jwt.Token, error) {
+	var claims CustomClaims
+	return jwt.ParseWithClaims(tokenString, &claims, func(token *jwt.Token) (interface{}, error) {
+		//Make sure that the token method conform to "SigningMethodHMAC"
+		if _, ok := token.Method.(*jwt.SigningMethodHMAC); !ok {
+			return nil, fmt.Errorf("unexpected signing method: %v", token.Header["alg"])
+		}
+
+		if time.Now().Unix() > claims.ExpiresAt {
+			return nil, ErrExpiredToken
+		}
+
+		if claims.SessionID == "" {
+			return nil, errors.New("empty session ID")
+		}
+
+		if claims.AllowRefresh == "0" {
+			return nil, errors.New("token is no refresh token")
 		}
 
 		return getAccessSecret()
