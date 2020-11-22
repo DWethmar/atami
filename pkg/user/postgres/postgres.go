@@ -1,8 +1,6 @@
 package postgres
 
 import (
-	"database/sql"
-
 	"github.com/dwethmar/atami/pkg/user"
 )
 
@@ -28,7 +26,9 @@ func defaultMap(row Row) (*user.User, error) {
 }
 
 func mapIsUniqueCheck(row Row) (bool, error) {
-	return sql.ErrNoRows == row.Err(), row.Err()
+	i := 0
+	row.Scan(&i)
+	return i == 0, row.Err()
 }
 
 func mapWithPassword(row Row) (*user.User, error) {
