@@ -6,7 +6,7 @@
 - `make serve`
 
 ## TODO
-
+- [ ] Generate code to std out: https://www.calhoun.io/using-code-generation-to-survive-without-generics-in-go/
 - [x] Migrate sql queries to pkg/postgres (maybe rename to querybuilder)
 - [x] Refresh token
 - [ ] Message endpoint - WIP
