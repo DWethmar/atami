@@ -28,3 +28,4 @@
 - [ ] Rename services: (?)
     - [ ] UserService -> Users
     - [ ] MessageService -> Messages
+- [ ] Cloud Vision API 
