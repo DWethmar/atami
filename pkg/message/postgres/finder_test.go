@@ -24,12 +24,12 @@ func generateTestMessages(size int) []message.CreateMessage {
 	return messages
 }
 
-func setup(db *sql.DB) (*message.Finder, []message.Message) {
-	messages := make([]message.Message, 300)
+func setup(db *sql.DB, size int) (*message.Finder, []message.Message) {
+	messages := make([]message.Message, size)
 
 	repo := &creatorRepository{db}
 
-	for i, newMSG := range generateTestMessages(300) {
+	for i, newMSG := range generateTestMessages(size) {
 		msg, err := repo.Create(newMSG)
 		if err != nil {
 			fmt.Printf("error: %s", err)
@@ -42,7 +42,7 @@ func setup(db *sql.DB) (*message.Finder, []message.Message) {
 
 func TestReadOne(t *testing.T) {
 	assert.NoError(t, database.WithTestDB(t, func(db *sql.DB) error {
-		finder, messages := setup(db)
+		finder, messages := setup(db, 100)
 		message.TestFindOne(t, finder, 10, messages[9])
 		return nil
 	}))
@@ -50,7 +50,7 @@ func TestReadOne(t *testing.T) {
 
 func TestNotFound(t *testing.T) {
 	assert.NoError(t, database.WithTestDB(t, func(db *sql.DB) error {
-		finder, _ := setup(db)
+		finder, _ := setup(db, 100)
 		message.TestNotFound(t, finder)
 		return nil
 	}))
@@ -58,9 +58,8 @@ func TestNotFound(t *testing.T) {
 
 func TestFind(t *testing.T) {
 	assert.NoError(t, database.WithTestDB(t, func(db *sql.DB) error {
-		finder, m := setup(db)
-
-		items := m[0:51]
+		finder, m := setup(db, 300)
+		items := m[250:301]
 
 		// Reverse items because of the order by on created_at DESC
 		for i, j := 0, len(items)-1; i < j; i, j = i+1, j-1 {
