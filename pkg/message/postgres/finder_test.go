@@ -59,7 +59,7 @@ func TestNotFound(t *testing.T) {
 func TestFind(t *testing.T) {
 	assert.NoError(t, database.WithTestDB(t, func(db *sql.DB) error {
 		finder, m := setup(db, 300)
-		items := m[250:301]
+		items := m[250:300]
 
 		// Reverse items because of the order by on created_at DESC
 		for i, j := 0, len(items)-1; i < j; i, j = i+1, j-1 {
