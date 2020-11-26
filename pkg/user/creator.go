@@ -2,6 +2,9 @@ package user
 
 import (
 	"errors"
+	"time"
+
+	"github.com/segmentio/ksuid"
 )
 
 var (
@@ -15,7 +18,7 @@ var (
 
 // CreateRepository declares a storage repository
 type CreateRepository interface {
-	Create(createUser CreateUserRequest) (*User, error)
+	Create(createUser CreateUser) (*User, error)
 }
 
 // Creator struct declaration
@@ -29,7 +32,14 @@ func (m *Creator) Create(createUser CreateUserRequest) (*User, error) {
 	if err := m.validator.ValidateCreateUser(createUser); err != nil {
 		return nil, err
 	}
-	return m.createRepo.Create(createUser)
+	return m.createRepo.Create(CreateUser{
+		UID:       ksuid.New().String(),
+		Username:  createUser.Username,
+		Email:     createUser.Email,
+		Password:  createUser.Password,
+		CreatedAt: time.Now().UTC(),
+		UpdatedAt: time.Now().UTC(),
+	})
 }
 
 // NewCreator returns a new searcher

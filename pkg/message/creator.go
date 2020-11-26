@@ -24,7 +24,8 @@ func (m *Creator) Create(cmr CreateMessageRequest) (*Message, error) {
 		UID:             ksuid.New().String(),
 		Text:            cmr.Text,
 		CreatedByUserID: cmr.CreatedByUserID,
-		CreatedAt:       time.Now().UTC()})
+		CreatedAt:       time.Now().UTC(),
+	})
 }
 
 // NewCreator returns a new Listing

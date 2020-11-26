@@ -2,11 +2,8 @@ package postgres
 
 import (
 	"database/sql"
-	"time"
 
 	"github.com/dwethmar/atami/pkg/user"
-
-	"github.com/segmentio/ksuid"
 )
 
 // createRepository stores new messages
@@ -15,7 +12,7 @@ type creatorRepository struct {
 }
 
 // Create new user
-func (i *creatorRepository) Create(newUser user.CreateUserRequest) (*user.User, error) {
+func (i *creatorRepository) Create(newUser user.CreateUser) (*user.User, error) {
 	if newUser.Password == "" {
 		return nil, user.ErrPwdNotSet
 	}
@@ -36,17 +33,14 @@ func (i *creatorRepository) Create(newUser user.CreateUserRequest) (*user.User, 
 		return nil, err
 	}
 
-	uid := ksuid.New().String()
-	now := time.Now().UTC()
-
 	return queryRowInsertUser(
 		i.db,
-		uid,
+		newUser.UID,
 		newUser.Username,
 		newUser.Email,
 		newUser.Password,
-		now,
-		now,
+		newUser.CreatedAt,
+		newUser.UpdatedAt,
 	)
 }
 

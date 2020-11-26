@@ -3,11 +3,9 @@ package memory
 import (
 	"errors"
 	"strconv"
-	"time"
 
 	"github.com/dwethmar/atami/pkg/memstore"
 	"github.com/dwethmar/atami/pkg/user"
-	"github.com/segmentio/ksuid"
 )
 
 var layoutISO = "2006-01-02"
@@ -19,7 +17,7 @@ type creatorRepository struct {
 }
 
 // Create new user
-func (i *creatorRepository) Create(newUser user.CreateUserRequest) (*user.User, error) {
+func (i *creatorRepository) Create(newUser user.CreateUser) (*user.User, error) {
 	if newUser.Password == "" {
 		return nil, user.ErrPwdNotSet
 	}
@@ -45,11 +43,11 @@ func (i *creatorRepository) Create(newUser user.CreateUserRequest) (*user.User, 
 	i.newID++
 	usr := userRecord{
 		ID:        i.newID,
-		UID:       ksuid.New().String(),
+		UID:       newUser.UID,
 		Username:  newUser.Username,
 		Email:     newUser.Email,
-		CreatedAt: time.Now(),
-		UpdatedAt: time.Now(),
+		CreatedAt: newUser.CreatedAt,
+		UpdatedAt: newUser.UpdatedAt,
 		Password:  newUser.Password,
 	}
 	IDStr := strconv.Itoa(usr.ID)

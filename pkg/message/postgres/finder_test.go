@@ -4,29 +4,33 @@ import (
 	"database/sql"
 	"fmt"
 	"testing"
+	"time"
 
 	"github.com/dwethmar/atami/pkg/database"
 	"github.com/dwethmar/atami/pkg/message"
 	"github.com/stretchr/testify/assert"
 )
 
-func generateTestMessages(size int) []message.CreateMessageRequest {
-	messages := make([]message.CreateMessageRequest, size)
+func generateTestMessages(size int) []message.CreateMessage {
+	messages := make([]message.CreateMessage, size)
 	for i := 0; i < size; i++ {
-		messages[i] = message.CreateMessageRequest{
+		messages[i] = message.CreateMessage{
+			UID:             fmt.Sprintf("%v", i),
 			Text:            fmt.Sprintf("Lorum ipsum %d", i+1),
 			CreatedByUserID: 1,
+			CreatedAt:       time.Now().AddDate(0, -1, 0).Add(time.Duration(i) * time.Second),
 		}
 	}
 	return messages
 }
 
 func setup(db *sql.DB) (*message.Finder, []message.Message) {
-	service := New(db)
 	messages := make([]message.Message, 300)
 
+	repo := &creatorRepository{db}
+
 	for i, newMSG := range generateTestMessages(300) {
-		msg, err := service.Create(newMSG)
+		msg, err := repo.Create(newMSG)
 		if err != nil {
 			fmt.Printf("error: %s", err)
 			panic(1)
