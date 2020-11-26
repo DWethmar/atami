@@ -8,7 +8,7 @@ import (
 )
 
 // TestCreator test the creator repo
-func TestCreator(t *testing.T, creator *Creator, newUser CreateUser) {
+func TestCreator(t *testing.T, creator *Creator, newUser CreateUserRequest) {
 	user, err := creator.Create(newUser)
 
 	if assert.NoError(t, err) {
@@ -22,7 +22,7 @@ func TestCreator(t *testing.T, creator *Creator, newUser CreateUser) {
 }
 
 // TestDuplicateUsername check if the correct error is returned
-func TestDuplicateUsername(t *testing.T, creator *Creator, newUser CreateUser) {
+func TestDuplicateUsername(t *testing.T, creator *Creator, newUser CreateUserRequest) {
 	_, errOne := creator.Create(newUser)
 	assert.NoError(t, errOne)
 
@@ -33,7 +33,7 @@ func TestDuplicateUsername(t *testing.T, creator *Creator, newUser CreateUser) {
 }
 
 // TestDuplicateEmail check if the correct error is returned
-func TestDuplicateEmail(t *testing.T, creator *Creator, newUser CreateUser) {
+func TestDuplicateEmail(t *testing.T, creator *Creator, newUser CreateUserRequest) {
 	_, errOne := creator.Create(newUser)
 	assert.NoError(t, errOne)
 
@@ -45,7 +45,7 @@ func TestDuplicateEmail(t *testing.T, creator *Creator, newUser CreateUser) {
 
 // TestEmptyPassword test if the correct error is returned
 func TestEmptyPassword(t *testing.T, creator *Creator) {
-	_, err := creator.Create(CreateUser{
+	_, err := creator.Create(CreateUserRequest{
 		Username: "wow",
 		Email:    "test@test.nl",
 		Password: "",

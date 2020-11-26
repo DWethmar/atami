@@ -12,12 +12,23 @@ type Store struct {
 	mux     *sync.Mutex
 }
 
-// List returns all entries.
-func (h *Store) List() []interface{} {
+// All returns all entries.
+func (h *Store) All() []interface{} {
 	entries := make([]interface{}, len(h.entries))
 
 	for i, ID := range h.order {
 		entries[i] = h.entries[ID]
+	}
+
+	return entries
+}
+
+// Slice returns entries within the range.
+func (h *Store) Slice(low, high int) []interface{} {
+	entries := make([]interface{}, high-low)
+
+	for i, key := range h.order[low:high] {
+		entries[i] = h.entries[key]
 	}
 
 	return entries
@@ -29,14 +40,14 @@ func (h *Store) Get(ID string) (interface{}, bool) {
 	return value, ok
 }
 
-// Add new value
-func (h *Store) Add(ID string, value interface{}) bool {
+// Put new value
+func (h *Store) Put(key string, value interface{}) bool {
 	h.mux.Lock()
 	defer h.mux.Unlock()
 
-	if _, exists := h.entries[ID]; !exists {
-		h.entries[ID] = value
-		h.order = append(h.order, ID)
+	if _, exists := h.entries[key]; !exists {
+		h.entries[key] = value
+		h.order = append(h.order, key)
 		return true
 	}
 
@@ -44,17 +55,14 @@ func (h *Store) Add(ID string, value interface{}) bool {
 }
 
 // Delete a value
-func (h *Store) Delete(ID string) bool {
+func (h *Store) Delete(key string) bool {
 	h.mux.Lock()
 	defer h.mux.Unlock()
-	_, ok := h.entries[ID]
+	_, ok := h.entries[key]
 	if ok {
-		delete(h.entries, ID)
-	}
-
-	if ok {
+		delete(h.entries, key)
 		for i, n := range h.order {
-			if n == ID {
+			if n == key {
 				h.order = append(h.order[:i], h.order[i+1:]...)
 			}
 		}

@@ -28,7 +28,7 @@ func (err errValidate) Error() string {
 }
 
 // ValidateCreateMessage validates a new message
-func (v Validator) ValidateCreateMessage(msg CreateMessage) error {
+func (v Validator) ValidateCreateMessage(msg CreateMessageRequest) error {
 	err := errValidate{}
 
 	if e := v.messageTextValidator.Validate(msg.Text); e != nil {

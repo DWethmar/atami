@@ -38,7 +38,7 @@ func TestNotFound(t *testing.T, finder *Finder) {
 
 // TestFind tests the Find function.
 func TestFind(t *testing.T, finder *Finder, length int, messages []Message) {
-	list, err := finder.Find()
+	list, err := finder.Find(0, length)
 
 	assert.NoError(t, err)
 	if assert.Equal(t, length, len(list)) {

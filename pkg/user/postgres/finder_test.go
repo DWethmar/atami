@@ -10,10 +10,10 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
-func generateTestUsers(size int) []user.CreateUser {
-	users := make([]user.CreateUser, size)
+func generateTestUsers(size int) []user.CreateUserRequest {
+	users := make([]user.CreateUserRequest, size)
 	for i := 0; i < size; i++ {
-		users[i] = user.CreateUser{
+		users[i] = user.CreateUserRequest{
 			Username: fmt.Sprintf("username_%d", i+1),
 			Email:    fmt.Sprintf("test-%d@test.com", i+1),
 			Password: fmt.Sprintf("abcdef1234!@#$ABCD-%d", i+1),

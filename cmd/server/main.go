@@ -38,7 +38,7 @@ func main() {
 	handler.Mount("/beta/auth", router.NewAuthRouter(authService, userService))
 	handler.Mount("/beta/messages", router.NewMessageRouter(userService, messageService))
 
-	srv, err := api.NewServer(":8080", handler)
+	srv, err := api.NewServer(":8081", handler)
 	die(err)
 	srv.Start()
 }

@@ -11,7 +11,7 @@ import (
 
 func TestCreate(t *testing.T) {
 	assert.NoError(t, database.WithTestDB(t, func(db *sql.DB) error {
-		newMessage := message.CreateMessage{
+		newMessage := message.CreateMessageRequest{
 			Text:            "wow",
 			CreatedByUserID: 1,
 		}

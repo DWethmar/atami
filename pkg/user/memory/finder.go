@@ -14,7 +14,7 @@ type findRepository struct {
 
 // Find get multiple messages
 func (f findRepository) Find() ([]*user.User, error) {
-	results := f.store.List()
+	results := f.store.All()
 	items := make([]*user.User, len(results))
 
 	for i, result := range results {
@@ -41,14 +41,14 @@ func (f findRepository) FindByID(ID int) (*user.User, error) {
 
 // FindByID get one message
 func (f findRepository) FindByUID(UID string) (*user.User, error) {
-	return filterList(f.store.List(), func(record userRecord) bool {
+	return filterList(f.store.All(), func(record userRecord) bool {
 		return UID == record.UID
 	})
 }
 
 // FindByEmail func
 func (f *findRepository) FindByEmail(email string) (*user.User, error) {
-	for _, item := range f.store.List() {
+	for _, item := range f.store.All() {
 		if record, ok := item.(userRecord); ok {
 			if record.Email == email {
 				usr := recordToUser(record)
@@ -63,7 +63,7 @@ func (f *findRepository) FindByEmail(email string) (*user.User, error) {
 
 // FindByEmailWithPassword func
 func (f *findRepository) FindByEmailWithPassword(email string) (*user.User, error) {
-	for _, item := range f.store.List() {
+	for _, item := range f.store.All() {
 		if record, ok := item.(userRecord); ok {
 			if record.Email == email {
 				usr := recordToUser(record)
@@ -79,7 +79,7 @@ func (f *findRepository) FindByEmailWithPassword(email string) (*user.User, erro
 
 // FindByEmail func
 func (f *findRepository) FindByUsername(username string) (*user.User, error) {
-	return filterList(f.store.List(), func(record userRecord) bool {
+	return filterList(f.store.All(), func(record userRecord) bool {
 		return username == record.Username
 	})
 }

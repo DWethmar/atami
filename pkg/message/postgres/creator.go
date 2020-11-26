@@ -2,10 +2,8 @@ package postgres
 
 import (
 	"database/sql"
-	"time"
 
 	"github.com/dwethmar/atami/pkg/message"
-	"github.com/segmentio/ksuid"
 )
 
 // creatorRepository stores new messages
@@ -14,13 +12,13 @@ type creatorRepository struct {
 }
 
 // Create new message
-func (i creatorRepository) Create(newMessage message.CreateMessage) (*message.Message, error) {
+func (i creatorRepository) Create(newMsg message.CreateMessage) (*message.Message, error) {
 	msg, err := queryRowInsertMessage(
 		i.db,
-		ksuid.New().String(),
-		newMessage.Text,
-		newMessage.CreatedByUserID,
-		time.Now().UTC(),
+		newMsg.UID,
+		newMsg.Text,
+		newMsg.CreatedByUserID,
+		newMsg.CreatedAt,
 	)
 	if err != nil {
 		return nil, err

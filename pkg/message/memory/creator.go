@@ -3,11 +3,9 @@ package memory
 import (
 	"errors"
 	"strconv"
-	"time"
 
 	"github.com/dwethmar/atami/pkg/memstore"
 	"github.com/dwethmar/atami/pkg/message"
-	"github.com/segmentio/ksuid"
 )
 
 // creatorRepository stores new messages
@@ -17,17 +15,17 @@ type creatorRepository struct {
 }
 
 // Create new message
-func (i *creatorRepository) Create(newMessage message.CreateMessage) (*message.Message, error) {
+func (i *creatorRepository) Create(newMsg message.CreateMessage) (*message.Message, error) {
 	i.newID++
 	msg := message.Message{
 		ID:              i.newID,
-		UID:             ksuid.New().String(),
-		Text:            newMessage.Text,
-		CreatedAt:       time.Now(),
-		CreatedByUserID: newMessage.CreatedByUserID,
+		UID:             newMsg.UID,
+		Text:            newMsg.Text,
+		CreatedByUserID: newMsg.CreatedByUserID,
+		CreatedAt:       newMsg.CreatedAt,
 	}
 	idStr := strconv.Itoa(msg.ID)
-	i.store.Add(idStr, msg)
+	i.store.Put(idStr, msg)
 
 	if value, ok := i.store.Get(idStr); ok {
 		if msg, ok := value.(message.Message); ok {

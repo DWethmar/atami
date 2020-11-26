@@ -8,12 +8,12 @@ import (
 )
 
 // TestCreator test the creator repo
-func TestCreator(t *testing.T, creator *Creator, newMessage CreateMessage) {
+func TestCreator(t *testing.T, creator *Creator, newMessage CreateMessageRequest) {
 	message, err := creator.Create(newMessage)
 
 	assert.Nil(t, err)
 	assert.Equal(t, message.ID, 1)
 	assert.Equal(t, message.Text, newMessage.Text)
-	time.Sleep(1)
-	assert.True(t, time.Now().After(message.CreatedAt))
+	assert.Equal(t, message.CreatedByUserID, newMessage.CreatedByUserID)
+	assert.True(t, time.Now().Add(time.Microsecond).After(message.CreatedAt))
 }

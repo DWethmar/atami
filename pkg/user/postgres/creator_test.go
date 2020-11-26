@@ -12,7 +12,7 @@ import (
 func TestCreate(t *testing.T) {
 	assert.NoError(t, database.WithTestDB(t, func(db *sql.DB) error {
 		creator := NewCreator(db)
-		user.TestCreator(t, creator, user.CreateUser{
+		user.TestCreator(t, creator, user.CreateUserRequest{
 			Username: "username",
 			Email:    "test@test.nl",
 			Password: "!Test123",
@@ -23,7 +23,7 @@ func TestCreate(t *testing.T) {
 
 func TestDuplicateUsername(t *testing.T) {
 	assert.NoError(t, database.WithTestDB(t, func(db *sql.DB) error {
-		newUser := user.CreateUser{
+		newUser := user.CreateUserRequest{
 			Username: "username",
 			Email:    "test@test.nl",
 			Password: "!Test123",
@@ -36,7 +36,7 @@ func TestDuplicateUsername(t *testing.T) {
 
 func TestDuplicateEmail(t *testing.T) {
 	assert.NoError(t, database.WithTestDB(t, func(db *sql.DB) error {
-		newUser := user.CreateUser{
+		newUser := user.CreateUserRequest{
 			Username: "username",
 			Email:    "test@test.nl",
 			Password: "!Test123",

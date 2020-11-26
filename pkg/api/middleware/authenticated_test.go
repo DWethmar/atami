@@ -8,27 +8,29 @@ import (
 	"time"
 
 	"github.com/dwethmar/atami/pkg/auth"
+	"github.com/dwethmar/atami/pkg/memstore"
 	"github.com/dwethmar/atami/pkg/service"
 	"github.com/dwethmar/atami/pkg/user"
 	"github.com/stretchr/testify/assert"
 )
 
 func TestAuthenticated(t *testing.T) {
-	userService, store := service.NewUserServiceMemory()
+	store := memstore.New()
+	userService := service.NewUserServiceMemory(store)
 	authService := service.NewAuthServiceMemory(store)
 
-	user, err := authService.Register(auth.CreateUser{
+	var accessToken string
+	if user, err := authService.Register(auth.CreateUser{
 		Username: "userx",
 		Email:    "test@test.nl",
 		Password: "Abcd1234!@#$",
-	})
-	if err != nil {
+	}); err == nil {
+		accessToken, err = auth.CreateAccessToken(user.UID, user.Username, 4100760000)
+		if !assert.NoError(t, err) {
+			return
+		}
+	} else {
 		assert.Fail(t, "could not create user :<")
-		return
-	}
-
-	accessToken, err := auth.CreateAccessToken(user.UID, user.Username, 4100760000)
-	if !assert.NoError(t, err) {
 		return
 	}
 

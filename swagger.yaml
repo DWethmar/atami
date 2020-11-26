@@ -1,0 +1,61 @@
+# this is an example of the Uber API
+# as a demonstration of an API spec in YAML
+swagger: '2.0'
+info:
+  title: Atami API
+  description: Messaging platform
+  version: "1.0.0"
+# the domain of the service
+host: localhost:8081
+# array of all schemes that your API supports
+schemes:
+ - http
+ - https
+# will be prefixed to all paths
+basePath: /beta
+produces:
+  - application/json
+paths:
+  /auth/login:
+    post:
+      summary: Login
+      description: |
+        Login with credentials and receive access_token
+      consumes:
+        - application/x-www-form-urlencoded
+      parameters:
+        - name: email
+          in: formData
+          description: The email of the user
+          required: true
+          type: string
+        - name: password
+          in: formData
+          description: The password of the user
+          required: true
+          type: string
+      tags:
+        - Auth
+      responses:
+        200:
+          description: Successful login result
+          schema:
+            $ref: '#/definitions/AccessDetails'
+        default:
+          description: Unexpected error
+          schema:
+            $ref: '#/definitions/Error'
+definitions:
+  AccessDetails:
+    type: object
+    properties:
+      access_token:
+        type: string
+        description: JWT token for accessing the api.
+  Error:
+    type: object
+    properties:
+      error:
+        type: string
+      message:
+        type: string

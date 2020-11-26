@@ -1,9 +1,3 @@
-// The following directive is necessary to make the package coherent:
-
-// +build ignore
-
-// This program generates contributors.go. It can be invoked by running
-// go generate
 package main
 
 import (
@@ -29,9 +23,10 @@ func main() {
 				Name: "selectUsernameUniqueCheck",
 				SQL: qb.Select(
 					qb.SelectQuery{
-						From:  schema.Table,
-						Cols:  []string{"1"},
-						Where: qb.NewWhere().And(fmt.Sprintf("%s = $1", schema.ColUsername)),
+						From: schema.Table,
+						Cols: []string{"1"},
+						Where: qb.NewWhere().
+							And(fmt.Sprintf("%s = $1", schema.ColUsername)),
 						Limit: strconv.Itoa(1),
 					},
 				),
@@ -50,9 +45,10 @@ func main() {
 				Name: "selectEmailUniqueCheck",
 				SQL: qb.Select(
 					qb.SelectQuery{
-						From:  schema.Table,
-						Cols:  []string{"1"},
-						Where: qb.NewWhere().And(fmt.Sprintf("%s = $1", schema.ColEmail)),
+						From: schema.Table,
+						Cols: []string{"1"},
+						Where: qb.NewWhere().
+							And(fmt.Sprintf("%s = $1", schema.ColEmail)),
 						Limit: strconv.Itoa(1),
 					},
 				),

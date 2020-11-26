@@ -11,9 +11,8 @@ import (
 )
 
 // NewUserServiceMemory create a new in memory auth service
-func NewUserServiceMemory() (*user.Service, *memstore.Store) {
-	store := memstore.New()
-	return userMemory.New(store), store
+func NewUserServiceMemory(store *memstore.Store) *user.Service {
+	return userMemory.New(store)
 }
 
 // NewUserServicePostgres create a new postgres auth service

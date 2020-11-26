@@ -48,7 +48,7 @@ func (v Validator) ValidateUser(user User) error {
 }
 
 // ValidateCreateUser validates a new user
-func (v Validator) ValidateCreateUser(createUser CreateUser) error {
+func (v Validator) ValidateCreateUser(createUser CreateUserRequest) error {
 	err := errValidate{}
 
 	if createUser.Password == "" {

@@ -8,8 +8,9 @@ import (
 )
 
 func TestCreate(t *testing.T) {
-	newMessage := message.CreateMessage{
-		Text: "lorum ipsum",
+	newMessage := message.CreateMessageRequest{
+		Text:            "lorum ipsum",
+		CreatedByUserID: 1,
 	}
 	message.TestCreator(t, NewCreator(memstore.New()), newMessage)
 }

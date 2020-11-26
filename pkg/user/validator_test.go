@@ -52,7 +52,7 @@ func TestInvalidEmail(t *testing.T) {
 }
 
 func TestValidNewUser(t *testing.T) {
-	assert.NoError(t, validator.ValidateCreateUser(CreateUser{
+	assert.NoError(t, validator.ValidateCreateUser(CreateUserRequest{
 		Username: "username",
 		Email:    "test@test.nl",
 		Password: "Abcdefgh123@@",
@@ -60,7 +60,7 @@ func TestValidNewUser(t *testing.T) {
 }
 
 func TestInvalidNewUser(t *testing.T) {
-	assert.Error(t, validator.ValidateCreateUser(CreateUser{
+	assert.Error(t, validator.ValidateCreateUser(CreateUserRequest{
 		Username: "a",
 		Email:    "b",
 	}))

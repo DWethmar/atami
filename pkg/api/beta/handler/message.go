@@ -25,6 +25,18 @@ type Message struct {
 	CreatedAt time.Time   `json:"created_at"`
 }
 
+func mapMessage(msg message.Message) *Message {
+	return &Message{
+		UID:       msg.UID,
+		Text:      msg.Text,
+		CreatedAt: msg.CreatedAt,
+		User: MessageUser{
+			UID:      "",
+			Username: "",
+		},
+	}
+}
+
 // CreatMessageInput input
 type CreatMessageInput struct {
 	Text string `json:"text"`
@@ -47,18 +59,19 @@ func ListMessages(ms *message.Service) http.HandlerFunc {
 			return
 		}
 
-		if result, err := ms.Find(); err == nil {
-			response.SendJSON(w, r, result, http.StatusOK)
-		} else {
+		result, err := ms.Find(0, 100)
+
+		if err != nil {
 			response.SendBadRequestError(w, r, err)
+			return
 		}
 
-		// fmt.Fprintf(w, "Hi there %v, I love %s!", usr.Username, r.URL.Path[1:])
+		response.SendJSON(w, r, result, http.StatusOK)
 	})
 }
 
-// CreateMessages handler
-func CreateMessages(ms *message.Service) http.HandlerFunc {
+// CreateMessage handler
+func CreateMessage(ms *message.Service) http.HandlerFunc {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		w.WriteHeader(http.StatusOK)
 
@@ -76,7 +89,7 @@ func CreateMessages(ms *message.Service) http.HandlerFunc {
 			return
 		}
 
-		newMsg := message.CreateMessage{
+		newMsg := message.CreateMessageRequest{
 			Text:            input.Text,
 			CreatedByUserID: usr.ID,
 		}
@@ -88,12 +101,35 @@ func CreateMessages(ms *message.Service) http.HandlerFunc {
 				}, http.StatusOK)
 			} else {
 				fmt.Print(err)
-				response.SendServerError(w, r)
 			}
 		} else {
 			response.SendBadRequestError(w, r, err)
 		}
 
-		// fmt.Fprintf(w, "CREATE NEW MSG %v!", usr.Username)
+		response.SendServerError(w, r)
+	})
+}
+
+// DeleteMessage handler
+func DeleteMessage(ms *message.Service) http.HandlerFunc {
+	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		w.WriteHeader(http.StatusOK)
+
+		usr, err := middleware.UserFromContext(r.Context())
+		if err != nil || usr == nil {
+			fmt.Print(err)
+			response.SendServerError(w, r)
+			return
+		}
+
+		// uid, err := middleware.UIDFromContext(r.Context())
+		// if err != nil {
+		// 	fmt.Print(err)
+		// 	response.SendServerError(w, r)
+		// 	return
+		// }
+
+		// msg, err := ms.FindByUID(uid)
+
 	})
 }

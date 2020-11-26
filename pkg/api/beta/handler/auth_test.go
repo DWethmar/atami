@@ -38,7 +38,8 @@ var users = []*auth.CreateUser{
 }
 
 func TestList(t *testing.T) {
-	userService, store := service.NewUserServiceMemory()
+	store := memstore.New()
+	userService := service.NewUserServiceMemory(store)
 	authService := service.NewAuthServiceMemory(store)
 
 	var expectedResponds = make([]*Responds, len(users))
@@ -161,7 +162,7 @@ func TestRegisterInvalidUser(t *testing.T) {
 func TestLogin(t *testing.T) {
 	os.Setenv("ACCESS_SECRET", "abc")
 	store := memstore.New()
-	userService, store := service.NewUserServiceMemory()
+	userService := service.NewUserServiceMemory(store)
 	authService := service.NewAuthServiceMemory(store)
 
 	_, err := authService.Register(auth.CreateUser{
@@ -185,7 +186,7 @@ func TestLogin(t *testing.T) {
 	if assert.Equal(t, http.StatusOK, rr.Code, rr.Body.String()) {
 		assert.Equal(t, "application/json", rr.Header().Get("Content-Type"))
 		// Check the response body is what we expect.
-		responds := loginResponds{}
+		responds := AccessDetails{}
 		assert.NoError(t, json.Unmarshal(rr.Body.Bytes(), &responds))
 		assert.NotEmpty(t, responds.AccessToken)
 	}
@@ -194,7 +195,7 @@ func TestLogin(t *testing.T) {
 func TestRefresh(t *testing.T) {
 	os.Setenv("ACCESS_SECRET", "abc")
 	store := memstore.New()
-	userService, store := service.NewUserServiceMemory()
+	userService := service.NewUserServiceMemory(store)
 	authService := service.NewAuthServiceMemory(store)
 
 	user, err := authService.Register(auth.CreateUser{
@@ -227,7 +228,7 @@ func TestRefresh(t *testing.T) {
 	if assert.Equal(t, http.StatusOK, rr.Code, rr.Body.String()) {
 		assert.Equal(t, "application/json", rr.Header().Get("Content-Type"))
 		// Check the response body is what we expect.
-		responds := loginResponds{}
+		responds := AccessDetails{}
 		assert.NoError(t, json.Unmarshal(rr.Body.Bytes(), &responds))
 		assert.NotEmpty(t, responds.AccessToken)
 
@@ -245,7 +246,7 @@ func TestRefresh(t *testing.T) {
 func TestInvalidRefresh(t *testing.T) {
 	os.Setenv("ACCESS_SECRET", "abc")
 	store := memstore.New()
-	userService, store := service.NewUserServiceMemory()
+	userService := service.NewUserServiceMemory(store)
 	authService := service.NewAuthServiceMemory(store)
 
 	handler := http.HandlerFunc(Refresh(authService, userService))
@@ -266,7 +267,7 @@ func TestInvalidRefresh(t *testing.T) {
 func TestRefreshWithExpiredToken(t *testing.T) {
 	os.Setenv("ACCESS_SECRET", "abc")
 	store := memstore.New()
-	userService, store := service.NewUserServiceMemory()
+	userService := service.NewUserServiceMemory(store)
 	authService := service.NewAuthServiceMemory(store)
 
 	user, err := authService.Register(auth.CreateUser{

@@ -11,8 +11,8 @@ import (
 )
 
 // NewMessageServiceMemory create a new in memory message service
-func NewMessageServiceMemory() *message.Service {
-	return messageMemory.New(memstore.New())
+func NewMessageServiceMemory(store *memstore.Store) *message.Service {
+	return messageMemory.New(store)
 }
 
 // NewMessageServicePostgres create a new postgres message service

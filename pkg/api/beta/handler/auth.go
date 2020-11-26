@@ -12,7 +12,8 @@ import (
 	"github.com/dwethmar/atami/pkg/user"
 )
 
-type loginResponds struct {
+// AccessDetails contains details for accessing the api
+type AccessDetails struct {
 	AccessToken string `json:"access_token"`
 }
 
@@ -167,7 +168,7 @@ func Login(authService *auth.Service, userService *user.Service) http.HandlerFun
 		)
 		http.SetCookie(w, cookie)
 
-		response.SendJSON(w, r, loginResponds{
+		response.SendJSON(w, r, AccessDetails{
 			AccessToken: accessToken,
 		}, http.StatusOK)
 	})
@@ -216,7 +217,7 @@ func Refresh(authService *auth.Service, userService *user.Service) http.HandlerF
 			return
 		}
 
-		response.SendJSON(w, r, loginResponds{
+		response.SendJSON(w, r, AccessDetails{
 			AccessToken: accessToken,
 		}, http.StatusOK)
 	})

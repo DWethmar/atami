@@ -12,7 +12,7 @@ var (
 // FindRepository defines a messsage listing repository
 type FindRepository interface {
 	FindByID(ID int) (*Message, error)
-	Find() ([]*Message, error)
+	Find(limit, offset int) ([]*Message, error)
 }
 
 // Finder lists messages.
@@ -26,8 +26,8 @@ func (m *Finder) FindByID(ID int) (*Message, error) {
 }
 
 // Find return a list of list items.
-func (m *Finder) Find() ([]*Message, error) {
-	return m.readerRepo.Find()
+func (m *Finder) Find(page, size int) ([]*Message, error) {
+	return m.readerRepo.Find(size, page*size)
 }
 
 // NewFinder returns a new Listing

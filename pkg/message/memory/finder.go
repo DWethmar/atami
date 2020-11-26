@@ -25,8 +25,8 @@ func (i *findRepository) FindByID(ID int) (*message.Message, error) {
 }
 
 // FindAll get multiple messages
-func (i *findRepository) Find() ([]*message.Message, error) {
-	results := i.store.List()
+func (i *findRepository) Find(limit, offset int) ([]*message.Message, error) {
+	results := i.store.Slice(offset, limit)
 	items := make([]*message.Message, len(results))
 
 	for i, l := range results {

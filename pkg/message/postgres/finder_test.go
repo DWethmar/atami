@@ -10,10 +10,10 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
-func generateTestMessages(size int) []message.CreateMessage {
-	messages := make([]message.CreateMessage, size)
+func generateTestMessages(size int) []message.CreateMessageRequest {
+	messages := make([]message.CreateMessageRequest, size)
 	for i := 0; i < size; i++ {
-		messages[i] = message.CreateMessage{
+		messages[i] = message.CreateMessageRequest{
 			Text:            fmt.Sprintf("Lorum ipsum %d", i+1),
 			CreatedByUserID: 1,
 		}
@@ -23,9 +23,9 @@ func generateTestMessages(size int) []message.CreateMessage {
 
 func setup(db *sql.DB) (*message.Finder, []message.Message) {
 	service := New(db)
-	messages := make([]message.Message, 100)
+	messages := make([]message.Message, 300)
 
-	for i, newMSG := range generateTestMessages(100) {
+	for i, newMSG := range generateTestMessages(300) {
 		msg, err := service.Create(newMSG)
 		if err != nil {
 			fmt.Printf("error: %s", err)
@@ -52,16 +52,16 @@ func TestNotFound(t *testing.T) {
 	}))
 }
 
-func TestFindAll(t *testing.T) {
+func TestFind(t *testing.T) {
 	assert.NoError(t, database.WithTestDB(t, func(db *sql.DB) error {
 		finder, m := setup(db)
 
-		// Reverse items because of the order by on created_at DESC
-		for i, j := 0, len(m)-1; i < j; i, j = i+1, j-1 {
-			m[i], m[j] = m[j], m[i]
-		}
+		// // Reverse items because of the order by on created_at DESC
+		// for i, j := 0, len(m)-1; i < j; i, j = i+1, j-1 {
+		// 	m[i], m[j] = m[j], m[i]
+		// }
 
-		message.TestFind(t, finder, 100, m)
+		message.TestFind(t, finder, 50, m[0:51])
 		return nil
 	}))
 }

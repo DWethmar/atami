@@ -12,7 +12,7 @@ type Message struct {
 	CreatedByUserID int
 	CreatedAt       time.Time
 
-	user *User
+	User *User
 }
 
 // User output
@@ -22,8 +22,16 @@ type User struct {
 	Username string
 }
 
-// CreateMessage model
-type CreateMessage struct {
+// CreateMessageRequest model
+type CreateMessageRequest struct {
 	Text            string
 	CreatedByUserID int
+}
+
+// CreateMessage model
+type CreateMessage struct {
+	UID             string
+	Text            string
+	CreatedByUserID int
+	CreatedAt       time.Time
 }

@@ -18,7 +18,7 @@ func TestDelete(t *testing.T) {
 		Text:      "sd1",
 		CreatedAt: time.Now(),
 	}
-	assert.True(t, store.Add(strconv.Itoa(a.ID), a))
+	assert.True(t, store.Put(strconv.Itoa(a.ID), a))
 
 	deleter := NewDeleter(store)
 	message.TestDelete(t, deleter, a.ID)

@@ -42,19 +42,29 @@ func (u User) Equal(user User) bool {
 		u.UpdatedAt.Equal(user.UpdatedAt))
 }
 
-// CreateUser struct declaration
-type CreateUser struct {
+// CreateUserRequest struct declaration
+type CreateUserRequest struct {
 	Username string
 	Email    string
 	Password string
 }
 
 // GetUsername return the username
-func (u CreateUser) GetUsername() string {
+func (u CreateUserRequest) GetUsername() string {
 	return u.Username
 }
 
 // GetEmail return the email
-func (u CreateUser) GetEmail() string {
+func (u CreateUserRequest) GetEmail() string {
 	return u.Email
+}
+
+// CreateUser user that is going to be created
+type CreateUser struct {
+	UID       string
+	Username  string
+	Email     string
+	Password  string
+	CreatedAt time.Time
+	UpdatedAt time.Time
 }

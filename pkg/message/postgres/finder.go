@@ -12,8 +12,8 @@ type findRepository struct {
 }
 
 // FindAll get multiple messages
-func (i *findRepository) Find() ([]*message.Message, error) {
-	return querySelectMessages(i.db, 100, 0)
+func (i *findRepository) Find(limit, offset int) ([]*message.Message, error) {
+	return querySelectMessages(i.db, limit, offset)
 }
 
 // FindByID get one message

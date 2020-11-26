@@ -19,13 +19,13 @@ type creatorRepository struct {
 }
 
 // Create new user
-func (i *creatorRepository) Create(newUser user.CreateUser) (*user.User, error) {
+func (i *creatorRepository) Create(newUser user.CreateUserRequest) (*user.User, error) {
 	if newUser.Password == "" {
 		return nil, user.ErrPwdNotSet
 	}
 
 	// Check for user with same username or email
-	if match, err := filterList(i.store.List(), func(record userRecord) bool {
+	if match, err := filterList(i.store.All(), func(record userRecord) bool {
 		return newUser.Username == record.Username || newUser.Email == record.Email
 	}); match != nil {
 
@@ -53,7 +53,7 @@ func (i *creatorRepository) Create(newUser user.CreateUser) (*user.User, error) 
 		Password:  newUser.Password,
 	}
 	IDStr := strconv.Itoa(usr.ID)
-	i.store.Add(IDStr, usr)
+	i.store.Put(IDStr, usr)
 
 	if value, ok := i.store.Get(IDStr); ok {
 		if record, ok := value.(userRecord); ok {

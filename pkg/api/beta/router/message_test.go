@@ -5,15 +5,17 @@ import (
 	"net/http/httptest"
 	"testing"
 
+	"github.com/dwethmar/atami/pkg/memstore"
 	"github.com/dwethmar/atami/pkg/service"
 	"github.com/stretchr/testify/assert"
 )
 
 func TestMessageAuthenticated(t *testing.T) {
-	userService, store := service.NewUserServiceMemory()
+	store := memstore.New()
+	userService := service.NewUserServiceMemory(store)
 	authService := service.NewAuthServiceMemory(store)
 
-	messageService := service.NewMessageServiceMemory()
+	messageService := service.NewMessageServiceMemory(memstore.New())
 	handler := NewMessageRouter(userService, messageService)
 
 	req := httptest.NewRequest("GET", "/", nil)
@@ -26,8 +28,8 @@ func TestMessageAuthenticated(t *testing.T) {
 }
 
 func TestMessageUnauthenticated(t *testing.T) {
-	userService, _ := service.NewUserServiceMemory()
-	messageService := service.NewMessageServiceMemory()
+	userService := service.NewUserServiceMemory(memstore.New())
+	messageService := service.NewMessageServiceMemory(memstore.New())
 	handler := NewMessageRouter(userService, messageService)
 
 	req := httptest.NewRequest("GET", "/feed", nil)
