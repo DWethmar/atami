@@ -60,12 +60,14 @@ func TestFind(t *testing.T) {
 	assert.NoError(t, database.WithTestDB(t, func(db *sql.DB) error {
 		finder, m := setup(db)
 
-		// // Reverse items because of the order by on created_at DESC
-		// for i, j := 0, len(m)-1; i < j; i, j = i+1, j-1 {
-		// 	m[i], m[j] = m[j], m[i]
-		// }
+		items := m[0:51]
 
-		message.TestFind(t, finder, 50, m[0:51])
+		// Reverse items because of the order by on created_at DESC
+		for i, j := 0, len(items)-1; i < j; i, j = i+1, j-1 {
+			items[i], items[j] = items[j], items[i]
+		}
+
+		message.TestFind(t, finder, 50, items)
 		return nil
 	}))
 }
