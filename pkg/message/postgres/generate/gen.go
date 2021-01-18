@@ -12,6 +12,7 @@ import (
 	qb "github.com/dwethmar/atami/pkg/database/querybuilder"
 	qg "github.com/dwethmar/atami/pkg/database/querygenerator"
 	"github.com/dwethmar/atami/pkg/message/postgres/schema"
+	userSchema "github.com/dwethmar/atami/pkg/user/postgres/schema"
 )
 
 func main() {
@@ -27,9 +28,19 @@ func main() {
 				Name: "selectMessages",
 				SQL: qb.Select(
 					qb.SelectQuery{
-						Cols:    schema.SelectCols,
-						From:    schema.Table,
-						Joins:   nil,
+						Cols: append(
+							schema.SelectCols,
+							userSchema.ColUID,
+							userSchema.ColUsername,
+						),
+						From: schema.Table,
+						Joins: qb.NewJoin().
+							Left(fmt.Sprintf(
+								"%s ON %v = %v",
+								userSchema.Table,
+								schema.ColCreatedByUserID,
+								userSchema.ColID,
+							)),
 						Where:   nil,
 						GroupBy: []string{},
 						Having:  nil,
@@ -49,7 +60,7 @@ func main() {
 						Type: "int",
 					},
 				},
-				MapFunc:    "defaultMap",
+				MapFunc:    "mapMessageWithUser",
 				ReturnType: "*message.Message",
 			},
 			{

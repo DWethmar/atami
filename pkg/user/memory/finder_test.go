@@ -21,7 +21,7 @@ func generateTestUsers(size int) []user.CreateUserRequest {
 }
 
 func setup() (*user.Finder, []user.User) {
-	store := memstore.New()
+	store := memstore.NewStore()
 	service := New(store)
 	users := make([]user.User, 100)
 	for i, testUser := range generateTestUsers(100) {

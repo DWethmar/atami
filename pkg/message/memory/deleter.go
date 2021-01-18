@@ -14,7 +14,8 @@ type deleterRepository struct {
 
 // Delete deletes one message
 func (i deleterRepository) Delete(ID int) error {
-	if i.store.Delete(strconv.Itoa(ID)) {
+	messages := i.store.GetMessages()
+	if messages.Delete(strconv.Itoa(ID)) {
 		return nil
 	}
 	return message.ErrCouldNotDelete

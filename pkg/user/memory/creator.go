@@ -22,8 +22,10 @@ func (i *creatorRepository) Create(newUser user.CreateUser) (*user.User, error) 
 		return nil, user.ErrPwdNotSet
 	}
 
+	users := i.store.GetUsers()
+
 	// Check for user with same username or email
-	if match, err := filterList(i.store.All(), func(record userRecord) bool {
+	if match, err := filterList(users.All(), func(record userRecord) bool {
 		return newUser.Username == record.Username || newUser.Email == record.Email
 	}); match != nil {
 
@@ -51,9 +53,9 @@ func (i *creatorRepository) Create(newUser user.CreateUser) (*user.User, error) 
 		Password:  newUser.Password,
 	}
 	IDStr := strconv.Itoa(usr.ID)
-	i.store.Put(IDStr, usr)
+	users.Put(IDStr, usr)
 
-	if value, ok := i.store.Get(IDStr); ok {
+	if value, ok := users.Get(IDStr); ok {
 		if record, ok := value.(userRecord); ok {
 			return recordToUser(record), nil
 		}

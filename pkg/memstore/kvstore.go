@@ -5,15 +5,17 @@ import (
 	"sync"
 )
 
-// Store stores data in memory by key / value
-type Store struct {
+// KvStore stores data in memory by key / value
+type KvStore struct {
 	entries map[string]interface{}
 	order   []string
 	mux     *sync.Mutex
 }
 
 // All returns all entries.
-func (h *Store) All() []interface{} {
+func (h *KvStore) All() []interface{} {
+	h.mux.Lock()
+	defer h.mux.Unlock()
 	entries := make([]interface{}, len(h.entries))
 
 	for i, ID := range h.order {
@@ -24,7 +26,9 @@ func (h *Store) All() []interface{} {
 }
 
 // Slice returns entries within the range.
-func (h *Store) Slice(low, high int) []interface{} {
+func (h *KvStore) Slice(low, high int) []interface{} {
+	h.mux.Lock()
+	defer h.mux.Unlock()
 	entries := make([]interface{}, high-low)
 
 	for i, key := range h.order[low:high] {
@@ -35,16 +39,15 @@ func (h *Store) Slice(low, high int) []interface{} {
 }
 
 // Get a single value.
-func (h *Store) Get(ID string) (interface{}, bool) {
+func (h *KvStore) Get(ID string) (interface{}, bool) {
 	value, ok := h.entries[ID]
 	return value, ok
 }
 
 // Put new value
-func (h *Store) Put(key string, value interface{}) bool {
+func (h *KvStore) Put(key string, value interface{}) bool {
 	h.mux.Lock()
 	defer h.mux.Unlock()
-
 	if _, exists := h.entries[key]; !exists {
 		h.entries[key] = value
 		h.order = append(h.order, key)
@@ -55,7 +58,7 @@ func (h *Store) Put(key string, value interface{}) bool {
 }
 
 // Delete a value
-func (h *Store) Delete(key string) bool {
+func (h *KvStore) Delete(key string) bool {
 	h.mux.Lock()
 	defer h.mux.Unlock()
 	_, ok := h.entries[key]
@@ -72,12 +75,12 @@ func (h *Store) Delete(key string) bool {
 }
 
 // Len gets number of entries
-func (h *Store) Len() int {
+func (h *KvStore) Len() int {
 	return len(h.order)
 }
 
 // FromIndex gets value by index
-func (h *Store) FromIndex(i int) (interface{}, bool) {
+func (h *KvStore) FromIndex(i int) (interface{}, bool) {
 	if i >= 0 && i < h.Len() {
 		return h.Get(h.order[i])
 	}
@@ -85,13 +88,13 @@ func (h *Store) FromIndex(i int) (interface{}, bool) {
 }
 
 // Sort items in memory
-func (h *Store) Sort(less func(i, j int) bool) {
+func (h *KvStore) Sort(less func(i, j int) bool) {
 	sort.SliceStable(h.order, less)
 }
 
-// New returns a new in memory repository.
-func New() *Store {
-	return &Store{
+// NewKvStore returns a new in memory repository.
+func NewKvStore() *KvStore {
+	return &KvStore{
 		entries: make(map[string]interface{}),
 		order:   make([]string, 0),
 		mux:     &sync.Mutex{},

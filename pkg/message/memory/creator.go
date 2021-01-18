@@ -6,6 +6,7 @@ import (
 
 	"github.com/dwethmar/atami/pkg/memstore"
 	"github.com/dwethmar/atami/pkg/message"
+	"github.com/dwethmar/atami/pkg/message/memory/util"
 )
 
 // creatorRepository stores new messages
@@ -16,6 +17,9 @@ type creatorRepository struct {
 
 // Create new message
 func (i *creatorRepository) Create(newMsg message.CreateMessage) (*message.Message, error) {
+	messages := i.store.GetMessages()
+	users := i.store.GetUsers()
+
 	i.newID++
 	msg := message.Message{
 		ID:              i.newID,
@@ -25,9 +29,21 @@ func (i *creatorRepository) Create(newMsg message.CreateMessage) (*message.Messa
 		CreatedAt:       newMsg.CreatedAt,
 	}
 	idStr := strconv.Itoa(msg.ID)
-	i.store.Put(idStr, msg)
 
-	if value, ok := i.store.Get(idStr); ok {
+	if result, ok := users.Get(strconv.Itoa(msg.CreatedByUserID)); ok {
+		user, err := util.ToMsgUser(result)
+		if err == nil {
+			msg.User = user
+		} else {
+			return nil, err
+		}
+	} else {
+		return nil, errors.New("user not found")
+	}
+
+	messages.Put(idStr, msg)
+
+	if value, ok := messages.Get(idStr); ok {
 		if msg, ok := value.(message.Message); ok {
 			return &msg, nil
 		}

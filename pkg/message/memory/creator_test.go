@@ -5,12 +5,15 @@ import (
 
 	"github.com/dwethmar/atami/pkg/memstore"
 	"github.com/dwethmar/atami/pkg/message"
+	"github.com/dwethmar/atami/pkg/message/memory/util"
 )
 
 func TestCreate(t *testing.T) {
+	store := memstore.NewStore()
+	util.AddTestUser(store, 1)
 	newMessage := message.CreateMessageRequest{
 		Text:            "lorum ipsum",
 		CreatedByUserID: 1,
 	}
-	message.TestCreator(t, NewCreator(memstore.New()), newMessage)
+	message.TestCreator(t, NewCreator(store), newMessage)
 }

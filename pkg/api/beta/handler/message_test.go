@@ -1,14 +1,18 @@
 package handler
 
 import (
+	"encoding/json"
 	"net/http"
 	"net/http/httptest"
 	"strconv"
 	"testing"
 	"time"
 
+	"github.com/dwethmar/atami/pkg/api/middleware"
 	"github.com/dwethmar/atami/pkg/memstore"
 	"github.com/dwethmar/atami/pkg/message"
+	"github.com/dwethmar/atami/pkg/user"
+
 	"github.com/dwethmar/atami/pkg/service"
 	"github.com/stretchr/testify/assert"
 )
@@ -23,7 +27,8 @@ func TestListMessages(t *testing.T) {
 			CreatedAt:       time.Now(),
 			CreatedByUserID: 1,
 			User: &message.User{
-				ID: 1,
+				UID:      "1kF1ZTVJ3xknUgLWAAmPRKX3r8X",
+				Username: "testaccount_1",
 			},
 		},
 		{
@@ -33,18 +38,26 @@ func TestListMessages(t *testing.T) {
 			CreatedAt:       time.Now(),
 			CreatedByUserID: 1,
 			User: &message.User{
-				ID: 1,
+				UID:      "1kF1ZTVJ3xknUgLWAAmPRKX3r8X",
+				Username: "testaccount_1",
 			},
 		},
 	}
-	store := memstore.New()
+	store := memstore.NewStore()
 	for _, msg := range messages {
-		store.Put(strconv.Itoa(msg.ID), msg)
+		store.GetMessages().Put(strconv.Itoa(msg.ID), *msg)
 	}
 	ms := service.NewMessageServiceMemory(store)
-
 	req, err := http.NewRequest("GET", "/", nil)
-	assert.Nil(t, err)
+	assert.NoError(t, err)
+
+	ctx := req.Context()
+	ctx = middleware.WithUser(ctx, &user.User{
+		ID:       1,
+		UID:      "abc",
+		Username: "test",
+	})
+	req = req.WithContext(ctx)
 
 	rr := httptest.NewRecorder()
 	handler := http.HandlerFunc(ListMessages(ms))
@@ -53,9 +66,14 @@ func TestListMessages(t *testing.T) {
 	assert.Equal(t, http.StatusOK, rr.Code, "Status code should be equal")
 	assert.Equal(t, "application/json", rr.Header().Get("Content-Type"), "Content-Type code should be equal")
 
-	// // Check the response body is what we expect.
-	// expected, _ := json.Marshal(expectedResponds)
-	// assert.Equal(t, string(expected), rr.Body.String(), "handler returned unexpected body")
+	expectedResponds := make([]*Message, len(messages))
+	for i, m := range messages {
+		expectedResponds[i] = mapMessage(m)
+	}
+
+	// Check the response body is what we expect.
+	expected, _ := json.Marshal(expectedResponds)
+	assert.Equal(t, string(expected), rr.Body.String(), "handler returned unexpected body")
 }
 
 func TestCreateMessage(t *testing.T) {

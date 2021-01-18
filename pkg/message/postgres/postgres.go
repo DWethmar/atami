@@ -25,3 +25,21 @@ func defaultMap(row Row) (*message.Message, error) {
 	}
 	return e, nil
 }
+
+func mapMessageWithUser(row Row) (*message.Message, error) {
+	e := &message.Message{
+		User: &message.User{},
+	}
+	if err := row.Scan(
+		&e.ID,
+		&e.UID,
+		&e.Text,
+		&e.CreatedByUserID,
+		&e.CreatedAt,
+		&e.User.UID,
+		&e.User.Username,
+	); err != nil {
+		return nil, err
+	}
+	return e, nil
+}

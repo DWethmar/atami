@@ -1,6 +1,7 @@
 package message
 
 import (
+	"errors"
 	"strings"
 
 	"github.com/dwethmar/atami/pkg/validate"
@@ -33,6 +34,10 @@ func (v Validator) ValidateCreateMessage(msg CreateMessageRequest) error {
 
 	if e := v.messageTextValidator.Validate(msg.Text); e != nil {
 		err.Errors = append(err.Errors, e)
+	}
+
+	if msg.CreatedByUserID == 0 {
+		err.Errors = append(err.Errors, errors.New("user not set"))
 	}
 
 	if err.Valid() {

@@ -14,7 +14,7 @@ type deleterRepository struct {
 
 // Delete deletes one user
 func (i deleterRepository) Delete(ID int) error {
-	if i.store.Delete(strconv.Itoa(ID)) {
+	if i.store.GetUsers().Delete(strconv.Itoa(ID)) {
 		return nil
 	}
 	return user.ErrCouldNotDelete

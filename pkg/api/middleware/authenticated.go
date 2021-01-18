@@ -21,8 +21,8 @@ func WithUser(ctx context.Context, user *user.User) context.Context {
 	return context.WithValue(ctx, userCTXKey, user)
 }
 
-// UserFromContext returns the user UID from the context.
-func UserFromContext(ctx context.Context) (*user.User, error) {
+// GetUser returns the user UID from the context.
+func GetUser(ctx context.Context) (*user.User, error) {
 	value := ctx.Value(userCTXKey)
 	if user, ok := value.(*user.User); ok {
 		return user, nil

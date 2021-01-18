@@ -52,6 +52,8 @@ func TestFind(t *testing.T, finder *Finder, length int, messages []Message) {
 			assert.Equal(t, messages[i].ID, message.ID)
 			assert.Equal(t, messages[i].UID, message.UID)
 			assert.Equal(t, messages[i].Text, message.Text)
+
+			assert.NotNil(t, messages[i].User)
 		}
 	}
 }

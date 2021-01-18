@@ -11,14 +11,14 @@ import (
 )
 
 func TestDelete(t *testing.T) {
-	store := memstore.New()
+	store := memstore.NewStore()
 	a := message.Message{
 		ID:        1,
 		UID:       "x",
 		Text:      "sd1",
 		CreatedAt: time.Now(),
 	}
-	assert.True(t, store.Put(strconv.Itoa(a.ID), a))
+	assert.True(t, store.GetMessages().Put(strconv.Itoa(a.ID), a))
 
 	deleter := NewDeleter(store)
 	message.TestDelete(t, deleter, a.ID)

@@ -8,7 +8,7 @@ import (
 )
 
 func TestCreate(t *testing.T) {
-	s := memstore.New()
+	s := memstore.NewStore()
 	register := NewCreator(s)
 	user.TestCreator(t, register, user.CreateUserRequest{
 		Username: "username",
@@ -23,7 +23,7 @@ func TestDuplicateUsername(t *testing.T) {
 		Email:    "test@test.nl",
 		Password: "!Test123",
 	}
-	s := memstore.New()
+	s := memstore.NewStore()
 	register := NewCreator(s)
 	user.TestDuplicateUsername(t, register, newUser)
 }
@@ -34,14 +34,14 @@ func TestDuplicateEmail(t *testing.T) {
 		Email:    "test@test.nl",
 		Password: "!Test123",
 	}
-	s := memstore.New()
+	s := memstore.NewStore()
 	register := NewCreator(s)
 	user.TestDuplicateEmail(t, register, newUser)
 }
 
 // TestEmptyPassword test if the correct error is returned
 func TestEmptyPassword(t *testing.T) {
-	s := memstore.New()
+	s := memstore.NewStore()
 	register := NewCreator(s)
 	user.TestEmptyPassword(t, register)
 }

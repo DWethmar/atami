@@ -15,7 +15,7 @@ import (
 )
 
 func TestAuthenticated(t *testing.T) {
-	store := memstore.New()
+	store := memstore.NewStore()
 	userService := service.NewUserServiceMemory(store)
 	authService := service.NewAuthServiceMemory(store)
 
@@ -35,7 +35,7 @@ func TestAuthenticated(t *testing.T) {
 	}
 
 	nextHandler := http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		user, err := UserFromContext(r.Context())
+		user, err := GetUser(r.Context())
 		assert.NoError(t, err)
 
 		if assert.NotNil(t, user) && user.ID != 0 {
@@ -69,7 +69,7 @@ func TestAuthenticatedContext(t *testing.T) {
 	ctx := req.Context()
 	ctx = WithUser(ctx, user)
 
-	userStored, err := UserFromContext(ctx)
+	userStored, err := GetUser(ctx)
 	if assert.NoError(t, err) {
 		assert.True(t, user.Equal(*userStored))
 	}

@@ -25,14 +25,14 @@ type Message struct {
 	CreatedAt time.Time   `json:"created_at"`
 }
 
-func mapMessage(msg message.Message) *Message {
+func mapMessage(msg *message.Message) *Message {
 	return &Message{
 		UID:       msg.UID,
 		Text:      msg.Text,
 		CreatedAt: msg.CreatedAt,
 		User: MessageUser{
-			UID:      "",
-			Username: "",
+			UID:      msg.User.UID,
+			Username: msg.User.Username,
 		},
 	}
 }
@@ -50,23 +50,25 @@ type CreatMessageSuccess struct {
 // ListMessages handler
 func ListMessages(ms *message.Service) http.HandlerFunc {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		w.WriteHeader(http.StatusOK)
-
-		usr, err := middleware.UserFromContext(r.Context())
+		usr, err := middleware.GetUser(r.Context())
 		if err != nil || usr == nil {
 			fmt.Print(err)
 			response.SendServerError(w, r)
 			return
 		}
 
-		result, err := ms.Find(0, 100)
+		messages := make([]*Message, 0)
 
-		if err != nil {
+		if result, err := ms.Find(0, 100); err == nil {
+			for _, msg := range result {
+				messages = append(messages, mapMessage(msg))
+			}
+		} else {
 			response.SendBadRequestError(w, r, err)
 			return
 		}
 
-		response.SendJSON(w, r, result, http.StatusOK)
+		response.SendJSON(w, r, messages, http.StatusOK)
 	})
 }
 
@@ -75,7 +77,7 @@ func CreateMessage(ms *message.Service) http.HandlerFunc {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		w.WriteHeader(http.StatusOK)
 
-		usr, err := middleware.UserFromContext(r.Context())
+		usr, err := middleware.GetUser(r.Context())
 		if err != nil || usr == nil {
 			fmt.Print(err)
 			response.SendServerError(w, r)
@@ -115,7 +117,7 @@ func DeleteMessage(ms *message.Service) http.HandlerFunc {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		w.WriteHeader(http.StatusOK)
 
-		usr, err := middleware.UserFromContext(r.Context())
+		usr, err := middleware.GetUser(r.Context())
 		if err != nil || usr == nil {
 			fmt.Print(err)
 			response.SendServerError(w, r)

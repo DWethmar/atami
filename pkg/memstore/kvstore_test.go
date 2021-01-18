@@ -8,7 +8,7 @@ import (
 )
 
 func TestList(t *testing.T) {
-	store := New()
+	store := NewKvStore()
 
 	for i := 0; i < 100; i++ {
 		ok := store.Put(strconv.Itoa(i+1), "test"+strconv.Itoa(i+1))
@@ -28,7 +28,7 @@ func TestList(t *testing.T) {
 }
 
 func TestSlice(t *testing.T) {
-	store := New()
+	store := NewKvStore()
 
 	for i := 0; i < 100; i++ {
 		ok := store.Put(strconv.Itoa(i), "test"+strconv.Itoa(i))
@@ -47,7 +47,7 @@ func TestSlice(t *testing.T) {
 }
 
 func TestGet(t *testing.T) {
-	store := New()
+	store := NewKvStore()
 
 	store.Put("1", "test")
 
@@ -60,7 +60,7 @@ func TestGet(t *testing.T) {
 }
 
 func TestDelete(t *testing.T) {
-	store := New()
+	store := NewKvStore()
 
 	store.Put("1", "test uno")
 	store.Put("2", "test dos")
@@ -74,7 +74,7 @@ func TestDelete(t *testing.T) {
 }
 
 func TestLen(t *testing.T) {
-	store := New()
+	store := NewKvStore()
 	for i := 0; i < 9000; i++ {
 		store.Put(strconv.Itoa(i+1), "test"+strconv.Itoa(i+1))
 	}
@@ -82,7 +82,7 @@ func TestLen(t *testing.T) {
 }
 
 func TestFromIndex(t *testing.T) {
-	store := New()
+	store := NewKvStore()
 	for i := 0; i < 9000; i++ {
 		store.Put(strconv.Itoa(i+1), "test"+strconv.Itoa(i))
 	}
@@ -102,7 +102,7 @@ func TestFromIndex(t *testing.T) {
 
 // Sort items in memory
 func TestSort(t *testing.T) {
-	store := New()
+	store := NewKvStore()
 
 	type testObj struct {
 		Number int

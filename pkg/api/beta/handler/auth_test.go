@@ -38,7 +38,7 @@ var users = []*auth.CreateUser{
 }
 
 func TestList(t *testing.T) {
-	store := memstore.New()
+	store := memstore.NewStore()
 	userService := service.NewUserServiceMemory(store)
 	authService := service.NewAuthServiceMemory(store)
 
@@ -76,7 +76,7 @@ var invalidUser1 = NewUser{
 }
 
 func TestRegisterUser(t *testing.T) {
-	store := memstore.New()
+	store := memstore.NewStore()
 	authService := service.NewAuthServiceMemory(store)
 	handler := http.HandlerFunc(Register(authService))
 
@@ -100,7 +100,7 @@ func TestRegisterUser(t *testing.T) {
 }
 
 func TestRegisterInvalidUser(t *testing.T) {
-	store := memstore.New()
+	store := memstore.NewStore()
 	authService := service.NewAuthServiceMemory(store)
 	handler := http.HandlerFunc(Register(authService))
 
@@ -161,7 +161,7 @@ func TestRegisterInvalidUser(t *testing.T) {
 
 func TestLogin(t *testing.T) {
 	os.Setenv("ACCESS_SECRET", "abc")
-	store := memstore.New()
+	store := memstore.NewStore()
 	userService := service.NewUserServiceMemory(store)
 	authService := service.NewAuthServiceMemory(store)
 
@@ -194,7 +194,7 @@ func TestLogin(t *testing.T) {
 
 func TestRefresh(t *testing.T) {
 	os.Setenv("ACCESS_SECRET", "abc")
-	store := memstore.New()
+	store := memstore.NewStore()
 	userService := service.NewUserServiceMemory(store)
 	authService := service.NewAuthServiceMemory(store)
 
@@ -245,7 +245,7 @@ func TestRefresh(t *testing.T) {
 
 func TestInvalidRefresh(t *testing.T) {
 	os.Setenv("ACCESS_SECRET", "abc")
-	store := memstore.New()
+	store := memstore.NewStore()
 	userService := service.NewUserServiceMemory(store)
 	authService := service.NewAuthServiceMemory(store)
 
@@ -266,7 +266,7 @@ func TestInvalidRefresh(t *testing.T) {
 
 func TestRefreshWithExpiredToken(t *testing.T) {
 	os.Setenv("ACCESS_SECRET", "abc")
-	store := memstore.New()
+	store := memstore.NewStore()
 	userService := service.NewUserServiceMemory(store)
 	authService := service.NewAuthServiceMemory(store)
 

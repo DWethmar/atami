@@ -1,25 +1,16 @@
 package memory
 
 import (
-	"strconv"
 	"testing"
-	"time"
 
 	"github.com/dwethmar/atami/pkg/memstore"
 	"github.com/dwethmar/atami/pkg/user"
-	"github.com/stretchr/testify/assert"
+	"github.com/dwethmar/atami/pkg/user/memory/util"
 )
 
 func TestDelete(t *testing.T) {
-	store := memstore.New()
-	a := userRecord{
-		ID:        1,
-		UID:       "x",
-		Email:     "test@test.nl",
-		CreatedAt: time.Now(),
-	}
-	assert.True(t, store.Put(strconv.Itoa(a.ID), a))
-
+	store := memstore.NewStore()
+	util.AddTestUser(store, 1)
 	deleter := NewDeleter(store)
-	user.TestDelete(t, deleter, a.ID)
+	user.TestDelete(t, deleter, 1)
 }

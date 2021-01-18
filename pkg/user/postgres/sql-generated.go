@@ -21,7 +21,7 @@ type Row interface {
 var selectUsernameUniqueCheck = `SELECT
 	1
 FROM public.app_user
-WHERE username = $1
+WHERE app_user.username = $1
 LIMIT 1`
 
 func mapSelectUsernameUniqueCheck(row Row) (bool, error) {
@@ -42,7 +42,7 @@ func queryRowSelectUsernameUniqueCheck(
 var selectEmailUniqueCheck = `SELECT
 	1
 FROM public.app_user
-WHERE email = $1
+WHERE app_user.email = $1
 LIMIT 1`
 
 func mapSelectEmailUniqueCheck(row Row) (bool, error) {
@@ -62,12 +62,12 @@ func queryRowSelectEmailUniqueCheck(
 // insertUser sql query
 var insertUser = `INSERT INTO public.app_user
 (
-	uid,
-	username,
-	email,
-	password,
-	created_at,
-	updated_at
+	app_user.uid,
+	app_user.username,
+	app_user.email,
+	app_user.password,
+	app_user.created_at,
+	app_user.updated_at
 )
 VALUES (
 	$1,
@@ -105,7 +105,7 @@ func queryRowInsertUser(
 
 // deleteUser sql query
 var deleteUser = `DELETE FROM public.app_user
-WHERE id = $1`
+WHERE app_user.id = $1`
 
 func execDeleteUser(
 	db *sql.DB,
@@ -171,7 +171,7 @@ var selectUserByID = `SELECT
 	app_user.created_at,
 	app_user.updated_at
 FROM public.app_user
-WHERE id = $1
+WHERE app_user.id = $1
 LIMIT 1`
 
 func mapSelectUserByID(row Row) (*user.User, error) {
@@ -197,7 +197,7 @@ var selectUserByUID = `SELECT
 	app_user.created_at,
 	app_user.updated_at
 FROM public.app_user
-WHERE uid = $1
+WHERE app_user.uid = $1
 LIMIT 1`
 
 func mapSelectUserByUID(row Row) (*user.User, error) {
@@ -223,7 +223,7 @@ var selectUserByEmail = `SELECT
 	app_user.created_at,
 	app_user.updated_at
 FROM public.app_user
-WHERE email = $1
+WHERE app_user.email = $1
 LIMIT 1`
 
 func mapSelectUserByEmail(row Row) (*user.User, error) {
@@ -248,9 +248,9 @@ var selectUserByEmailWithPassword = `SELECT
 	app_user.email,
 	app_user.created_at,
 	app_user.updated_at,
-	password
+	app_user.password
 FROM public.app_user
-WHERE email = $1
+WHERE app_user.email = $1
 LIMIT 1`
 
 func mapSelectUserByEmailWithPassword(row Row) (*user.User, error) {
@@ -276,7 +276,7 @@ var selectUserByUsername = `SELECT
 	app_user.created_at,
 	app_user.updated_at
 FROM public.app_user
-WHERE username = $1
+WHERE app_user.username = $1
 LIMIT 1`
 
 func mapSelectUserByUsername(row Row) (*user.User, error) {

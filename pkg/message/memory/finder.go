@@ -14,7 +14,8 @@ type findRepository struct {
 
 // FindByID get one message
 func (i *findRepository) FindByID(ID int) (*message.Message, error) {
-	result, ok := i.store.Get(strconv.Itoa(ID))
+	messages := i.store.GetMessages()
+	result, ok := messages.Get(strconv.Itoa(ID))
 	if ok {
 		if message, ok := result.(message.Message); ok {
 			return &message, nil
@@ -26,7 +27,15 @@ func (i *findRepository) FindByID(ID int) (*message.Message, error) {
 
 // FindAll get multiple messages
 func (i *findRepository) Find(limit, offset int) ([]*message.Message, error) {
-	results := i.store.Slice(offset, limit)
+	messages := i.store.GetMessages()
+
+	if len := messages.Len(); len == 0 {
+		return nil, nil
+	} else if offset+limit > len {
+		limit = len - offset
+	}
+
+	results := messages.Slice(offset, limit)
 	items := make([]*message.Message, len(results))
 
 	for i, l := range results {

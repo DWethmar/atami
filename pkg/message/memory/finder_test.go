@@ -7,6 +7,7 @@ import (
 
 	"github.com/dwethmar/atami/pkg/memstore"
 	"github.com/dwethmar/atami/pkg/message"
+	"github.com/dwethmar/atami/pkg/message/memory/util"
 )
 
 func generateTestMessages(size int) []message.CreateMessageRequest {
@@ -21,7 +22,9 @@ func generateTestMessages(size int) []message.CreateMessageRequest {
 }
 
 func setup() (*memstore.Store, []message.Message) {
-	store := memstore.New()
+	store := memstore.NewStore()
+	util.AddTestUser(store, 1)
+
 	service := New(store)
 	msgs := make([]message.Message, 100)
 	for i, newMsg := range generateTestMessages(100) {
@@ -53,6 +56,5 @@ func TestNotFound(t *testing.T) {
 
 func TestFindAll(t *testing.T) {
 	store, messages := setup()
-
 	message.TestFind(t, NewFinder(store), 100, messages)
 }

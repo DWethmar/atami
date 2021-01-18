@@ -29,3 +29,8 @@
     - [ ] UserService -> Users
     - [ ] MessageService -> Messages
 - [ ] Cloud Vision API 
+
+
+merge packages
+pkg/api/beta/router
+pkg/api/beta/handler
