@@ -19,16 +19,16 @@ type Row interface {
 
 // selectMessages sql query
 var selectMessages = `SELECT
-	message.id,
-	message.uid,
-	message.text,
-	message.created_by_user_id,
-	message.created_at,
-	app_user.uid,
-	app_user.username
+	id,
+	uid,
+	text,
+	created_by_user_id,
+	created_at,
+	uid,
+	username
 FROM public.message
-LEFT JOIN public.app_user ON message.created_by_user_id = app_user.id
-ORDER BY message.created_at DESC
+LEFT JOIN public.app_user ON created_by_user_id = id
+ORDER BY created_at DESC
 LIMIT $1
 OFFSET $2`
 
@@ -66,13 +66,13 @@ func querySelectMessages(
 
 // selectMessageByID sql query
 var selectMessageByID = `SELECT
-	message.id,
-	message.uid,
-	message.text,
-	message.created_by_user_id,
-	message.created_at
+	id,
+	uid,
+	text,
+	created_by_user_id,
+	created_at
 FROM public.message
-WHERE message.id = $1`
+WHERE id = $1`
 
 func mapSelectMessageByID(row Row) (*message.Message, error) {
 	return defaultMap(row)
@@ -90,7 +90,7 @@ func queryRowSelectMessageByID(
 
 // deleteMessage sql query
 var deleteMessage = `DELETE FROM public.message
-WHERE message.id = $1`
+WHERE id = $1`
 
 func execDeleteMessage(
 	db *sql.DB,
@@ -105,10 +105,10 @@ func execDeleteMessage(
 // insertMessage sql query
 var insertMessage = `INSERT INTO public.message
 (
-	message.uid,
-	message.text,
-	message.created_by_user_id,
-	message.created_at
+	uid,
+	text,
+	created_by_user_id,
+	created_at
 )
 VALUES (
 	$1,
@@ -116,7 +116,7 @@ VALUES (
 	$3,
 	$4
 )
-RETURNING message.id, message.uid, message.text, message.created_by_user_id, message.created_at`
+RETURNING id, uid, text, created_by_user_id, created_at`
 
 func mapInsertMessage(row Row) (*message.Message, error) {
 	return defaultMap(row)

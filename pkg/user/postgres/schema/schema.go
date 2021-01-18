@@ -7,19 +7,19 @@ var (
 
 const (
 	// ColID table Column
-	ColID = "app_user.id"
+	ColID = "id"
 	// ColUID table Column
-	ColUID = "app_user.uid"
+	ColUID = "uid"
 	// ColUsername table Column
-	ColUsername = "app_user.username"
+	ColUsername = "username"
 	// ColEmail table Column
-	ColEmail = "app_user.email"
+	ColEmail = "email"
 	// ColPassword table Column
-	ColPassword = "app_user.password"
+	ColPassword = "password"
 	// ColCreatedAt table Column
-	ColCreatedAt = "app_user.created_at"
+	ColCreatedAt = "created_at"
 	// ColUpdatedAt table Column
-	ColUpdatedAt = "app_user.updated_at"
+	ColUpdatedAt = "updated_at"
 )
 
 // SelectCols are the default selected columns

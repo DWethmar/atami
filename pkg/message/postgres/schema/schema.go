@@ -7,15 +7,15 @@ var (
 
 var (
 	// ColID table Column
-	ColID = "message.id"
+	ColID = "id"
 	// ColUID table Column
-	ColUID = "message.uid"
+	ColUID = "uid"
 	// ColText table Column
-	ColText = "message.text"
+	ColText = "text"
 	// ColCreatedByUserID table Column
-	ColCreatedByUserID = "message.created_by_user_id"
+	ColCreatedByUserID = "created_by_user_id"
 	// ColCreatedAt table Column
-	ColCreatedAt = "message.created_at"
+	ColCreatedAt = "created_at"
 )
 
 // SelectCols are the default selected columns

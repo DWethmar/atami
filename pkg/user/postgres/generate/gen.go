@@ -18,7 +18,6 @@ func main() {
 			"github.com/dwethmar/atami/pkg/user",
 		},
 		[]*qg.GenerateQuery{
-
 			{
 				Name: "selectUsernameUniqueCheck",
 				SQL: qb.Select(
