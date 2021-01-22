@@ -30,14 +30,19 @@ type Message struct {
 }
 
 func mapMessage(msg *message.Message) *Message {
+	var user MessageUser
+	if msg.User != nil {
+		user = MessageUser{
+			UID:      msg.User.UID,
+			Username: msg.User.Username,
+		}
+	}
+
 	return &Message{
 		UID:       msg.UID,
 		Text:      msg.Text,
 		CreatedAt: msg.CreatedAt,
-		User: MessageUser{
-			UID:      msg.User.UID,
-			Username: msg.User.Username,
-		},
+		User:      user,
 	}
 }
 

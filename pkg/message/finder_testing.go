@@ -27,6 +27,11 @@ func TestFindOne(t *testing.T, finder *Finder, ID int, message Message) {
 		assert.Equal(t, message.ID, m.ID)
 		assert.Equal(t, message.Text, m.Text)
 		assert.Equal(t, message.CreatedByUserID, m.CreatedByUserID)
+
+		if assert.NotNil(t, m.User) {
+			assert.Equal(t, message.CreatedByUserID, m.User.ID)
+			assert.Equal(t, m.CreatedByUserID, m.User.ID)
+		}
 	}
 }
 

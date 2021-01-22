@@ -12,6 +12,7 @@ import (
 	"github.com/dwethmar/atami/pkg/memstore"
 	"github.com/dwethmar/atami/pkg/message"
 	"github.com/dwethmar/atami/pkg/user"
+	"github.com/dwethmar/atami/pkg/user/memory/util"
 
 	"github.com/dwethmar/atami/pkg/service"
 	"github.com/stretchr/testify/assert"
@@ -27,8 +28,9 @@ func TestListMessages(t *testing.T) {
 			CreatedAt:       time.Now(),
 			CreatedByUserID: 1,
 			User: &message.User{
-				UID:      "1kF1ZTVJ3xknUgLWAAmPRKX3r8X",
-				Username: "testaccount_1",
+				ID:       1,
+				UID:      "UID1",
+				Username: "test",
 			},
 		},
 		{
@@ -38,12 +40,15 @@ func TestListMessages(t *testing.T) {
 			CreatedAt:       time.Now(),
 			CreatedByUserID: 1,
 			User: &message.User{
-				UID:      "1kF1ZTVJ3xknUgLWAAmPRKX3r8X",
-				Username: "testaccount_1",
+				ID:       1,
+				UID:      "UID1",
+				Username: "test",
 			},
 		},
 	}
 	store := memstore.NewStore()
+	util.AddTestUser(store, 1)
+
 	for _, msg := range messages {
 		store.GetMessages().Put(strconv.Itoa(msg.ID), *msg)
 	}

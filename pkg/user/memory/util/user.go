@@ -1,6 +1,7 @@
 package util
 
 import (
+	"fmt"
 	"strconv"
 	"time"
 
@@ -14,7 +15,7 @@ func AddTestUser(store *memstore.Store, ID int) {
 		ID:        ID,
 		UID:       "UID" + strconv.Itoa(ID),
 		Username:  "test",
-		Email:     "test@test.nl",
+		Email:     fmt.Sprintf("test%d@test.nl", ID),
 		CreatedAt: time.Now(),
 		UpdatedAt: time.Now(),
 	})
