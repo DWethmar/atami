@@ -65,8 +65,8 @@ func TestListMessages(t *testing.T) {
 	handler := http.HandlerFunc(ListMessages(ms))
 	handler.ServeHTTP(rr, req)
 
-	assert.Equal(t, http.StatusOK, rr.Code, "Status code should be equal")
-	assert.Equal(t, "application/json", rr.Header().Get("Content-Type"), "Content-Type code should be equal")
+	assert.Equal(t, http.StatusCreated, rr.Code)
+	assert.Equal(t, "application/json", rr.Header().Get("Content-Type"))
 
 	expectedResponds := make([]*Message, len(messages))
 	for i, m := range messages {
@@ -98,8 +98,8 @@ func TestCreateMessage(t *testing.T) {
 	handler := http.HandlerFunc(CreateMessage(ms))
 	handler.ServeHTTP(rr, req)
 
-	assert.Equal(t, http.StatusCreated, rr.Code, "Status code should be equal")
-	assert.Equal(t, "application/json", rr.Header().Get("Content-Type"), "Content-Type code should be equal")
+	assert.Equal(t, http.StatusCreated, rr.Code)
+	assert.Equal(t, "application/json", rr.Header().Get("Content-Type"))
 
 	// Check the response body is what we expect.
 	result := CreatMessageSuccess{}

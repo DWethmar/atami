@@ -109,7 +109,7 @@ func CreateMessage(ms *message.Service) http.HandlerFunc {
 			if msg, err := ms.Create(newMsg); err == nil {
 				response.SendJSON(w, r, CreatMessageSuccess{
 					UID: msg.UID,
-				}, http.StatusOK)
+				}, http.StatusCreated)
 				return
 			}
 			response.SendBadRequestError(w, r, err)
