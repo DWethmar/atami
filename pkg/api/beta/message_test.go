@@ -89,7 +89,7 @@ func TestCreateMessage(t *testing.T) {
 	body, _ := json.Marshal(addEntry)
 	req := httptest.NewRequest("POST", "/", bytes.NewBuffer(body))
 
-	// Add user to context
+	// Add user to context.
 	ctx := req.Context()
 	ctx = middleware.WithUser(ctx, user)
 	req = req.WithContext(ctx)
