@@ -1,7 +1,6 @@
 package message
 
 import (
-	"fmt"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
@@ -55,11 +54,10 @@ func TestFind(t *testing.T, finder *Finder, length int, messages []Message) {
 			assert.Equal(t, messages[i].Text, message.Text)
 
 			if assert.NotNil(t, message.User) {
-				fmt.Println(message)
-				fmt.Println("UID: -> " + message.User.UID + " <- ")
-				fmt.Println(message.User.ID)
-				fmt.Println(message.User.Username)
-
+				// fmt.Println(message)
+				// fmt.Println("UID: -> " + message.User.UID + " <- ")
+				// fmt.Println(message.User.ID)
+				// fmt.Println(message.User.Username)
 				assert.Equal(t, message.CreatedByUserID, message.User.ID)
 			}
 		}

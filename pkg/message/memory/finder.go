@@ -28,6 +28,7 @@ func (i *findRepository) FindByID(ID int) (*message.Message, error) {
 // FindAll get multiple messages
 func (i *findRepository) Find(limit, offset int) ([]*message.Message, error) {
 	messages := i.store.GetMessages()
+	users := i.store.GetUsers()
 
 	if len := messages.Len(); len == 0 {
 		return nil, nil
@@ -35,12 +36,20 @@ func (i *findRepository) Find(limit, offset int) ([]*message.Message, error) {
 		limit = len - offset
 	}
 
-	results := messages.Slice(offset, limit)
-	items := make([]*message.Message, len(results))
+	paged := messages.Slice(offset, limit)
+	items := make([]*message.Message, len(paged))
 
-	for i, l := range results {
-		if item, ok := l.(message.Message); ok {
-			items[i] = &item
+	for i, l := range paged {
+		if msg, ok := l.(message.Message); ok {
+
+			// find and set user
+			if r, ok := users.Get(strconv.Itoa(msg.CreatedByUserID)); ok {
+				if user, ok := r.(message.User); ok {
+					msg.User = &user
+				}
+			}
+
+			items[i] = &msg
 		} else {
 			return nil, errCouldNotParse
 		}
