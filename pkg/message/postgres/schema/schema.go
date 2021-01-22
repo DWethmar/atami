@@ -1,8 +1,10 @@
 package schema
 
+import "fmt"
+
 var (
 	// Table is the database tablename
-	Table = "public.message"
+	Table = "message"
 )
 
 var (
@@ -20,9 +22,14 @@ var (
 
 // SelectCols are the default selected columns
 var SelectCols = []string{
-	ColID,
-	ColUID,
-	ColText,
-	ColCreatedByUserID,
-	ColCreatedAt,
+	WithTbl(ColID),
+	WithTbl(ColUID),
+	WithTbl(ColText),
+	WithTbl(ColCreatedByUserID),
+	WithTbl(ColCreatedAt),
+}
+
+// WithTbl adds table to col
+func WithTbl(col string) string {
+	return fmt.Sprintf("%s.%s", Table, col)
 }

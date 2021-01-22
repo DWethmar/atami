@@ -77,7 +77,7 @@ VALUES (
 	$5,
 	$6
 )
-RETURNING id, uid, username, email, created_at, updated_at`
+RETURNING public.app_user.id, public.app_user.uid, public.app_user.username, public.app_user.email, public.app_user.created_at, public.app_user.updated_at`
 
 func mapInsertUser(row Row) (*user.User, error) {
 	return defaultMap(row)
@@ -119,12 +119,12 @@ func execDeleteUser(
 
 // selectUsers sql query
 var selectUsers = `SELECT
-	id,
-	uid,
-	username,
-	email,
-	created_at,
-	updated_at
+	public.app_user.id,
+	public.app_user.uid,
+	public.app_user.username,
+	public.app_user.email,
+	public.app_user.created_at,
+	public.app_user.updated_at
 FROM public.app_user
 ORDER BY created_at ASC
 LIMIT $1
@@ -164,12 +164,12 @@ func querySelectUsers(
 
 // selectUserByID sql query
 var selectUserByID = `SELECT
-	id,
-	uid,
-	username,
-	email,
-	created_at,
-	updated_at
+	public.app_user.id,
+	public.app_user.uid,
+	public.app_user.username,
+	public.app_user.email,
+	public.app_user.created_at,
+	public.app_user.updated_at
 FROM public.app_user
 WHERE id = $1
 LIMIT 1`
@@ -190,12 +190,12 @@ func queryRowSelectUserByID(
 
 // selectUserByUID sql query
 var selectUserByUID = `SELECT
-	id,
-	uid,
-	username,
-	email,
-	created_at,
-	updated_at
+	public.app_user.id,
+	public.app_user.uid,
+	public.app_user.username,
+	public.app_user.email,
+	public.app_user.created_at,
+	public.app_user.updated_at
 FROM public.app_user
 WHERE uid = $1
 LIMIT 1`
@@ -216,12 +216,12 @@ func queryRowSelectUserByUID(
 
 // selectUserByEmail sql query
 var selectUserByEmail = `SELECT
-	id,
-	uid,
-	username,
-	email,
-	created_at,
-	updated_at
+	public.app_user.id,
+	public.app_user.uid,
+	public.app_user.username,
+	public.app_user.email,
+	public.app_user.created_at,
+	public.app_user.updated_at
 FROM public.app_user
 WHERE email = $1
 LIMIT 1`
@@ -242,12 +242,12 @@ func queryRowSelectUserByEmail(
 
 // selectUserByEmailWithPassword sql query
 var selectUserByEmailWithPassword = `SELECT
-	id,
-	uid,
-	username,
-	email,
-	created_at,
-	updated_at,
+	public.app_user.id,
+	public.app_user.uid,
+	public.app_user.username,
+	public.app_user.email,
+	public.app_user.created_at,
+	public.app_user.updated_at,
 	password
 FROM public.app_user
 WHERE email = $1
@@ -269,12 +269,12 @@ func queryRowSelectUserByEmailWithPassword(
 
 // selectUserByUsername sql query
 var selectUserByUsername = `SELECT
-	id,
-	uid,
-	username,
-	email,
-	created_at,
-	updated_at
+	public.app_user.id,
+	public.app_user.uid,
+	public.app_user.username,
+	public.app_user.email,
+	public.app_user.created_at,
+	public.app_user.updated_at
 FROM public.app_user
 WHERE username = $1
 LIMIT 1`

@@ -15,6 +15,24 @@ import (
 	userSchema "github.com/dwethmar/atami/pkg/user/postgres/schema"
 )
 
+var IDCol = schema.WithTbl(schema.ColID)
+
+var defaultCols = append(
+	schema.SelectCols,
+	userSchema.WithTbl(userSchema.ColUID),
+	userSchema.WithTbl(userSchema.ColUsername),
+)
+
+var defaultJoin = qb.NewJoin().
+	Left(fmt.Sprintf(
+		"%s ON %v = %v",
+		userSchema.Table,
+		schema.WithTbl(schema.ColCreatedByUserID),
+		userSchema.WithTbl(userSchema.ColID),
+	))
+
+var defaultOrderBy = []string{fmt.Sprintf("%s DESC", schema.WithTbl(schema.ColCreatedAt))}
+
 func main() {
 	qg.Generate(
 		"sql-generated.go",
@@ -28,23 +46,13 @@ func main() {
 				Name: "selectMessages",
 				SQL: qb.Select(
 					qb.SelectQuery{
-						Cols: append(
-							schema.SelectCols,
-							userSchema.ColUID,
-							userSchema.ColUsername,
-						),
-						From: schema.Table,
-						Joins: qb.NewJoin().
-							Left(fmt.Sprintf(
-								"%s ON %v = %v",
-								userSchema.Table,
-								schema.ColCreatedByUserID,
-								userSchema.ColID,
-							)),
+						Cols:    defaultCols,
+						From:    schema.Table,
+						Joins:   defaultJoin,
 						Where:   nil,
 						GroupBy: []string{},
 						Having:  nil,
-						OrderBy: []string{fmt.Sprintf("%s DESC", schema.ColCreatedAt)},
+						OrderBy: defaultOrderBy,
 						Limit:   "$1",
 						Offset:  "$2",
 					},
@@ -67,11 +75,11 @@ func main() {
 				Name: "selectMessageByID",
 				SQL: qb.Select(
 					qb.SelectQuery{
-						Cols:  schema.SelectCols,
+						Cols:  defaultCols,
 						From:  schema.Table,
-						Joins: nil,
+						Joins: defaultJoin,
 						Where: qb.NewWhere().And(
-							fmt.Sprintf("%s = $1", schema.ColID),
+							fmt.Sprintf("%s = $1", IDCol),
 						),
 						GroupBy: []string{},
 						Having:  nil,
@@ -96,7 +104,7 @@ func main() {
 					qb.DeleteQuery{
 						From: schema.Table,
 						Where: qb.NewWhere().And(
-							fmt.Sprintf("%s = $1", schema.ColID),
+							fmt.Sprintf("%s = $1", IDCol),
 						)},
 				),
 				QueryType: qg.Exec,
