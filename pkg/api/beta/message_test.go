@@ -98,7 +98,7 @@ func TestCreateMessage(t *testing.T) {
 	handler := http.HandlerFunc(CreateMessage(ms))
 	handler.ServeHTTP(rr, req)
 
-	assert.Equal(t, http.StatusCreated, rr.Code)
+	assert.Equal(t, http.StatusCreated, rr.Code, rr.Body.ReadString()
 	assert.Equal(t, "application/json", rr.Header().Get("Content-Type"))
 
 	// Check the response body is what we expect.
