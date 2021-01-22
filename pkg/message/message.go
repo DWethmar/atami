@@ -17,6 +17,7 @@ type Message struct {
 
 // User output
 type User struct {
+	ID       int
 	UID      string
 	Username string
 }

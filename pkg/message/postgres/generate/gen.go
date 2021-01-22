@@ -19,6 +19,7 @@ var IDCol = schema.WithTbl(schema.ColID)
 
 var defaultCols = append(
 	schema.SelectCols,
+	userSchema.WithTbl(userSchema.ColID),
 	userSchema.WithTbl(userSchema.ColUID),
 	userSchema.WithTbl(userSchema.ColUsername),
 )

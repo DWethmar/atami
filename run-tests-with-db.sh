@@ -31,5 +31,15 @@ clean_up () {
 }
 trap clean_up EXIT
 
+ACCESS_SECRET="abcdefghijklmnopqrstuvwxyz" \
+POSTGRES_HOST=$POSTGRES_HOST \
+POSTGRES_PORT=$POSTGRES_PORT  \
+POSTGRES_USER=$POSTGRES_USER \
+POSTGRES_PASSWORD=$ \
+POSTGRES_DATABASE=$POSTGRES_DB_NAME \
+DRIVER_NAME=$DRIVER_NAME \
+MIGRATION_FILES=migrations/\
+TEST_WITH_DB=true\
+TEST_SEED_FILE="seed/init.sql"\
 go test -v ./...
 

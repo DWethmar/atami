@@ -30,12 +30,12 @@ func setup(db *sql.DB, size int) (*message.Finder, []message.Message) {
 	repo := &creatorRepository{db}
 
 	for i, newMSG := range generateTestMessages(size) {
-		msg, err := repo.Create(newMSG)
-		if err != nil {
+		if msg, err := repo.Create(newMSG); err == nil {
+			messages[i] = *msg
+		} else {
 			fmt.Printf("error: %s", err)
 			panic(1)
 		}
-		messages[i] = *msg
 	}
 	return NewFinder(db), messages
 }

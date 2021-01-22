@@ -58,7 +58,9 @@ func TestFind(t *testing.T, finder *Finder, length int, messages []Message) {
 			fmt.Print(messages[i])
 			fmt.Print(message)
 
-			assert.NotNil(t, message.User)
+			if assert.NotNil(t, message.User) {
+				assert.Equal(t, message.User.ID, message.CreatedByUserID)
+			}
 		}
 	}
 }
