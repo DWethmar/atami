@@ -24,6 +24,7 @@ var selectMessages = `SELECT
 	message.text,
 	message.created_by_user_id,
 	message.created_at,
+	app_user.id,
 	app_user.uid,
 	app_user.username
 FROM message
@@ -71,6 +72,7 @@ var selectMessageByID = `SELECT
 	message.text,
 	message.created_by_user_id,
 	message.created_at,
+	app_user.id,
 	app_user.uid,
 	app_user.username
 FROM message
