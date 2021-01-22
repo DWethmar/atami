@@ -5,6 +5,7 @@ import (
 
 	"github.com/dwethmar/atami/pkg/memstore"
 	"github.com/dwethmar/atami/pkg/message"
+	"github.com/dwethmar/atami/pkg/message/memory/util"
 )
 
 // readerRepository reads messages from memory
@@ -44,8 +45,8 @@ func (i *findRepository) Find(limit, offset int) ([]*message.Message, error) {
 
 			// find and set user
 			if r, ok := users.Get(strconv.Itoa(msg.CreatedByUserID)); ok {
-				if user, ok := r.(message.User); ok {
-					msg.User = &user
+				if user, err := util.ToMsgUser(r); err == nil {
+					msg.User = user
 				}
 			}
 
