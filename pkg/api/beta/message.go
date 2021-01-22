@@ -112,6 +112,9 @@ func CreateMessage(ms *message.Service) http.HandlerFunc {
 			}
 			response.SendBadRequestError(w, r, err)
 			return
+		} else {
+			response.SendBadRequestError(w, r, err)
+			return
 		}
 
 		response.SendServerError(w, r)
