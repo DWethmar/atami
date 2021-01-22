@@ -1,4 +1,4 @@
-package handler
+package beta
 
 import (
 	"encoding/json"
@@ -9,6 +9,10 @@ import (
 	"github.com/dwethmar/atami/pkg/api/middleware"
 	"github.com/dwethmar/atami/pkg/api/response"
 	"github.com/dwethmar/atami/pkg/message"
+	"github.com/dwethmar/atami/pkg/user"
+	"github.com/go-chi/chi"
+	"github.com/go-chi/cors"
+	"github.com/go-chi/httplog"
 )
 
 // MessageUser output
@@ -134,4 +138,29 @@ func DeleteMessage(ms *message.Service) http.HandlerFunc {
 		// msg, err := ms.FindByUID(uid)
 
 	})
+}
+
+// NewMessageRouter creates new message router
+func NewMessageRouter(userService *user.Service, messageService *message.Service) http.Handler {
+	r := chi.NewRouter()
+
+	logger := httplog.NewLogger("message", httplog.Options{})
+	r.Use(httplog.RequestLogger(logger))
+	r.Use(middleware.Authenticated(userService))
+	r.Use(cors.Handler(cors.Options{
+		AllowOriginFunc: func(r *http.Request, origin string) bool {
+			return true
+		},
+		AllowedMethods:   []string{"POST", "DELETE"},
+		AllowedHeaders:   []string{"Accept", "Authorization", "Content-Type"},
+		ExposedHeaders:   []string{"Link"},
+		AllowCredentials: false,
+		MaxAge:           300,
+	}))
+
+	r.Get("/", ListMessages(messageService))
+	r.Post("/", CreateMessage(messageService))
+	r.Delete("/{uid}", CreateMessage(messageService))
+
+	return r
 }

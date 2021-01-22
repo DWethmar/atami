@@ -1,7 +1,6 @@
 package message
 
 import (
-	"fmt"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
@@ -47,19 +46,15 @@ func TestFind(t *testing.T, finder *Finder, length int, messages []Message) {
 			assert.NotEmpty(t, messages[i].ID)
 			assert.NotEmpty(t, messages[i].UID)
 			assert.NotEmpty(t, messages[i].Text)
-			assert.NotEmpty(t, messages[i].CreatedByUserID)
+			assert.NotZero(t, messages[i].CreatedByUserID)
 			assert.False(t, messages[i].CreatedAt.IsZero())
 
 			assert.Equal(t, messages[i].ID, message.ID)
 			assert.Equal(t, messages[i].UID, message.UID)
 			assert.Equal(t, messages[i].Text, message.Text)
 
-			fmt.Printf("HMMMMM")
-			fmt.Print(messages[i])
-			fmt.Print(message)
-
 			if assert.NotNil(t, message.User) {
-				assert.Equal(t, message.User.ID, message.CreatedByUserID)
+				assert.Equal(t, message.CreatedByUserID, message.User.ID)
 			}
 		}
 	}
