@@ -1,4 +1,4 @@
-package message
+package beta
 
 import (
 	"encoding/json"
