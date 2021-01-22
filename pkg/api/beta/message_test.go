@@ -65,7 +65,7 @@ func TestListMessages(t *testing.T) {
 	handler := http.HandlerFunc(ListMessages(ms))
 	handler.ServeHTTP(rr, req)
 
-	assert.Equal(t, http.StatusCreated, rr.Code)
+	assert.Equal(t, http.StatusOK, rr.Code)
 	assert.Equal(t, "application/json", rr.Header().Get("Content-Type"))
 
 	expectedResponds := make([]*Message, len(messages))
