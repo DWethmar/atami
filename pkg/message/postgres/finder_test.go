@@ -27,11 +27,13 @@ func generateTestMessages(size int) []message.CreateMessage {
 func setup(db *sql.DB, size int) (*message.Finder, []message.Message) {
 	messages := make([]message.Message, size)
 
-	repo := &creatorRepository{db}
+	createRepo := &creatorRepository{db}
+	findRepo := &findRepository{db}
 
 	for i, newMSG := range generateTestMessages(size) {
-		if msg, err := repo.Create(newMSG); err == nil {
-			messages[i] = *msg
+		if msg, err := createRepo.Create(newMSG); err == nil {
+			m, _ := findRepo.FindByID(msg.ID)
+			messages[i] = *m
 		} else {
 			fmt.Printf("error: %s", err)
 			panic(1)
