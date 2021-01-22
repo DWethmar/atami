@@ -78,7 +78,7 @@ LEFT JOIN app_user ON message.created_by_user_id = app_user.id
 WHERE message.id = $1`
 
 func mapSelectMessageByID(row Row) (*message.Message, error) {
-	return defaultMap(row)
+	return mapMessageWithUser(row)
 }
 
 func queryRowSelectMessageByID(
