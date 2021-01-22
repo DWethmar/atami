@@ -84,7 +84,7 @@ func TestCreateMessage(t *testing.T) {
 	ms := service.NewMessageServiceMemory(store)
 
 	addEntry := CreatMessageInput{
-		Text: ":D",
+		Text: "sadsdkjskjdskjsjdsjkskjkjdkjkjsdkjjdsk",
 	}
 	body, _ := json.Marshal(addEntry)
 	req := httptest.NewRequest("POST", "/", bytes.NewBuffer(body))
@@ -98,7 +98,7 @@ func TestCreateMessage(t *testing.T) {
 	handler := http.HandlerFunc(CreateMessage(ms))
 	handler.ServeHTTP(rr, req)
 
-	assert.Equal(t, http.StatusCreated, rr.Code, rr.Body.ReadString()
+	assert.Equal(t, http.StatusCreated, rr.Code)
 	assert.Equal(t, "application/json", rr.Header().Get("Content-Type"))
 
 	// Check the response body is what we expect.
