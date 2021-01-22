@@ -27,8 +27,8 @@ OFFSET 1`
 
 	received := Select(
 		SelectQuery{
-			Cols: []string{"public.user.id", "username"},
-			From: "public.message",
+			Select: []string{"public.user.id", "username"},
+			From:   "public.message",
 			Joins: NewJoin().
 				Left("public.user ON public.user.id = public.message.created_by_user_id"),
 			Where: NewWhere().

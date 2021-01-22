@@ -24,10 +24,10 @@ var selectMessages = `SELECT
 	message.text,
 	message.created_by_user_id,
 	message.created_at,
-	public.app_user.uid,
-	public.app_user.username
+	app_user.uid,
+	app_user.username
 FROM message
-LEFT JOIN public.app_user ON message.created_by_user_id = public.app_user.id
+LEFT JOIN app_user ON message.created_by_user_id = app_user.id
 ORDER BY message.created_at DESC
 LIMIT $1
 OFFSET $2`
@@ -71,10 +71,10 @@ var selectMessageByID = `SELECT
 	message.text,
 	message.created_by_user_id,
 	message.created_at,
-	public.app_user.uid,
-	public.app_user.username
+	app_user.uid,
+	app_user.username
 FROM message
-LEFT JOIN public.app_user ON message.created_by_user_id = public.app_user.id
+LEFT JOIN app_user ON message.created_by_user_id = app_user.id
 WHERE message.id = $1`
 
 func mapSelectMessageByID(row Row) (*message.Message, error) {

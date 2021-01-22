@@ -7,11 +7,11 @@ import (
 
 // InsertQuery defines the fields to build a insert sql query
 type InsertQuery struct {
-	Into      string
-	Cols      []string
-	Values    []interface{}
-	Select    *SelectQuery // If populated than instead of values, a select will be print
-	Returning []string
+	Into        string
+	Select      []string
+	Values      []interface{}
+	SelectQuery *SelectQuery // If populated than instead of values, a select will be print
+	Returning   []string
 }
 
 // Insert returns a insert sql query
@@ -23,12 +23,12 @@ func Insert(iq InsertQuery) string {
 		queryParts = append(queryParts, fromPart)
 	}
 
-	if len(iq.Cols) > 0 {
-		selectPart := fmt.Sprintf(`(%s)`, "\n\t"+strings.Join(iq.Cols, ",\n\t")+"\n")
+	if len(iq.Select) > 0 {
+		selectPart := fmt.Sprintf(`(%s)`, "\n\t"+strings.Join(iq.Select, ",\n\t")+"\n")
 		queryParts = append(queryParts, selectPart)
 	}
 
-	if len(iq.Values) > 0 && iq.Select == nil {
+	if len(iq.Values) > 0 && iq.SelectQuery == nil {
 		valuesParts := []string{}
 
 		for _, v := range iq.Values {
@@ -41,8 +41,8 @@ func Insert(iq InsertQuery) string {
 		)
 	}
 
-	if iq.Select != nil {
-		queryParts = append(queryParts, Select(*iq.Select))
+	if iq.SelectQuery != nil {
+		queryParts = append(queryParts, Select(*iq.SelectQuery))
 	}
 
 	if len(iq.Returning) > 0 {

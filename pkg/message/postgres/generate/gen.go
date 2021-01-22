@@ -46,7 +46,7 @@ func main() {
 				Name: "selectMessages",
 				SQL: qb.Select(
 					qb.SelectQuery{
-						Cols:    defaultCols,
+						Select:  defaultCols,
 						From:    schema.Table,
 						Joins:   defaultJoin,
 						Where:   nil,
@@ -75,9 +75,9 @@ func main() {
 				Name: "selectMessageByID",
 				SQL: qb.Select(
 					qb.SelectQuery{
-						Cols:  defaultCols,
-						From:  schema.Table,
-						Joins: defaultJoin,
+						Select: defaultCols,
+						From:   schema.Table,
+						Joins:  defaultJoin,
 						Where: qb.NewWhere().And(
 							fmt.Sprintf("%s = $1", IDCol),
 						),
@@ -122,7 +122,7 @@ func main() {
 				SQL: qb.Insert(
 					qb.InsertQuery{
 						Into: schema.Table,
-						Cols: []string{
+						Select: []string{
 							schema.ColUID,
 							schema.ColText,
 							schema.ColCreatedByUserID,

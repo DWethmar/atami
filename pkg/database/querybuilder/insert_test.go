@@ -29,7 +29,7 @@ VALUES (
 	received := Insert(
 		InsertQuery{
 			Into: "public.user",
-			Cols: []string{
+			Select: []string{
 				"uid",
 				"email",
 				"username",
@@ -75,7 +75,7 @@ RETURNING id`
 	received := Insert(
 		InsertQuery{
 			Into: "public.user",
-			Cols: []string{
+			Select: []string{
 				"uid",
 				"email",
 				"username",
@@ -83,8 +83,8 @@ RETURNING id`
 				"created_at",
 				"updated_at",
 			},
-			Select: &SelectQuery{
-				Cols: []string{
+			SelectQuery: &SelectQuery{
+				Select: []string{
 					"'abcdefg'",
 					"CONCAT('c_', email)",
 					"CONCAT('c_', username)",

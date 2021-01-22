@@ -9,6 +9,8 @@ import (
 	"github.com/dwethmar/atami/pkg/user/postgres/schema"
 )
 
+var defaultCols = schema.SelectCols
+
 func main() {
 	qg.Generate(
 		"sql-generated.go",
@@ -22,10 +24,10 @@ func main() {
 				Name: "selectUsernameUniqueCheck",
 				SQL: qb.Select(
 					qb.SelectQuery{
-						From: schema.Table,
-						Cols: []string{"1"},
+						From:   schema.Table,
+						Select: []string{"1"},
 						Where: qb.NewWhere().
-							And(fmt.Sprintf("%s = $1", schema.ColUsername)),
+							And(fmt.Sprintf("%s = $1", schema.WithTbl(schema.ColUsername))),
 						Limit: strconv.Itoa(1),
 					},
 				),
@@ -44,10 +46,10 @@ func main() {
 				Name: "selectEmailUniqueCheck",
 				SQL: qb.Select(
 					qb.SelectQuery{
-						From: schema.Table,
-						Cols: []string{"1"},
+						From:   schema.Table,
+						Select: []string{"1"},
 						Where: qb.NewWhere().
-							And(fmt.Sprintf("%s = $1", schema.ColEmail)),
+							And(fmt.Sprintf("%s = $1", schema.WithTbl(schema.ColEmail))),
 						Limit: strconv.Itoa(1),
 					},
 				),
@@ -67,7 +69,7 @@ func main() {
 				SQL: qb.Insert(
 					qb.InsertQuery{
 						Into: schema.Table,
-						Cols: []string{
+						Select: []string{
 							schema.ColUID,
 							schema.ColUsername,
 							schema.ColEmail,
@@ -117,7 +119,7 @@ func main() {
 				SQL: qb.Delete(
 					qb.DeleteQuery{
 						From:  schema.Table,
-						Where: qb.NewWhere().And(fmt.Sprintf("%s = $1", schema.ColID)),
+						Where: qb.NewWhere().And(fmt.Sprintf("%s = $1", schema.WithTbl(schema.ColID))),
 					},
 				),
 				QueryType: qg.Exec,
@@ -135,9 +137,9 @@ func main() {
 				Name: "selectUsers",
 				SQL: qb.Select(
 					qb.SelectQuery{
-						Cols:    schema.SelectCols,
+						Select:  defaultCols,
 						From:    schema.Table,
-						OrderBy: []string{"created_at ASC"},
+						OrderBy: []string{fmt.Sprintf("%s ASC", schema.WithTbl(schema.ColCreatedAt))},
 						Limit:   "$1",
 						Offset:  "$2",
 					},
@@ -161,10 +163,10 @@ func main() {
 				Name: "selectUserByID",
 				SQL: qb.Select(
 					qb.SelectQuery{
-						From: schema.Table,
-						Cols: schema.SelectCols,
+						From:   schema.Table,
+						Select: defaultCols,
 						Where: qb.NewWhere().And(
-							fmt.Sprintf("%s = $1", schema.ColID),
+							fmt.Sprintf("%s = $1", schema.WithTbl(schema.ColID)),
 						),
 						Limit: strconv.Itoa(1),
 					},
@@ -184,10 +186,10 @@ func main() {
 				Name: "selectUserByUID",
 				SQL: qb.Select(
 					qb.SelectQuery{
-						From: schema.Table,
-						Cols: schema.SelectCols,
+						From:   schema.Table,
+						Select: defaultCols,
 						Where: qb.NewWhere().And(
-							fmt.Sprintf("%s = $1", schema.ColUID),
+							fmt.Sprintf("%s = $1", schema.WithTbl(schema.ColUID)),
 						),
 						Limit: strconv.Itoa(1),
 					},
@@ -207,10 +209,10 @@ func main() {
 				Name: "selectUserByEmail",
 				SQL: qb.Select(
 					qb.SelectQuery{
-						From: schema.Table,
-						Cols: schema.SelectCols,
+						From:   schema.Table,
+						Select: defaultCols,
 						Where: qb.NewWhere().And(
-							fmt.Sprintf("%s = $1", schema.ColEmail),
+							fmt.Sprintf("%s = $1", schema.WithTbl(schema.ColEmail)),
 						),
 						Limit: strconv.Itoa(1),
 					},
@@ -230,10 +232,10 @@ func main() {
 				Name: "selectUserByEmailWithPassword",
 				SQL: qb.Select(
 					qb.SelectQuery{
-						From: schema.Table,
-						Cols: append(schema.SelectCols, schema.ColPassword),
+						From:   schema.Table,
+						Select: append(schema.SelectCols, schema.WithTbl(schema.ColPassword)),
 						Where: qb.NewWhere().And(
-							fmt.Sprintf("%s = $1", schema.ColEmail),
+							fmt.Sprintf("%s = $1", schema.WithTbl(schema.ColEmail)),
 						),
 						Limit: strconv.Itoa(1),
 					},
@@ -253,10 +255,10 @@ func main() {
 				Name: "selectUserByUsername",
 				SQL: qb.Select(
 					qb.SelectQuery{
-						From: schema.Table,
-						Cols: schema.SelectCols,
+						From:   schema.Table,
+						Select: schema.SelectCols,
 						Where: qb.NewWhere().And(
-							fmt.Sprintf("%s = $1", schema.ColUsername),
+							fmt.Sprintf("%s = $1", schema.WithTbl(schema.ColUsername)),
 						),
 						Limit: strconv.Itoa(1),
 					},

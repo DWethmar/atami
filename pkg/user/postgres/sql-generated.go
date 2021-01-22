@@ -20,8 +20,8 @@ type Row interface {
 // selectUsernameUniqueCheck sql query
 var selectUsernameUniqueCheck = `SELECT
 	1
-FROM public.app_user
-WHERE username = $1
+FROM app_user
+WHERE app_user.username = $1
 LIMIT 1`
 
 func mapSelectUsernameUniqueCheck(row Row) (bool, error) {
@@ -41,8 +41,8 @@ func queryRowSelectUsernameUniqueCheck(
 // selectEmailUniqueCheck sql query
 var selectEmailUniqueCheck = `SELECT
 	1
-FROM public.app_user
-WHERE email = $1
+FROM app_user
+WHERE app_user.email = $1
 LIMIT 1`
 
 func mapSelectEmailUniqueCheck(row Row) (bool, error) {
@@ -60,7 +60,7 @@ func queryRowSelectEmailUniqueCheck(
 }
 
 // insertUser sql query
-var insertUser = `INSERT INTO public.app_user
+var insertUser = `INSERT INTO app_user
 (
 	uid,
 	username,
@@ -77,7 +77,7 @@ VALUES (
 	$5,
 	$6
 )
-RETURNING public.app_user.id, public.app_user.uid, public.app_user.username, public.app_user.email, public.app_user.created_at, public.app_user.updated_at`
+RETURNING app_user.id, app_user.uid, app_user.username, app_user.email, app_user.created_at, app_user.updated_at`
 
 func mapInsertUser(row Row) (*user.User, error) {
 	return defaultMap(row)
@@ -104,8 +104,8 @@ func queryRowInsertUser(
 }
 
 // deleteUser sql query
-var deleteUser = `DELETE FROM public.app_user
-WHERE id = $1`
+var deleteUser = `DELETE FROM app_user
+WHERE app_user.id = $1`
 
 func execDeleteUser(
 	db *sql.DB,
@@ -119,14 +119,14 @@ func execDeleteUser(
 
 // selectUsers sql query
 var selectUsers = `SELECT
-	public.app_user.id,
-	public.app_user.uid,
-	public.app_user.username,
-	public.app_user.email,
-	public.app_user.created_at,
-	public.app_user.updated_at
-FROM public.app_user
-ORDER BY created_at ASC
+	app_user.id,
+	app_user.uid,
+	app_user.username,
+	app_user.email,
+	app_user.created_at,
+	app_user.updated_at
+FROM app_user
+ORDER BY app_user.created_at ASC
 LIMIT $1
 OFFSET $2`
 
@@ -164,14 +164,14 @@ func querySelectUsers(
 
 // selectUserByID sql query
 var selectUserByID = `SELECT
-	public.app_user.id,
-	public.app_user.uid,
-	public.app_user.username,
-	public.app_user.email,
-	public.app_user.created_at,
-	public.app_user.updated_at
-FROM public.app_user
-WHERE id = $1
+	app_user.id,
+	app_user.uid,
+	app_user.username,
+	app_user.email,
+	app_user.created_at,
+	app_user.updated_at
+FROM app_user
+WHERE app_user.id = $1
 LIMIT 1`
 
 func mapSelectUserByID(row Row) (*user.User, error) {
@@ -190,14 +190,14 @@ func queryRowSelectUserByID(
 
 // selectUserByUID sql query
 var selectUserByUID = `SELECT
-	public.app_user.id,
-	public.app_user.uid,
-	public.app_user.username,
-	public.app_user.email,
-	public.app_user.created_at,
-	public.app_user.updated_at
-FROM public.app_user
-WHERE uid = $1
+	app_user.id,
+	app_user.uid,
+	app_user.username,
+	app_user.email,
+	app_user.created_at,
+	app_user.updated_at
+FROM app_user
+WHERE app_user.uid = $1
 LIMIT 1`
 
 func mapSelectUserByUID(row Row) (*user.User, error) {
@@ -216,14 +216,14 @@ func queryRowSelectUserByUID(
 
 // selectUserByEmail sql query
 var selectUserByEmail = `SELECT
-	public.app_user.id,
-	public.app_user.uid,
-	public.app_user.username,
-	public.app_user.email,
-	public.app_user.created_at,
-	public.app_user.updated_at
-FROM public.app_user
-WHERE email = $1
+	app_user.id,
+	app_user.uid,
+	app_user.username,
+	app_user.email,
+	app_user.created_at,
+	app_user.updated_at
+FROM app_user
+WHERE app_user.email = $1
 LIMIT 1`
 
 func mapSelectUserByEmail(row Row) (*user.User, error) {
@@ -242,15 +242,15 @@ func queryRowSelectUserByEmail(
 
 // selectUserByEmailWithPassword sql query
 var selectUserByEmailWithPassword = `SELECT
-	public.app_user.id,
-	public.app_user.uid,
-	public.app_user.username,
-	public.app_user.email,
-	public.app_user.created_at,
-	public.app_user.updated_at,
-	password
-FROM public.app_user
-WHERE email = $1
+	app_user.id,
+	app_user.uid,
+	app_user.username,
+	app_user.email,
+	app_user.created_at,
+	app_user.updated_at,
+	app_user.password
+FROM app_user
+WHERE app_user.email = $1
 LIMIT 1`
 
 func mapSelectUserByEmailWithPassword(row Row) (*user.User, error) {
@@ -269,14 +269,14 @@ func queryRowSelectUserByEmailWithPassword(
 
 // selectUserByUsername sql query
 var selectUserByUsername = `SELECT
-	public.app_user.id,
-	public.app_user.uid,
-	public.app_user.username,
-	public.app_user.email,
-	public.app_user.created_at,
-	public.app_user.updated_at
-FROM public.app_user
-WHERE username = $1
+	app_user.id,
+	app_user.uid,
+	app_user.username,
+	app_user.email,
+	app_user.created_at,
+	app_user.updated_at
+FROM app_user
+WHERE app_user.username = $1
 LIMIT 1`
 
 func mapSelectUserByUsername(row Row) (*user.User, error) {

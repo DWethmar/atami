@@ -4,7 +4,7 @@ import "fmt"
 
 var (
 	// Table is the database tablename
-	Table = "public.app_user"
+	Table = "app_user"
 )
 
 const (
@@ -24,7 +24,7 @@ const (
 	ColUpdatedAt = "updated_at"
 )
 
-// SelectCols are the default selected columns
+// SelectCols are the default selected columns. Note that the password col is omitted.
 var SelectCols = []string{
 	WithTbl(ColID),
 	WithTbl(ColUID),
