@@ -55,7 +55,7 @@ func TestFind(t *testing.T, finder *Finder, length int, messages []Message) {
 			assert.Equal(t, messages[i].Text, message.Text)
 
 			fmt.Printf("HMMMMM")
-			fmt.Print(messages[i].User)
+			fmt.Print(messages[i])
 
 			assert.NotNil(t, messages[i].User)
 		}
