@@ -84,8 +84,6 @@ func ListMessages(ms *message.Service) http.HandlerFunc {
 // CreateMessage handler
 func CreateMessage(ms *message.Service) http.HandlerFunc {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		w.WriteHeader(http.StatusOK)
-
 		usr, err := middleware.GetUser(r.Context())
 		if err != nil || usr == nil {
 			fmt.Print(err)
