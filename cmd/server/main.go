@@ -18,8 +18,14 @@ import (
 func main() {
 	fmt.Println("Staring server")
 
-	c := config.LoadEnvFile()
-	die(c.Valid())
+	c := config.Load()
+	if err := c.Valid(); err != nil {
+
+		fmt.Println("Not all env vars are set. Loading .env file.")
+
+		c = config.LoadEnvFile()
+		die(c.Valid())
+	}
 
 	dataSource := database.GetPostgresConnectionString(c)
 

@@ -14,7 +14,7 @@ BIN=bin
 
 server: 
 	@echo build server
-	$(GOBUILD) -v -o $(BIN)/atami-server ./cmd/server/
+	$(GOBUILD) -v -o $(BIN)/server ./cmd/server/
 
 generate:
 	@echo generating
