@@ -95,7 +95,7 @@ func main() {
 						Type: "int",
 					},
 				},
-				MapFunc:    "defaultMap",
+				MapFunc:    "mapMessageWithUser",
 				ReturnType: "*message.Message",
 			},
 			{
