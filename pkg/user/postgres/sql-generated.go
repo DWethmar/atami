@@ -144,10 +144,10 @@ func querySelectUsers(
 		limit,
 		offset,
 	)
+	defer rows.Close()
 	if err != nil {
 		return nil, err
 	}
-	defer rows.Close()
 	entries := make([]*user.User, 0)
 	for rows.Next() {
 		if entry, err := mapSelectUsers(rows); err == nil {

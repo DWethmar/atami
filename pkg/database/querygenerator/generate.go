@@ -111,10 +111,10 @@ func query{{.Name | Title}}(
 		{{ .Name }},
 		{{ JoinQueryArgs .FuncArgs }}
 	)
+	defer rows.Close()
 	if err != nil {
 		return nil, err
 	}
-	defer rows.Close()
 	entries := make([]{{ .ReturnType }}, 0)
 	for rows.Next() {
 		if entry, err := map{{.Name | Title}}(rows); err == nil {
