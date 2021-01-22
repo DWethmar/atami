@@ -110,11 +110,10 @@ func CreateMessage(ms *message.Service) http.HandlerFunc {
 				response.SendJSON(w, r, CreatMessageSuccess{
 					UID: msg.UID,
 				}, http.StatusOK)
-			} else {
-				fmt.Print(err)
+				return
 			}
-		} else {
 			response.SendBadRequestError(w, r, err)
+			return
 		}
 
 		response.SendServerError(w, r)

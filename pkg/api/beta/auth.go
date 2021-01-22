@@ -149,7 +149,7 @@ func Login(authService *auth.Service, userService *user.Service) http.HandlerFun
 
 		session := strconv.FormatInt(time.Now().UnixNano(), 10)
 
-		accessTokenDuration := time.Minute * 15
+		accessTokenDuration := time.Minute * 60
 		accessToken, err := auth.CreateAccessToken(user.UID, session, time.Now().Add(accessTokenDuration).Unix())
 		if err != nil || accessToken == "" {
 			fmt.Printf("Error creating access token: %v\n", err)

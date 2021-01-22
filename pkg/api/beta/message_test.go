@@ -1,6 +1,7 @@
 package beta
 
 import (
+	"bytes"
 	"encoding/json"
 	"net/http"
 	"net/http/httptest"
@@ -11,7 +12,6 @@ import (
 	"github.com/dwethmar/atami/pkg/api/middleware"
 	"github.com/dwethmar/atami/pkg/memstore"
 	"github.com/dwethmar/atami/pkg/message"
-	"github.com/dwethmar/atami/pkg/user"
 	"github.com/dwethmar/atami/pkg/user/memory/util"
 
 	"github.com/dwethmar/atami/pkg/service"
@@ -47,7 +47,7 @@ func TestListMessages(t *testing.T) {
 		},
 	}
 	store := memstore.NewStore()
-	util.AddTestUser(store, 1)
+	user := util.AddTestUser(store, 1)
 
 	for _, msg := range messages {
 		store.GetMessages().Put(strconv.Itoa(msg.ID), *msg)
@@ -56,12 +56,9 @@ func TestListMessages(t *testing.T) {
 	req, err := http.NewRequest("GET", "/", nil)
 	assert.NoError(t, err)
 
+	// Add user to context
 	ctx := req.Context()
-	ctx = middleware.WithUser(ctx, &user.User{
-		ID:       1,
-		UID:      "abc",
-		Username: "test",
-	})
+	ctx = middleware.WithUser(ctx, user)
 	req = req.WithContext(ctx)
 
 	rr := httptest.NewRecorder()
@@ -82,5 +79,29 @@ func TestListMessages(t *testing.T) {
 }
 
 func TestCreateMessage(t *testing.T) {
+	store := memstore.NewStore()
+	user := util.AddTestUser(store, 1)
+	ms := service.NewMessageServiceMemory(store)
 
+	addEntry := CreatMessageInput{
+		Text: ":D",
+	}
+	body, _ := json.Marshal(addEntry)
+	req := httptest.NewRequest("POST", "/", bytes.NewBuffer(body))
+
+	// Add user to context
+	ctx := req.Context()
+	ctx = middleware.WithUser(ctx, user)
+	req = req.WithContext(ctx)
+
+	rr := httptest.NewRecorder()
+	handler := http.HandlerFunc(CreateMessage(ms))
+	handler.ServeHTTP(rr, req)
+
+	assert.Equal(t, http.StatusCreated, rr.Code, "Status code should be equal")
+	assert.Equal(t, "application/json", rr.Header().Get("Content-Type"), "Content-Type code should be equal")
+
+	// Check the response body is what we expect.
+	result := CreatMessageSuccess{}
+	assert.Nil(t, json.Unmarshal(rr.Body.Bytes(), &result))
 }
