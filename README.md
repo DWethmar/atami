@@ -1,5 +1,6 @@
 # Atami - Messaging platform
 
+![Tests](https://github.com/DWethmar/atami/workflows/Tests/badge.svg)
 
 ## setup
 - `go mod download`
