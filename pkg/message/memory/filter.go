@@ -2,7 +2,6 @@ package memory
 
 import (
 	"github.com/dwethmar/atami/pkg/message"
-	"github.com/dwethmar/atami/pkg/user"
 )
 
 func filterList(list []interface{}, filterFn func(message.Message) bool) (*message.Message, error) {
@@ -15,5 +14,5 @@ func filterList(list []interface{}, filterFn func(message.Message) bool) (*messa
 			return nil, errCouldNotParse
 		}
 	}
-	return nil, user.ErrCouldNotFind
+	return nil, message.ErrCouldNotFind
 }

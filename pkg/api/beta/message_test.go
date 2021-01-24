@@ -294,3 +294,31 @@ func TestUnauthorizedDeleteMessage(t *testing.T) {
 	expected, _ := json.Marshal(expectedResponds)
 	assert.Equal(t, string(expected), rr.Body.String(), rr.Body.String())
 }
+
+func TestNotFoundDeleteMessage(t *testing.T) {
+	store := memstore.NewStore()
+	user := util.AddTestUser(store, 1)
+
+	print(user.UID)
+
+	ms := service.NewMessageServiceMemory(store)
+	req, err := http.NewRequest("DELETE", "/abcdefg1234", nil)
+	assert.NoError(t, err)
+
+	// Add user to context
+	ctx := req.Context()
+	ctx = middleware.WithUser(ctx, user)
+	req = req.WithContext(ctx)
+
+	// Add UID to context
+	ctx = req.Context()
+	ctx = middleware.WithUID(ctx, "abcdefg1234")
+	req = req.WithContext(ctx)
+
+	rr := httptest.NewRecorder()
+	handler := http.HandlerFunc(DeleteMessage(ms))
+	handler.ServeHTTP(rr, req)
+
+	assert.Equal(t, "application/json", rr.Header().Get("Content-Type"))
+	assert.Equal(t, http.StatusNotFound, rr.Code)
+}

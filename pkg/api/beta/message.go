@@ -153,9 +153,13 @@ func CreateMessage(ms *message.Service) http.HandlerFunc {
 // DeleteMessage handler
 func DeleteMessage(ms *message.Service) http.HandlerFunc {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+
+		fmt.Println("   :<      ")
+
 		usr, err := middleware.GetUser(r.Context())
 		if err != nil || usr == nil {
 			fmt.Print(err)
+			fmt.Println("   :D      ")
 			response.ServerError(w, r)
 			return
 		}
@@ -185,7 +189,7 @@ func DeleteMessage(ms *message.Service) http.HandlerFunc {
 			}
 		} else {
 			fmt.Print(err)
-			response.ServerError(w, r)
+			response.NotFoundError(w, r)
 			return
 		}
 	})

@@ -19,6 +19,10 @@ func (i *findRepository) FindByUID(UID string) (*message.Message, error) {
 		return UID == record.UID
 	})
 
+	if msg == nil {
+		return nil, err
+	}
+
 	users := i.store.GetUsers()
 
 	if err == nil {
