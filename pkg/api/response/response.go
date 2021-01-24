@@ -14,8 +14,8 @@ type ErrorResponds struct {
 	Message string `json:"message"`
 }
 
-// SendJSON set json responds.
-func SendJSON(w http.ResponseWriter, r *http.Request, v interface{}, code int) {
+// JSON set json responds.
+func JSON(w http.ResponseWriter, r *http.Request, v interface{}, code int) {
 	w.Header().Set("Content-Type", "application/json")
 
 	if b, err := json.Marshal(v); err != nil {
@@ -28,32 +28,32 @@ func SendJSON(w http.ResponseWriter, r *http.Request, v interface{}, code int) {
 	}
 }
 
-// SendServerError set server error
-func SendServerError(w http.ResponseWriter, r *http.Request) {
-	SendJSON(w, r, ErrorResponds{
+// ServerError set server error
+func ServerError(w http.ResponseWriter, r *http.Request) {
+	JSON(w, r, ErrorResponds{
 		Error: http.StatusText(http.StatusInternalServerError),
 	}, http.StatusInternalServerError)
 }
 
-// SendBadRequestError set bad request responds
-func SendBadRequestError(w http.ResponseWriter, r *http.Request, err error) {
-	SendJSON(w, r, ErrorResponds{
+// BadRequestError set bad request responds
+func BadRequestError(w http.ResponseWriter, r *http.Request, err error) {
+	JSON(w, r, ErrorResponds{
 		Error:   http.StatusText(http.StatusBadRequest),
 		Message: err.Error(),
 	}, http.StatusBadRequest)
 }
 
-// SendUnauthorizedError set bad request responds
-func SendUnauthorizedError(w http.ResponseWriter, r *http.Request, err error) {
-	SendJSON(w, r, ErrorResponds{
+// UnauthorizedError set bad request responds
+func UnauthorizedError(w http.ResponseWriter, r *http.Request, err error) {
+	JSON(w, r, ErrorResponds{
 		Error:   http.StatusText(http.StatusUnauthorized),
 		Message: err.Error(),
 	}, http.StatusUnauthorized)
 }
 
-// SendNotFoundError set not found responds
-func SendNotFoundError(w http.ResponseWriter, r *http.Request) {
-	SendJSON(w, r, ErrorResponds{
+// NotFoundError set not found responds
+func NotFoundError(w http.ResponseWriter, r *http.Request) {
+	JSON(w, r, ErrorResponds{
 		Error: "Resource not found.",
 	}, http.StatusNotFound)
 }

@@ -11,6 +11,7 @@ var (
 
 // FindRepository defines a messsage listing repository
 type FindRepository interface {
+	FindByUID(UID string) (*Message, error)
 	FindByID(ID int) (*Message, error)
 	Find(limit, offset int) ([]*Message, error)
 }
@@ -18,6 +19,11 @@ type FindRepository interface {
 // Finder lists messages.
 type Finder struct {
 	readerRepo FindRepository
+}
+
+// FindByUID return a list of list items.
+func (m *Finder) FindByUID(UID string) (*Message, error) {
+	return m.readerRepo.FindByUID(UID)
 }
 
 // FindByID return a list of list items.

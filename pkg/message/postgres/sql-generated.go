@@ -93,6 +93,34 @@ func queryRowSelectMessageByID(
 	))
 }
 
+// selectMessageByUID sql query
+var selectMessageByUID = `SELECT
+	message.id,
+	message.uid,
+	message.text,
+	message.created_by_user_id,
+	message.created_at,
+	app_user.id,
+	app_user.uid,
+	app_user.username
+FROM message
+LEFT JOIN app_user ON message.created_by_user_id = app_user.id
+WHERE message.uid = $1`
+
+func mapSelectMessageByUID(row Row) (*message.Message, error) {
+	return mapMessageWithUser(row)
+}
+
+func queryRowSelectMessageByUID(
+	db *sql.DB,
+	UID string,
+) (*message.Message, error) {
+	return mapSelectMessageByUID(db.QueryRow(
+		selectMessageByUID,
+		UID,
+	))
+}
+
 // deleteMessage sql query
 var deleteMessage = `DELETE FROM message
 WHERE message.id = $1`

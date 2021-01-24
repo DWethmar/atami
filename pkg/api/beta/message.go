@@ -2,6 +2,7 @@ package beta
 
 import (
 	"encoding/json"
+	"errors"
 	"fmt"
 	"net/http"
 	"time"
@@ -62,7 +63,7 @@ func ListMessages(ms *message.Service) http.HandlerFunc {
 		usr, err := middleware.GetUser(r.Context())
 		if err != nil || usr == nil {
 			fmt.Print(err)
-			response.SendServerError(w, r)
+			response.ServerError(w, r)
 			return
 		}
 
@@ -73,11 +74,42 @@ func ListMessages(ms *message.Service) http.HandlerFunc {
 				messages = append(messages, mapMessage(msg))
 			}
 		} else {
-			response.SendBadRequestError(w, r, err)
+			response.BadRequestError(w, r, err)
 			return
 		}
 
-		response.SendJSON(w, r, messages, http.StatusOK)
+		response.JSON(w, r, messages, http.StatusOK)
+	})
+}
+
+// GetMessages handler
+func GetMessages(ms *message.Service) http.HandlerFunc {
+	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		usr, err := middleware.GetUser(r.Context())
+		if err != nil || usr == nil {
+			fmt.Print(err)
+			response.ServerError(w, r)
+			return
+		}
+
+		uid, err := middleware.UIDFromContext(r.Context())
+		if err != nil {
+			fmt.Print(err)
+			response.ServerError(w, r)
+			return
+		}
+
+		if msg, err := ms.FindByUID(uid); err == nil {
+			if msg == nil {
+				response.NotFoundError(w, r)
+				return
+			}
+			response.JSON(w, r, mapMessage(msg), http.StatusOK)
+		} else {
+			fmt.Print(err)
+			response.ServerError(w, r)
+			return
+		}
 	})
 }
 
@@ -86,15 +118,14 @@ func CreateMessage(ms *message.Service) http.HandlerFunc {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		usr, err := middleware.GetUser(r.Context())
 		if err != nil || usr == nil {
-			fmt.Print(err)
-			response.SendServerError(w, r)
+			response.UnauthorizedError(w, r, errors.New("unauthorized"))
 			return
 		}
 
 		var input CreatMessageInput
 		if err = json.NewDecoder(r.Body).Decode(&input); err != nil {
 			fmt.Printf("Error while decoding entry: %v", err)
-			response.SendServerError(w, r)
+			response.ServerError(w, r)
 			return
 		}
 
@@ -105,43 +136,58 @@ func CreateMessage(ms *message.Service) http.HandlerFunc {
 
 		if err := ms.ValidateCreateMessage(newMsg); err == nil {
 			if msg, err := ms.Create(newMsg); err == nil {
-				response.SendJSON(w, r, CreatMessageSuccess{
+				response.JSON(w, r, CreatMessageSuccess{
 					UID: msg.UID,
 				}, http.StatusCreated)
 				return
 			}
-			response.SendBadRequestError(w, r, err)
-			return
-		} else {
-			response.SendBadRequestError(w, r, err)
+			response.BadRequestError(w, r, err)
 			return
 		}
 
-		response.SendServerError(w, r)
+		fmt.Print(err)
+		response.ServerError(w, r)
 	})
 }
 
 // DeleteMessage handler
 func DeleteMessage(ms *message.Service) http.HandlerFunc {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		w.WriteHeader(http.StatusOK)
-
 		usr, err := middleware.GetUser(r.Context())
 		if err != nil || usr == nil {
 			fmt.Print(err)
-			response.SendServerError(w, r)
+			response.ServerError(w, r)
 			return
 		}
 
-		// uid, err := middleware.UIDFromContext(r.Context())
-		// if err != nil {
-		// 	fmt.Print(err)
-		// 	response.SendServerError(w, r)
-		// 	return
-		// }
+		uid, err := middleware.UIDFromContext(r.Context())
+		if err != nil {
+			fmt.Print(err)
+			response.ServerError(w, r)
+			return
+		}
 
-		// msg, err := ms.FindByUID(uid)
+		if msg, err := ms.FindByUID(uid); err == nil {
+			if msg == nil {
+				response.NotFoundError(w, r)
+				return
+			}
 
+			if msg.CreatedByUserID == usr.ID {
+				if err := ms.Delete(msg.ID); err == nil {
+					response.JSON(w, r, mapMessage(msg), http.StatusOK)
+				} else {
+					response.ServerError(w, r)
+				}
+			} else {
+				// Not authorized
+				response.UnauthorizedError(w, r, errors.New("unauthorized"))
+			}
+		} else {
+			fmt.Print(err)
+			response.ServerError(w, r)
+			return
+		}
 	})
 }
 
@@ -156,7 +202,7 @@ func NewMessageRouter(userService *user.Service, messageService *message.Service
 		AllowOriginFunc: func(r *http.Request, origin string) bool {
 			return true
 		},
-		AllowedMethods:   []string{"POST", "DELETE"},
+		AllowedMethods:   []string{"GET", "POST", "DELETE"},
 		AllowedHeaders:   []string{"Accept", "Authorization", "Content-Type"},
 		ExposedHeaders:   []string{"Link"},
 		AllowCredentials: false,
@@ -164,8 +210,9 @@ func NewMessageRouter(userService *user.Service, messageService *message.Service
 	}))
 
 	r.Get("/", ListMessages(messageService))
+	r.Get("/{uid}", middleware.RequireUID(GetMessages(messageService)))
 	r.Post("/", CreateMessage(messageService))
-	r.Delete("/{uid}", CreateMessage(messageService))
+	r.Delete("/{uid}", middleware.RequireUID(DeleteMessage(messageService)))
 
 	return r
 }

@@ -38,9 +38,14 @@ func setup() (*memstore.Store, []message.Message) {
 	return store, msgs
 }
 
-func TestFindOne(t *testing.T) {
+func TestByUID(t *testing.T) {
+	store, messages := setup()
+	message.TestFindByUID(t, NewFinder(store), messages[0].UID, messages[0])
+}
+
+func TestFindByID(t *testing.T) {
 	store, _ := setup()
-	message.TestFindOne(t, NewFinder(store), 1, message.Message{
+	message.TestFindByID(t, NewFinder(store), 1, message.Message{
 		ID:              1,
 		UID:             "abcdef",
 		Text:            "Lorum ipsum 1",

@@ -17,6 +17,18 @@ func (i *findRepository) Find(limit, offset int) ([]*message.Message, error) {
 }
 
 // FindByID get one message
+func (i *findRepository) FindByUID(UID string) (*message.Message, error) {
+	m, err := queryRowSelectMessageByUID(i.db, UID)
+	if err != nil {
+		if err == sql.ErrNoRows {
+			return nil, message.ErrCouldNotFind
+		}
+		return nil, err
+	}
+	return m, nil
+}
+
+// FindByID get one message
 func (i *findRepository) FindByID(ID int) (*message.Message, error) {
 	m, err := queryRowSelectMessageByID(i.db, ID)
 	if err != nil {

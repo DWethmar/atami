@@ -13,6 +13,13 @@ func TestFindByID(t *testing.T, finder *Finder, ID int) {
 	assert.Equal(t, ID, m.ID)
 }
 
+// TestFindByUID tests the find by UID function.
+func TestFindByUID(t *testing.T, finder *Finder, UID string) {
+	m, err := finder.FindByUID(UID)
+	assert.NoError(t, err)
+	assert.Equal(t, UID, m.UID)
+}
+
 // TestUserNotFound tests the ReadOne function for a not found error.
 func TestUserNotFound(t *testing.T, finder *Finder) {
 	_, err := finder.FindByID(0)

@@ -42,10 +42,10 @@ func setup(db *sql.DB, size int) (*message.Finder, []message.Message) {
 	return NewFinder(db), messages
 }
 
-func TestReadOne(t *testing.T) {
+func TestFindByID(t *testing.T) {
 	assert.NoError(t, database.WithTestDB(t, func(db *sql.DB) error {
 		finder, messages := setup(db, 100)
-		message.TestFindOne(t, finder, 10, messages[9])
+		message.TestFindByID(t, finder, 10, messages[9])
 		return nil
 	}))
 }

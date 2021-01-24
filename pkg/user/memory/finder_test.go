@@ -40,6 +40,11 @@ func TestFind(t *testing.T) {
 	user.TestFind(t, finder, 100, users)
 }
 
+func TestFindByUID(t *testing.T) {
+	finder, users := setup()
+	user.TestFindByUID(t, finder, users[0].UID)
+}
+
 func TestFindByID(t *testing.T) {
 	finder, users := setup()
 	user.TestFindByID(t, finder, users[0].ID)

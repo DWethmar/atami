@@ -48,10 +48,10 @@ func toRespond(u *user.User) *Responds {
 func ListUsers(userService *user.Service) http.HandlerFunc {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		if users, err := userService.Find(); err == nil {
-			response.SendJSON(w, r, toResponds(users), 200)
+			response.JSON(w, r, toResponds(users), 200)
 		} else {
 			fmt.Printf("Error: %v \n", err)
-			response.SendServerError(w, r)
+			response.ServerError(w, r)
 		}
 	})
 }
@@ -76,7 +76,7 @@ func Register(authService *auth.Service) http.HandlerFunc {
 		}
 
 		if err := authService.ValidateNewUser(createUser); err != nil {
-			response.SendBadRequestError(w, r, err)
+			response.BadRequestError(w, r, err)
 			return
 		}
 
@@ -84,11 +84,11 @@ func Register(authService *auth.Service) http.HandlerFunc {
 
 		if err != nil || user == nil {
 			fmt.Printf("Error registering user: %v\n", err)
-			response.SendBadRequestError(w, r, err)
+			response.BadRequestError(w, r, err)
 			return
 		}
 
-		response.SendJSON(w, r, toRespond(user), http.StatusCreated)
+		response.JSON(w, r, toRespond(user), http.StatusCreated)
 	})
 }
 
@@ -118,12 +118,12 @@ func Login(authService *auth.Service, userService *user.Service) http.HandlerFun
 		password := r.FormValue("password")
 
 		if email == "" {
-			response.SendBadRequestError(w, r, errors.New("email is empty"))
+			response.BadRequestError(w, r, errors.New("email is empty"))
 			return
 		}
 
 		if password == "" {
-			response.SendBadRequestError(w, r, errors.New("password is empty"))
+			response.BadRequestError(w, r, errors.New("password is empty"))
 			return
 		}
 
@@ -136,14 +136,14 @@ func Login(authService *auth.Service, userService *user.Service) http.HandlerFun
 		}
 
 		if !authenticated {
-			response.SendBadRequestError(w, r, errors.New("validation failure"))
+			response.BadRequestError(w, r, errors.New("validation failure"))
 			return
 		}
 
 		user, err := userService.FindByEmail(email)
 		if err != nil || user == nil {
 			fmt.Printf("error while retrieving user: %v\n", err)
-			response.SendServerError(w, r)
+			response.ServerError(w, r)
 			return
 		}
 
@@ -153,7 +153,7 @@ func Login(authService *auth.Service, userService *user.Service) http.HandlerFun
 		accessToken, err := auth.CreateAccessToken(user.UID, session, time.Now().Add(accessTokenDuration).Unix())
 		if err != nil || accessToken == "" {
 			fmt.Printf("Error creating access token: %v\n", err)
-			response.SendServerError(w, r)
+			response.ServerError(w, r)
 			return
 		}
 
@@ -161,7 +161,7 @@ func Login(authService *auth.Service, userService *user.Service) http.HandlerFun
 		refreshToken, err := auth.CreateRefreshToken(user.UID, session, time.Now().Add(refreshTokenDuration).Unix())
 		if err != nil || accessToken == "" {
 			fmt.Printf("Error creating refresh token: %v\n", err)
-			response.SendServerError(w, r)
+			response.ServerError(w, r)
 			return
 		}
 
@@ -172,7 +172,7 @@ func Login(authService *auth.Service, userService *user.Service) http.HandlerFun
 		)
 		http.SetCookie(w, cookie)
 
-		response.SendJSON(w, r, AccessDetails{
+		response.JSON(w, r, AccessDetails{
 			AccessToken: accessToken,
 		}, http.StatusOK)
 	})
@@ -185,27 +185,27 @@ func Refresh(authService *auth.Service, userService *user.Service) http.HandlerF
 
 		cookie, err := r.Cookie("refresh_token")
 		if err != nil {
-			response.SendBadRequestError(w, r, errors.New(""))
+			response.BadRequestError(w, r, errors.New(""))
 			return
 		}
 
 		refreshToken := cookie.Value
 		token, err := auth.VerifyRefreshToken(refreshToken)
 		if err != nil {
-			response.SendBadRequestError(w, r, err)
+			response.BadRequestError(w, r, err)
 			return
 		}
 
 		claims, ok := token.Claims.(*auth.CustomClaims)
 		if !ok {
-			response.SendBadRequestError(w, r, errors.New("could not read token"))
+			response.BadRequestError(w, r, errors.New("could not read token"))
 			return
 		}
 
 		user, err := userService.FindByUID(claims.Subject)
 		if err != nil || user == nil {
 			fmt.Printf("error while retrieving user: %v\n", err)
-			response.SendServerError(w, r)
+			response.ServerError(w, r)
 			return
 		}
 
@@ -217,11 +217,11 @@ func Refresh(authService *auth.Service, userService *user.Service) http.HandlerF
 		)
 		if err != nil || accessToken == "" {
 			fmt.Printf("Error creating token: %v\n", err)
-			response.SendServerError(w, r)
+			response.ServerError(w, r)
 			return
 		}
 
-		response.SendJSON(w, r, AccessDetails{
+		response.JSON(w, r, AccessDetails{
 			AccessToken: accessToken,
 		}, http.StatusOK)
 	})

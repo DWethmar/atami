@@ -14,6 +14,26 @@ type findRepository struct {
 }
 
 // FindByID get one message
+func (i *findRepository) FindByUID(UID string) (*message.Message, error) {
+	msg, err := filterList(i.store.GetMessages().All(), func(record message.Message) bool {
+		return UID == record.UID
+	})
+
+	users := i.store.GetUsers()
+
+	if err == nil {
+		if user, err := util.FindUser(users, msg.CreatedByUserID); err == nil {
+			msg.User = user
+		} else {
+			return nil, err
+		}
+	} else {
+		return nil, err
+	}
+	return msg, nil
+}
+
+// FindByID get one message
 func (i *findRepository) FindByID(ID int) (*message.Message, error) {
 	messages := i.store.GetMessages()
 	users := i.store.GetUsers()

@@ -39,7 +39,7 @@ func Authenticated(userService *user.Service) func(next http.Handler) http.Handl
 			splitToken := strings.Split(reqToken, "Bearer ")
 
 			if len(splitToken) != 2 {
-				response.SendUnauthorizedError(w, r, errors.New("Invalid authorization header"))
+				response.UnauthorizedError(w, r, errors.New("Invalid authorization header"))
 				return
 			}
 
@@ -51,7 +51,7 @@ func Authenticated(userService *user.Service) func(next http.Handler) http.Handl
 					UID = claims.Subject
 				}
 			} else {
-				response.SendUnauthorizedError(w, r, errors.New("Invalid token"))
+				response.UnauthorizedError(w, r, errors.New("Invalid token"))
 				return
 			}
 
@@ -61,11 +61,11 @@ func Authenticated(userService *user.Service) func(next http.Handler) http.Handl
 					next.ServeHTTP(w, r.WithContext(ctx))
 				} else {
 					fmt.Print(err)
-					response.SendServerError(w, r)
+					response.ServerError(w, r)
 					return
 				}
 			} else {
-				response.SendUnauthorizedError(w, r, errors.New("Invalid token"))
+				response.UnauthorizedError(w, r, errors.New("Invalid token"))
 			}
 		}
 		return http.HandlerFunc(fn)

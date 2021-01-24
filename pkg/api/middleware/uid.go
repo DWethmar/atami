@@ -34,7 +34,7 @@ func RequireUID(next http.HandlerFunc) http.HandlerFunc {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		uid := chi.URLParam(r, "uid")
 		if uid == "" {
-			response.SendBadRequestError(w, r, errors.New("no uid in context"))
+			response.BadRequestError(w, r, errors.New("no UID found in URL"))
 			return
 		}
 		ctx := WithUID(r.Context(), uid)

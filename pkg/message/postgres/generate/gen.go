@@ -16,6 +16,7 @@ import (
 )
 
 var IDCol = schema.WithTbl(schema.ColID)
+var UIDCol = schema.WithTbl(schema.ColUID)
 
 var defaultCols = append(
 	schema.SelectCols,
@@ -94,6 +95,33 @@ func main() {
 					{
 						Name: "ID",
 						Type: "int",
+					},
+				},
+				MapFunc:    "mapMessageWithUser",
+				ReturnType: "*message.Message",
+			},
+			{
+				Name: "selectMessageByUID",
+				SQL: qb.Select(
+					qb.SelectQuery{
+						Select: defaultCols,
+						From:   schema.Table,
+						Joins:  defaultJoin,
+						Where: qb.NewWhere().And(
+							fmt.Sprintf("%s = $1", UIDCol),
+						),
+						GroupBy: []string{},
+						Having:  nil,
+						OrderBy: []string{},
+						Limit:   "",
+						Offset:  "",
+					},
+				),
+				QueryType: qg.QueryRow,
+				FuncArgs: []qg.FuncArg{
+					{
+						Name: "UID",
+						Type: "string",
 					},
 				},
 				MapFunc:    "mapMessageWithUser",

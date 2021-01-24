@@ -56,6 +56,15 @@ func TestFind(t *testing.T) {
 	}))
 }
 
+func TestFindByUID(t *testing.T) {
+	assert.NoError(t, database.WithTestDB(t, func(db *sql.DB) error {
+		finder, users := setup(db)
+		user.TestFindByUID(t, finder, users[0].UID)
+
+		return nil
+	}))
+}
+
 func TestFindByID(t *testing.T) {
 	assert.NoError(t, database.WithTestDB(t, func(db *sql.DB) error {
 		finder, users := setup(db)
