@@ -127,7 +127,7 @@ func TestGetMessage(t *testing.T) {
 	req = req.WithContext(ctx)
 
 	rr := httptest.NewRecorder()
-	handler := http.HandlerFunc(GetMessages(ms))
+	handler := http.HandlerFunc(GetMessage(ms))
 	handler.ServeHTTP(rr, req)
 
 	assert.Equal(t, http.StatusOK, rr.Code)
@@ -140,13 +140,47 @@ func TestGetMessage(t *testing.T) {
 	assert.Equal(t, string(expected), rr.Body.String(), "handler returned unexpected body")
 }
 
+func TestNotFoundGetMessage(t *testing.T) {
+	store := memstore.NewStore()
+	user := util.AddTestUser(store, 1)
+
+	ms := service.NewMessageServiceMemory(store)
+	req, err := http.NewRequest("GET", "/notexistinguid", nil)
+	assert.NoError(t, err)
+
+	// Add user to context
+	ctx := req.Context()
+	ctx = middleware.WithUser(ctx, user)
+	req = req.WithContext(ctx)
+
+	// Add UID to context
+	ctx = req.Context()
+	ctx = middleware.WithUID(ctx, "notexistinguid")
+	req = req.WithContext(ctx)
+
+	rr := httptest.NewRecorder()
+	handler := http.HandlerFunc(GetMessage(ms))
+	handler.ServeHTTP(rr, req)
+
+	assert.Equal(t, "application/json", rr.Header().Get("Content-Type"))
+	assert.Equal(t, http.StatusNotFound, rr.Code)
+
+	expectedResponds := response.ErrorResponds{
+		Error:   http.StatusText(http.StatusNotFound),
+		Message: "",
+	}
+	// Check the response body is what we expect.
+	expected, _ := json.Marshal(expectedResponds)
+	assert.Equal(t, string(expected), rr.Body.String(), "handler returned unexpected body")
+}
+
 func TestCreateMessage(t *testing.T) {
 	store := memstore.NewStore()
 	user := util.AddTestUser(store, 1)
 	ms := service.NewMessageServiceMemory(store)
 
 	addEntry := CreatMessageInput{
-		Text: "sadsdkjskjdskjsjdsjkskjkjdkjkjsdkjjdsk",
+		Text: "lorum ipsum",
 	}
 	body, _ := json.Marshal(addEntry)
 	req := httptest.NewRequest("POST", "/", bytes.NewBuffer(body))
@@ -230,7 +264,7 @@ func TestDeleteMessage(t *testing.T) {
 	req = req.WithContext(ctx)
 
 	rr := httptest.NewRecorder()
-	handler := http.HandlerFunc(GetMessages(ms))
+	handler := http.HandlerFunc(GetMessage(ms))
 	handler.ServeHTTP(rr, req)
 
 	assert.Equal(t, http.StatusOK, rr.Code)
@@ -298,8 +332,6 @@ func TestUnauthorizedDeleteMessage(t *testing.T) {
 func TestNotFoundDeleteMessage(t *testing.T) {
 	store := memstore.NewStore()
 	user := util.AddTestUser(store, 1)
-
-	print(user.UID)
 
 	ms := service.NewMessageServiceMemory(store)
 	req, err := http.NewRequest("DELETE", "/abcdefg1234", nil)

@@ -54,6 +54,6 @@ func UnauthorizedError(w http.ResponseWriter, r *http.Request, err error) {
 // NotFoundError set not found responds
 func NotFoundError(w http.ResponseWriter, r *http.Request) {
 	JSON(w, r, ErrorResponds{
-		Error: "Resource not found.",
+		Error: http.StatusText(http.StatusNotFound),
 	}, http.StatusNotFound)
 }

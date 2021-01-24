@@ -82,13 +82,14 @@ func ListMessages(ms *message.Service) http.HandlerFunc {
 	})
 }
 
-// GetMessages handler
-func GetMessages(ms *message.Service) http.HandlerFunc {
+// GetMessage handler
+func GetMessage(ms *message.Service) http.HandlerFunc {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+
 		usr, err := middleware.GetUser(r.Context())
 		if err != nil || usr == nil {
 			fmt.Print(err)
-			response.ServerError(w, r)
+			response.UnauthorizedError(w, r, errors.New("unauthorized"))
 			return
 		}
 
@@ -99,12 +100,12 @@ func GetMessages(ms *message.Service) http.HandlerFunc {
 			return
 		}
 
-		if msg, err := ms.FindByUID(uid); err == nil {
-			if msg == nil {
-				response.NotFoundError(w, r)
-				return
-			}
+		if msg, err := ms.FindByUID(uid); err == message.ErrCouldNotFind {
+			response.NotFoundError(w, r)
+			return
+		} else if msg != nil && err == nil {
 			response.JSON(w, r, mapMessage(msg), http.StatusOK)
+			return
 		} else {
 			fmt.Print(err)
 			response.ServerError(w, r)
@@ -116,8 +117,10 @@ func GetMessages(ms *message.Service) http.HandlerFunc {
 // CreateMessage handler
 func CreateMessage(ms *message.Service) http.HandlerFunc {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+
 		usr, err := middleware.GetUser(r.Context())
 		if err != nil || usr == nil {
+			fmt.Print(err)
 			response.UnauthorizedError(w, r, errors.New("unauthorized"))
 			return
 		}
@@ -154,13 +157,13 @@ func CreateMessage(ms *message.Service) http.HandlerFunc {
 func DeleteMessage(ms *message.Service) http.HandlerFunc {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 
-		fmt.Println("   :<      ")
-
 		usr, err := middleware.GetUser(r.Context())
-		if err != nil || usr == nil {
+		if err != nil {
 			fmt.Print(err)
-			fmt.Println("   :D      ")
 			response.ServerError(w, r)
+			return
+		} else if usr == nil {
+			response.UnauthorizedError(w, r, errors.New("unauthorized"))
 			return
 		}
 
@@ -189,7 +192,11 @@ func DeleteMessage(ms *message.Service) http.HandlerFunc {
 			}
 		} else {
 			fmt.Print(err)
-			response.NotFoundError(w, r)
+			if err == message.ErrCouldNotFind {
+				response.NotFoundError(w, r)
+			} else {
+				response.ServerError(w, r)
+			}
 			return
 		}
 	})
@@ -214,7 +221,7 @@ func NewMessageRouter(userService *user.Service, messageService *message.Service
 	}))
 
 	r.Get("/", ListMessages(messageService))
-	r.Get("/{uid}", middleware.RequireUID(GetMessages(messageService)))
+	r.Get("/{uid}", middleware.RequireUID(GetMessage(messageService)))
 	r.Post("/", CreateMessage(messageService))
 	r.Delete("/{uid}", middleware.RequireUID(DeleteMessage(messageService)))
 
