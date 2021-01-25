@@ -1,22 +1,32 @@
 package postgres
 
 import (
+	"database/sql"
+
 	"github.com/dwethmar/atami/pkg/user"
 )
 
 func defaultMap(row Row) (*user.User, error) {
 	e := &user.User{}
+
+	var biography sql.NullString
+
 	if err := row.Scan(
 		&e.ID,
 		&e.UID,
 		&e.Username,
 		&e.Email,
-		&e.Biography,
+		&biography,
 		&e.CreatedAt,
 		&e.UpdatedAt,
 	); err != nil {
 		return nil, err
 	}
+
+	if biography.Valid {
+		e.Biography = biography.String
+	}
+
 	return e, nil
 }
 
@@ -28,16 +38,25 @@ func mapIsUniqueCheck(row Row) (bool, error) {
 
 func mapWithPassword(row Row) (*user.User, error) {
 	e := &user.User{}
+
+	var biography sql.NullString
+
 	if err := row.Scan(
 		&e.ID,
 		&e.UID,
 		&e.Username,
 		&e.Email,
+		biography,
 		&e.CreatedAt,
 		&e.UpdatedAt,
 		&e.Password,
 	); err != nil {
 		return nil, err
 	}
+
+	if biography.Valid {
+		e.Biography = biography.String
+	}
+
 	return e, nil
 }
