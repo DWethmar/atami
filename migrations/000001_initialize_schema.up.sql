@@ -5,7 +5,7 @@ CREATE TABLE public.app_user
     id SERIAL PRIMARY KEY,
     uid VARCHAR (36) NOT NULL UNIQUE,
     username VARCHAR (15) NOT NULL UNIQUE,
-    biography text TEXT NULL,
+    biography text,
     email VARCHAR (254) NOT NULL UNIQUE,
     password TEXT NOT NULL,
     created_at timestamp NOT NULL,
