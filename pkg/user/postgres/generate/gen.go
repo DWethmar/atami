@@ -289,8 +289,8 @@ func main() {
 					qb.UpdateQuery{
 						Table: schema.Table,
 						Set: []qb.UpdateCol{
-							{Name: biographyCol, Value: "$2"},
-							{Name: updatedAtCol, Value: "$3"},
+							{Name: schema.ColBiography, Value: "$2"},
+							{Name: schema.ColUpdatedAt, Value: "$3"},
 						},
 						Where: qb.NewWhere().And(
 							fmt.Sprintf("%s = $1", idCol),

@@ -302,8 +302,8 @@ func queryRowSelectUserByUsername(
 // updateUser sql query
 var updateUser = `UPDATE app_user
 SET
-	app_user.biography = $2,
-	app_user.updated_at = $3
+	biography = $2,
+	updated_at = $3
 WHERE app_user.id = $1
 RETURNING app_user.id, app_user.uid, app_user.username, app_user.email, app_user.biography, app_user.created_at, app_user.updated_at`
 

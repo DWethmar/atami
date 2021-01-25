@@ -40,8 +40,8 @@ func (h *UserStore) Slice(low, high int) []User {
 
 // Get a single value.
 func (h *UserStore) Get(ID int) (User, bool) {
-	if r, ok := h.kv.Get(strconv.Itoa(ID)); ok {
-		if record, ok := r.(User); ok {
+	if record, ok := h.kv.Get(strconv.Itoa(ID)); ok {
+		if record, ok := record.(User); ok {
 			return record, true
 		}
 	}
