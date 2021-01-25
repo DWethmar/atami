@@ -18,6 +18,8 @@ const (
 	ColEmail = "email"
 	// ColPassword table Column
 	ColPassword = "password"
+	// ColBiography table Column
+	ColBiography = "biography"
 	// ColCreatedAt table Column
 	ColCreatedAt = "created_at"
 	// ColUpdatedAt table Column
@@ -30,6 +32,7 @@ var SelectCols = []string{
 	WithTbl(ColUID),
 	WithTbl(ColUsername),
 	WithTbl(ColEmail),
+	WithTbl(ColBiography),
 	WithTbl(ColCreatedAt),
 	WithTbl(ColUpdatedAt),
 }

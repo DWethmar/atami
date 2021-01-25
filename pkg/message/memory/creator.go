@@ -2,7 +2,6 @@ package memory
 
 import (
 	"errors"
-	"strconv"
 
 	"github.com/dwethmar/atami/pkg/memstore"
 	"github.com/dwethmar/atami/pkg/message"
@@ -28,26 +27,15 @@ func (i *creatorRepository) Create(newMsg message.CreateAction) (*message.Messag
 		CreatedByUserID: newMsg.CreatedByUserID,
 		CreatedAt:       newMsg.CreatedAt,
 	}
-	idStr := strconv.Itoa(msg.ID)
 
-	if result, ok := users.Get(strconv.Itoa(msg.CreatedByUserID)); ok {
-		user, err := util.ToMsgUser(result)
-		if err == nil {
-			msg.User = user
-		} else {
-			return nil, err
-		}
-	} else {
+	if _, ok := users.Get(msg.CreatedByUserID); !ok {
 		return nil, errors.New("user not found")
 	}
 
-	messages.Put(idStr, msg)
-
-	if value, ok := messages.Get(idStr); ok {
-		if msg, ok := value.(message.Message); ok {
-			return &msg, nil
-		}
-		return nil, errCouldNotParse
+	messages.Put(msg.ID, util.ToMemory(msg))
+	if r, ok := messages.Get(msg.ID); ok {
+		msg := util.FromMemory(r)
+		return &msg, nil
 	}
 
 	return nil, errors.New("Could not find message")

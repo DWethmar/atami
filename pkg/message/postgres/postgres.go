@@ -6,8 +6,6 @@ import (
 	"github.com/dwethmar/atami/pkg/message"
 )
 
-//go:generate go run ./generate/gen.go
-
 var (
 	errCouldNotParse = errors.New("could not parse user")
 )

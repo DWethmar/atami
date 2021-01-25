@@ -7,8 +7,8 @@ import (
 
 // UpdateCol specifies what updates
 type UpdateCol struct {
-	name  string
-	value interface{}
+	Name  string
+	Value interface{}
 }
 
 // UpdateQuery defines the fields to build a update sql query
@@ -16,7 +16,7 @@ type UpdateQuery struct {
 	Table     string
 	Set       []UpdateCol
 	From      *SelectQuery
-	FromAs    string
+	FromAs    string // alias for From
 	Where     *Where
 	Returning []string
 }
@@ -34,7 +34,7 @@ func Update(uq UpdateQuery) string {
 		setParts := []string{}
 
 		for _, v := range uq.Set {
-			setParts = append(setParts, fmt.Sprintf("%s = %v", v.name, v.value))
+			setParts = append(setParts, fmt.Sprintf("%s = %v", v.Name, v.Value))
 		}
 
 		queryParts = append(
@@ -57,7 +57,7 @@ func Update(uq UpdateQuery) string {
 	if len(uq.Returning) > 0 {
 		queryParts = append(
 			queryParts,
-			fmt.Sprintf(`RETURNING %s`, strings.Join(uq.Returning, ",")),
+			fmt.Sprintf(`RETURNING %s`, strings.Join(uq.Returning, ", ")),
 		)
 	}
 

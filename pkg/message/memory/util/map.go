@@ -1,20 +1,38 @@
 package util
 
 import (
-	"errors"
-
+	"github.com/dwethmar/atami/pkg/memstore"
 	"github.com/dwethmar/atami/pkg/message"
 	"github.com/dwethmar/atami/pkg/user"
 )
 
 // ToMsgUser from the memstore to message user
-func ToMsgUser(i interface{}) (*message.User, error) {
-	if usr, ok := i.(user.User); ok {
-		return &message.User{
-			ID:       usr.ID,
-			UID:      usr.UID,
-			Username: usr.Username,
-		}, nil
+func ToMsgUser(user user.User) *message.User {
+	return &message.User{
+		ID:       user.ID,
+		UID:      user.UID,
+		Username: user.Username,
 	}
-	return nil, errors.New("provided value is not an user")
+}
+
+// ToMemory maps a message to memory
+func ToMemory(m message.Message) memstore.Message {
+	return memstore.Message{
+		ID:              m.ID,
+		UID:             m.UID,
+		Text:            m.Text,
+		CreatedByUserID: m.CreatedByUserID,
+		CreatedAt:       m.CreatedAt,
+	}
+}
+
+// FromMemory maps a message from memory
+func FromMemory(m memstore.Message) message.Message {
+	return message.Message{
+		ID:              m.ID,
+		UID:             m.UID,
+		Text:            m.Text,
+		CreatedByUserID: m.CreatedByUserID,
+		CreatedAt:       m.CreatedAt,
+	}
 }

@@ -1,8 +1,6 @@
 package memory
 
 import (
-	"strconv"
-
 	"github.com/dwethmar/atami/pkg/memstore"
 	"github.com/dwethmar/atami/pkg/user"
 )
@@ -14,7 +12,7 @@ type deleterRepository struct {
 
 // Delete deletes one user
 func (i deleterRepository) Delete(ID int) error {
-	if i.store.GetUsers().Delete(strconv.Itoa(ID)) {
+	if i.store.GetUsers().Delete(ID) {
 		return nil
 	}
 	return user.ErrCouldNotDelete

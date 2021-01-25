@@ -78,4 +78,5 @@ type UpdateRequest struct {
 // UpdateAction user that is going to be created
 type UpdateAction struct {
 	Biography string
+	UpdatedAt time.Time
 }

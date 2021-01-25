@@ -5,7 +5,6 @@ import (
 	"encoding/json"
 	"net/http"
 	"net/http/httptest"
-	"strconv"
 	"testing"
 	"time"
 
@@ -13,7 +12,9 @@ import (
 	"github.com/dwethmar/atami/pkg/api/response"
 	"github.com/dwethmar/atami/pkg/memstore"
 	"github.com/dwethmar/atami/pkg/message"
+	messageUtil "github.com/dwethmar/atami/pkg/message/memory/util"
 	"github.com/dwethmar/atami/pkg/user/memory/util"
+	userUtil "github.com/dwethmar/atami/pkg/user/memory/util"
 
 	"github.com/dwethmar/atami/pkg/service"
 	"github.com/stretchr/testify/assert"
@@ -48,10 +49,10 @@ func TestListMessages(t *testing.T) {
 		},
 	}
 	store := memstore.NewStore()
-	user := util.AddTestUser(store, 1)
+	user := userUtil.AddTestUser(store, 1)
 
 	for _, msg := range messages {
-		store.GetMessages().Put(strconv.Itoa(msg.ID), *msg)
+		store.GetMessages().Put(msg.ID, messageUtil.ToMemory(*msg))
 	}
 	ms := service.NewMessageServiceMemory(store)
 	req, err := http.NewRequest("GET", "/", nil)
@@ -110,7 +111,7 @@ func TestGetMessage(t *testing.T) {
 	user := util.AddTestUser(store, 1)
 
 	for _, msg := range messages {
-		store.GetMessages().Put(strconv.Itoa(msg.ID), *msg)
+		store.GetMessages().Put(msg.ID, messageUtil.ToMemory(*msg))
 	}
 	ms := service.NewMessageServiceMemory(store)
 	req, err := http.NewRequest("GET", "/abcdefg1234", nil)
@@ -247,7 +248,7 @@ func TestDeleteMessage(t *testing.T) {
 	user := util.AddTestUser(store, 1)
 
 	for _, msg := range messages {
-		store.GetMessages().Put(strconv.Itoa(msg.ID), *msg)
+		store.GetMessages().Put(msg.ID, messageUtil.ToMemory(*msg))
 	}
 	ms := service.NewMessageServiceMemory(store)
 	req, err := http.NewRequest("DELETE", "/abcdefg1234", nil)
@@ -297,7 +298,7 @@ func TestUnauthorizedDeleteMessage(t *testing.T) {
 	util.AddTestUser(store, 2)
 
 	for _, msg := range messages {
-		store.GetMessages().Put(strconv.Itoa(msg.ID), *msg)
+		store.GetMessages().Put(msg.ID, messageUtil.ToMemory(*msg))
 	}
 	ms := service.NewMessageServiceMemory(store)
 	req, err := http.NewRequest("DELETE", "/abcdefg1234", nil)

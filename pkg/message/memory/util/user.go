@@ -1,7 +1,6 @@
 package util
 
 import (
-	"errors"
 	"fmt"
 	"strconv"
 	"time"
@@ -9,29 +8,27 @@ import (
 	"github.com/dwethmar/atami/pkg/memstore"
 	"github.com/dwethmar/atami/pkg/message"
 	"github.com/dwethmar/atami/pkg/user"
+	"github.com/dwethmar/atami/pkg/user/memory/util"
 )
 
 // FindUser finds user and parses it to message.User
-func FindUser(store *memstore.KvStore, userID int) (*message.User, error) {
+func FindUser(store *memstore.UserStore, userID int) (*message.User, error) {
 	// find and set user
-	if r, ok := store.Get(strconv.Itoa(userID)); ok {
-		if user, err := ToMsgUser(r); err == nil {
-			return user, nil
-		} else {
-			return nil, err
-		}
+	if r, ok := store.Get(userID); ok {
+		user := util.FromMemory(r)
+		return ToMsgUser(user), nil
 	}
-	return nil, errors.New("Could not find user in memory store")
+	return nil, fmt.Errorf("Could not find user with ID %d in memory store", userID)
 }
 
 // AddTestUser adds test user to store with ID = 1
 func AddTestUser(store *memstore.Store, ID int) {
-	store.GetUsers().Put(strconv.Itoa(ID), user.User{
+	store.GetUsers().Put(ID, util.ToMemory(user.User{
 		ID:        ID,
 		UID:       "UID" + strconv.Itoa(ID),
 		Username:  "test",
 		Email:     fmt.Sprintf("test_%v@test.nl", ID),
 		CreatedAt: time.Now(),
 		UpdatedAt: time.Now(),
-	})
+	}))
 }

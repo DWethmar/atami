@@ -11,9 +11,14 @@ type updateRepository struct {
 	db *sql.DB
 }
 
-// FindAll get multiple messages
-func (f updateRepository) Update(updateUser user.UpdateAction) (*user.User, error) {
-	return nil, nil
+// Update update user
+func (f updateRepository) Update(ID int, action user.UpdateAction) (*user.User, error) {
+	return queryRowUpdateUser(
+		f.db,
+		ID,
+		action.Biography,
+		action.UpdatedAt,
+	)
 }
 
 // NewUpdater return a new in memory listin repository

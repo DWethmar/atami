@@ -4,8 +4,6 @@ import (
 	"github.com/dwethmar/atami/pkg/user"
 )
 
-//go:generate go run ./generate/gen.go
-
 func defaultMap(row Row) (*user.User, error) {
 	e := &user.User{}
 	if err := row.Scan(
@@ -13,6 +11,7 @@ func defaultMap(row Row) (*user.User, error) {
 		&e.UID,
 		&e.Username,
 		&e.Email,
+		&e.Biography,
 		&e.CreatedAt,
 		&e.UpdatedAt,
 	); err != nil {

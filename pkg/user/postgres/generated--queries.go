@@ -77,7 +77,7 @@ VALUES (
 	$5,
 	$6
 )
-RETURNING app_user.id, app_user.uid, app_user.username, app_user.email, app_user.created_at, app_user.updated_at`
+RETURNING app_user.id, app_user.uid, app_user.username, app_user.email, app_user.biography, app_user.created_at, app_user.updated_at`
 
 func mapInsertUser(row Row) (*user.User, error) {
 	return defaultMap(row)
@@ -123,6 +123,7 @@ var selectUsers = `SELECT
 	app_user.uid,
 	app_user.username,
 	app_user.email,
+	app_user.biography,
 	app_user.created_at,
 	app_user.updated_at
 FROM app_user
@@ -168,6 +169,7 @@ var selectUserByID = `SELECT
 	app_user.uid,
 	app_user.username,
 	app_user.email,
+	app_user.biography,
 	app_user.created_at,
 	app_user.updated_at
 FROM app_user
@@ -194,6 +196,7 @@ var selectUserByUID = `SELECT
 	app_user.uid,
 	app_user.username,
 	app_user.email,
+	app_user.biography,
 	app_user.created_at,
 	app_user.updated_at
 FROM app_user
@@ -220,6 +223,7 @@ var selectUserByEmail = `SELECT
 	app_user.uid,
 	app_user.username,
 	app_user.email,
+	app_user.biography,
 	app_user.created_at,
 	app_user.updated_at
 FROM app_user
@@ -246,6 +250,7 @@ var selectUserByEmailWithPassword = `SELECT
 	app_user.uid,
 	app_user.username,
 	app_user.email,
+	app_user.biography,
 	app_user.created_at,
 	app_user.updated_at,
 	app_user.password
@@ -273,6 +278,7 @@ var selectUserByUsername = `SELECT
 	app_user.uid,
 	app_user.username,
 	app_user.email,
+	app_user.biography,
 	app_user.created_at,
 	app_user.updated_at
 FROM app_user
@@ -290,5 +296,31 @@ func queryRowSelectUserByUsername(
 	return mapSelectUserByUsername(db.QueryRow(
 		selectUserByUsername,
 		username,
+	))
+}
+
+// updateUser sql query
+var updateUser = `UPDATE app_user
+SET
+	app_user.biography = $2,
+	app_user.updated_at = $3
+WHERE app_user.id = $1
+RETURNING app_user.id, app_user.uid, app_user.username, app_user.email, app_user.biography, app_user.created_at, app_user.updated_at`
+
+func mapUpdateUser(row Row) (*user.User, error) {
+	return defaultMap(row)
+}
+
+func queryRowUpdateUser(
+	db *sql.DB,
+	ID int,
+	biography string,
+	updatedAt time.Time,
+) (*user.User, error) {
+	return mapUpdateUser(db.QueryRow(
+		updateUser,
+		ID,
+		biography,
+		updatedAt,
 	))
 }

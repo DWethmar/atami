@@ -11,9 +11,18 @@ import (
 
 var defaultCols = schema.SelectCols
 
+var usernameCol = schema.WithTbl(schema.ColUsername)
+var biographyCol = schema.WithTbl(schema.ColBiography)
+var emailCol = schema.WithTbl(schema.ColEmail)
+var idCol = schema.WithTbl(schema.ColID)
+var createdAtCol = schema.WithTbl(schema.ColCreatedAt)
+var updatedAtCol = schema.WithTbl(schema.ColUpdatedAt)
+var uidCol = schema.WithTbl(schema.ColUID)
+var passwordCol = schema.WithTbl(schema.ColPassword)
+
 func main() {
 	qg.Generate(
-		"sql-generated.go",
+		"generated--queries.go",
 		"postgres",
 		[]string{
 			"time",
@@ -27,7 +36,7 @@ func main() {
 						From:   schema.Table,
 						Select: []string{"1"},
 						Where: qb.NewWhere().
-							And(fmt.Sprintf("%s = $1", schema.WithTbl(schema.ColUsername))),
+							And(fmt.Sprintf("%s = $1", usernameCol)),
 						Limit: strconv.Itoa(1),
 					},
 				),
@@ -49,7 +58,7 @@ func main() {
 						From:   schema.Table,
 						Select: []string{"1"},
 						Where: qb.NewWhere().
-							And(fmt.Sprintf("%s = $1", schema.WithTbl(schema.ColEmail))),
+							And(fmt.Sprintf("%s = $1", emailCol)),
 						Limit: strconv.Itoa(1),
 					},
 				),
@@ -119,7 +128,7 @@ func main() {
 				SQL: qb.Delete(
 					qb.DeleteQuery{
 						From:  schema.Table,
-						Where: qb.NewWhere().And(fmt.Sprintf("%s = $1", schema.WithTbl(schema.ColID))),
+						Where: qb.NewWhere().And(fmt.Sprintf("%s = $1", idCol)),
 					},
 				),
 				QueryType: qg.Exec,
@@ -139,7 +148,7 @@ func main() {
 					qb.SelectQuery{
 						Select:  defaultCols,
 						From:    schema.Table,
-						OrderBy: []string{fmt.Sprintf("%s ASC", schema.WithTbl(schema.ColCreatedAt))},
+						OrderBy: []string{fmt.Sprintf("%s ASC", createdAtCol)},
 						Limit:   "$1",
 						Offset:  "$2",
 					},
@@ -166,7 +175,7 @@ func main() {
 						From:   schema.Table,
 						Select: defaultCols,
 						Where: qb.NewWhere().And(
-							fmt.Sprintf("%s = $1", schema.WithTbl(schema.ColID)),
+							fmt.Sprintf("%s = $1", idCol),
 						),
 						Limit: strconv.Itoa(1),
 					},
@@ -189,7 +198,7 @@ func main() {
 						From:   schema.Table,
 						Select: defaultCols,
 						Where: qb.NewWhere().And(
-							fmt.Sprintf("%s = $1", schema.WithTbl(schema.ColUID)),
+							fmt.Sprintf("%s = $1", uidCol),
 						),
 						Limit: strconv.Itoa(1),
 					},
@@ -212,7 +221,7 @@ func main() {
 						From:   schema.Table,
 						Select: defaultCols,
 						Where: qb.NewWhere().And(
-							fmt.Sprintf("%s = $1", schema.WithTbl(schema.ColEmail)),
+							fmt.Sprintf("%s = $1", emailCol),
 						),
 						Limit: strconv.Itoa(1),
 					},
@@ -233,9 +242,9 @@ func main() {
 				SQL: qb.Select(
 					qb.SelectQuery{
 						From:   schema.Table,
-						Select: append(schema.SelectCols, schema.WithTbl(schema.ColPassword)),
+						Select: append(schema.SelectCols, passwordCol),
 						Where: qb.NewWhere().And(
-							fmt.Sprintf("%s = $1", schema.WithTbl(schema.ColEmail)),
+							fmt.Sprintf("%s = $1", emailCol),
 						),
 						Limit: strconv.Itoa(1),
 					},
@@ -258,7 +267,7 @@ func main() {
 						From:   schema.Table,
 						Select: schema.SelectCols,
 						Where: qb.NewWhere().And(
-							fmt.Sprintf("%s = $1", schema.WithTbl(schema.ColUsername)),
+							fmt.Sprintf("%s = $1", usernameCol),
 						),
 						Limit: strconv.Itoa(1),
 					},
@@ -268,6 +277,40 @@ func main() {
 					{
 						Name: "username",
 						Type: "string",
+					},
+				},
+				MapFunc:    "defaultMap",
+				ReturnType: "*user.User",
+			},
+
+			{
+				Name: "updateUser",
+				SQL: qb.Update(
+					qb.UpdateQuery{
+						Table: schema.Table,
+						Set: []qb.UpdateCol{
+							{Name: biographyCol, Value: "$2"},
+							{Name: updatedAtCol, Value: "$3"},
+						},
+						Where: qb.NewWhere().And(
+							fmt.Sprintf("%s = $1", idCol),
+						),
+						Returning: schema.SelectCols,
+					},
+				),
+				QueryType: qg.QueryRow,
+				FuncArgs: []qg.FuncArg{
+					{
+						Name: "ID",
+						Type: "int",
+					},
+					{
+						Name: "biography",
+						Type: "string",
+					},
+					{
+						Name: "updatedAt",
+						Type: "time.Time",
 					},
 				},
 				MapFunc:    "defaultMap",

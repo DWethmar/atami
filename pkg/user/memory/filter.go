@@ -1,15 +1,16 @@
 package memory
 
-import "github.com/dwethmar/atami/pkg/user"
+import (
+	"github.com/dwethmar/atami/pkg/memstore"
+	"github.com/dwethmar/atami/pkg/user"
+	"github.com/dwethmar/atami/pkg/user/memory/util"
+)
 
-func filterList(list []interface{}, filterFn func(userRecord) bool) (*user.User, error) {
+func filterList(list []memstore.User, filterFunc func(user.User) bool) (*user.User, error) {
 	for _, item := range list {
-		if record, ok := item.(userRecord); ok {
-			if filterFn(record) {
-				return recordToUser(record), nil
-			}
-		} else {
-			return nil, errCouldNotParse
+		user := util.FromMemory(item)
+		if filterFunc(user) {
+			return &user, nil
 		}
 	}
 	return nil, user.ErrCouldNotFind

@@ -2,10 +2,10 @@ package memory
 
 import (
 	"errors"
-	"strconv"
 
 	"github.com/dwethmar/atami/pkg/memstore"
 	"github.com/dwethmar/atami/pkg/user"
+	"github.com/dwethmar/atami/pkg/user/memory/util"
 )
 
 var layoutISO = "2006-01-02"
@@ -25,7 +25,7 @@ func (i *creatorRepository) Create(newUser user.CreateAction) (*user.User, error
 	users := i.store.GetUsers()
 
 	// Check for user with same username or email
-	if match, err := filterList(users.All(), func(record userRecord) bool {
+	if match, err := filterList(users.All(), func(record user.User) bool {
 		return newUser.Username == record.Username || newUser.Email == record.Email
 	}); match != nil {
 
@@ -43,7 +43,7 @@ func (i *creatorRepository) Create(newUser user.CreateAction) (*user.User, error
 	}
 
 	i.newID++
-	usr := userRecord{
+	usr := user.User{
 		ID:        i.newID,
 		UID:       newUser.UID,
 		Username:  newUser.Username,
@@ -52,14 +52,12 @@ func (i *creatorRepository) Create(newUser user.CreateAction) (*user.User, error
 		UpdatedAt: newUser.UpdatedAt,
 		Password:  newUser.Password,
 	}
-	IDStr := strconv.Itoa(usr.ID)
-	users.Put(IDStr, usr)
 
-	if value, ok := users.Get(IDStr); ok {
-		if record, ok := value.(userRecord); ok {
-			return recordToUser(record), nil
-		}
-		return nil, errCouldNotParse
+	users.Put(usr.ID, util.ToMemory(usr))
+
+	if r, ok := users.Get(usr.ID); ok {
+		user := util.FromMemory(r)
+		return &user, nil
 	}
 
 	return nil, errors.New("could not register user")

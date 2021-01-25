@@ -1,8 +1,6 @@
 package memory
 
 import (
-	"strconv"
-
 	"github.com/dwethmar/atami/pkg/memstore"
 	"github.com/dwethmar/atami/pkg/message"
 )
@@ -15,7 +13,7 @@ type deleterRepository struct {
 // Delete deletes one message
 func (i deleterRepository) Delete(ID int) error {
 	messages := i.store.GetMessages()
-	if messages.Delete(strconv.Itoa(ID)) {
+	if messages.Delete(ID) {
 		return nil
 	}
 	return message.ErrCouldNotDelete
