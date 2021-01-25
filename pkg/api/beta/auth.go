@@ -132,6 +132,8 @@ func Login(authService *auth.Service, userService *user.Service) http.HandlerFun
 			Password: password,
 		}); err == nil && ok {
 			authenticated = true
+		} else {
+			fmt.Println(err)
 		}
 
 		if !authenticated {

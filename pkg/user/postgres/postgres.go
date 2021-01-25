@@ -46,7 +46,7 @@ func mapWithPassword(row Row) (*user.User, error) {
 		&e.UID,
 		&e.Username,
 		&e.Email,
-		biography,
+		&biography,
 		&e.CreatedAt,
 		&e.UpdatedAt,
 		&e.Password,
