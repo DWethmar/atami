@@ -23,6 +23,7 @@ INSERT INTO public.app_user (
 	uid,
 	username, 
 	email,
+    biography,
 	password,
 	created_at, 
 	updated_at
