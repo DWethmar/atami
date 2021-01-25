@@ -14,7 +14,7 @@ func TestDelete(t *testing.T) {
 	assert.NoError(t, database.WithTestDB(t, func(db *sql.DB) error {
 		creator := NewCreator(db)
 
-		u, err := creator.Create(user.CreateUserRequest{
+		u, err := creator.Create(user.CreateRequest{
 			Username: "username",
 			Email:    "username@test.com",
 			Password: "Test1234!@#$",

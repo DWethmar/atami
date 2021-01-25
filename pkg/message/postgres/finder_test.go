@@ -11,10 +11,10 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
-func generateTestMessages(size int) []message.CreateMessage {
-	messages := make([]message.CreateMessage, size)
+func generateTestMessages(size int) []message.CreateAction {
+	messages := make([]message.CreateAction, size)
 	for i := 0; i < size; i++ {
-		messages[i] = message.CreateMessage{
+		messages[i] = message.CreateAction{
 			UID:             fmt.Sprintf("%v", i),
 			Text:            fmt.Sprintf("Lorum ipsum %d", i+1),
 			CreatedByUserID: 1,

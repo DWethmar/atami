@@ -261,7 +261,7 @@ func TestInvalidRefresh(t *testing.T) {
 	responds := response.ErrorResponds{}
 	assert.NoError(t, json.Unmarshal(rr.Body.Bytes(), &responds))
 	assert.Equal(t, "Bad Request", responds.Error)
-	assert.Equal(t, "", responds.Message)
+	assert.Equal(t, "error setting cookie", responds.Message)
 }
 
 func TestRefreshWithExpiredToken(t *testing.T) {

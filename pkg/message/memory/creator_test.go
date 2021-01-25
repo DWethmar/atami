@@ -11,7 +11,7 @@ import (
 func TestCreate(t *testing.T) {
 	store := memstore.NewStore()
 	util.AddTestUser(store, 1)
-	newMessage := message.CreateMessageRequest{
+	newMessage := message.CreateRequest{
 		Text:            "lorum ipsum",
 		CreatedByUserID: 1,
 	}

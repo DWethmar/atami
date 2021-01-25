@@ -10,10 +10,10 @@ import (
 	"github.com/dwethmar/atami/pkg/message/memory/util"
 )
 
-func generateTestMessages(size int) []message.CreateMessageRequest {
-	messages := make([]message.CreateMessageRequest, size)
+func generateTestMessages(size int) []message.CreateRequest {
+	messages := make([]message.CreateRequest, size)
 	for i := 0; i < size; i++ {
-		messages[i] = message.CreateMessageRequest{
+		messages[i] = message.CreateRequest{
 			Text:            fmt.Sprintf("Lorum ipsum %v", i+1),
 			CreatedByUserID: 1,
 		}

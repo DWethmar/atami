@@ -18,7 +18,7 @@ var (
 
 // CreateRepository declares a storage repository
 type CreateRepository interface {
-	Create(createUser CreateUser) (*User, error)
+	Create(createUser CreateAction) (*User, error)
 }
 
 // Creator struct declaration
@@ -28,11 +28,11 @@ type Creator struct {
 }
 
 // Create registers a new user
-func (m *Creator) Create(createUser CreateUserRequest) (*User, error) {
+func (m *Creator) Create(createUser CreateRequest) (*User, error) {
 	if err := m.validator.ValidateCreateUser(createUser); err != nil {
 		return nil, err
 	}
-	return m.createRepo.Create(CreateUser{
+	return m.createRepo.Create(CreateAction{
 		UID:       ksuid.New().String(),
 		Username:  createUser.Username,
 		Email:     createUser.Email,
@@ -43,9 +43,9 @@ func (m *Creator) Create(createUser CreateUserRequest) (*User, error) {
 }
 
 // NewCreator returns a new searcher
-func NewCreator(r CreateRepository, v *Validator) *Creator {
+func NewCreator(r CreateRepository) *Creator {
 	return &Creator{
 		createRepo: r,
-		validator:  v,
+		validator:  NewDefaultValidator(),
 	}
 }

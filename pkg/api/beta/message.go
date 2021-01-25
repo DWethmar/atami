@@ -132,7 +132,7 @@ func CreateMessage(ms *message.Service) http.HandlerFunc {
 			return
 		}
 
-		newMsg := message.CreateMessageRequest{
+		newMsg := message.CreateRequest{
 			Text:            input.Text,
 			CreatedByUserID: usr.ID,
 		}

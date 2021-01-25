@@ -58,7 +58,6 @@ func ListUsers(userService *user.Service) http.HandlerFunc {
 
 // Register handler handles the request to create new user
 func Register(authService *auth.Service) http.HandlerFunc {
-
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		if err := r.ParseForm(); err != nil {
 			fmt.Fprintf(w, "ParseForm() err: %v", err)
@@ -107,8 +106,8 @@ func createRefreshCookie(expires time.Time, domain, token string) *http.Cookie {
 
 // Login handles login requests
 func Login(authService *auth.Service, userService *user.Service) http.HandlerFunc {
-
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+
 		if err := r.ParseForm(); err != nil {
 			fmt.Fprintf(w, "ParseForm() err: %v", err)
 			return
@@ -180,12 +179,11 @@ func Login(authService *auth.Service, userService *user.Service) http.HandlerFun
 
 // Refresh handles refresh requests
 func Refresh(authService *auth.Service, userService *user.Service) http.HandlerFunc {
-
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 
 		cookie, err := r.Cookie("refresh_token")
 		if err != nil {
-			response.BadRequestError(w, r, errors.New(""))
+			response.BadRequestError(w, r, errors.New("error setting cookie"))
 			return
 		}
 
@@ -224,6 +222,32 @@ func Refresh(authService *auth.Service, userService *user.Service) http.HandlerF
 		response.JSON(w, r, AccessDetails{
 			AccessToken: accessToken,
 		}, http.StatusOK)
+	})
+}
+
+// ForgotPassword handler handles the request to begin the reset password flow.
+func ForgotPassword(authService *auth.Service) http.HandlerFunc {
+	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		if err := r.ParseForm(); err != nil {
+			fmt.Fprintf(w, "ParseForm() err: %v", err)
+			return
+		}
+
+		email := r.FormValue("email")
+		fmt.Print(email)
+	})
+}
+
+// ResetPassword handler handles the request to reset password with a reset-token
+func ResetPassword(authService *auth.Service) http.HandlerFunc {
+	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		if err := r.ParseForm(); err != nil {
+			fmt.Fprintf(w, "ParseForm() err: %v", err)
+			return
+		}
+
+		email := r.FormValue("email")
+		fmt.Print(email)
 	})
 }
 

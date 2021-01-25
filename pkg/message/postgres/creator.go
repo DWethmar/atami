@@ -12,7 +12,7 @@ type creatorRepository struct {
 }
 
 // Create new message
-func (i creatorRepository) Create(newMsg message.CreateMessage) (*message.Message, error) {
+func (i creatorRepository) Create(newMsg message.CreateAction) (*message.Message, error) {
 	msg, err := queryRowInsertMessage(
 		i.db,
 		newMsg.UID,

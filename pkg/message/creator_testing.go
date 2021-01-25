@@ -8,7 +8,7 @@ import (
 )
 
 // TestCreator test the creator repo
-func TestCreator(t *testing.T, creator *Creator, newMessage CreateMessageRequest) {
+func TestCreator(t *testing.T, creator *Creator, newMessage CreateRequest) {
 	message, err := creator.Create(newMessage)
 
 	assert.Nil(t, err)

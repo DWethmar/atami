@@ -16,7 +16,7 @@ type creatorRepository struct {
 }
 
 // Create new message
-func (i *creatorRepository) Create(newMsg message.CreateMessage) (*message.Message, error) {
+func (i *creatorRepository) Create(newMsg message.CreateAction) (*message.Message, error) {
 	messages := i.store.GetMessages()
 	users := i.store.GetUsers()
 

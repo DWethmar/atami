@@ -19,40 +19,16 @@ var validUser = User{
 
 var emailValidator = validate.NewEmailValidator()
 var usernameValidator = validate.NewUsernameValidator()
+var biographyValidator = validate.NewBiographyValidator()
 
 var validator = NewValidator(
 	usernameValidator,
 	emailValidator,
+	biographyValidator,
 )
 
-// TestValidUser tests the validate function.
-func TestValidUser(t *testing.T) {
-	assert.NoError(t, validator.ValidateUser(validUser))
-}
-
-func TestInvalidUsername(t *testing.T) {
-	invalidUsername := validUser
-	invalidUsername.Username = "!@#$%^&*(Iasd"
-	assert.EqualError(t, validator.ValidateUser(invalidUsername), validate.ErrUsernameContainsInvalidChars.Error())
-
-	toLongUsername := validUser
-	toLongUsername.Username = "abcdefghijklmnopqrstuvwxyz"
-	assert.EqualError(t, validator.ValidateUser(toLongUsername), validate.ErrUsernameToLong.Error())
-
-	toShortUsername := validUser
-	toShortUsername.Username = "a"
-	assert.EqualError(t, validator.ValidateUser(toShortUsername), validate.ErrUsernameToShort.Error())
-}
-
-func TestInvalidEmail(t *testing.T) {
-	wrongEmail := validUser
-	wrongEmail.Email = ""
-
-	assert.EqualError(t, validator.ValidateUser(wrongEmail), validate.ErrEmailRequired.Error())
-}
-
 func TestValidNewUser(t *testing.T) {
-	assert.NoError(t, validator.ValidateCreateUser(CreateUserRequest{
+	assert.NoError(t, validator.ValidateCreateUser(CreateRequest{
 		Username: "username",
 		Email:    "test@test.nl",
 		Password: "Abcdefgh123@@",
@@ -60,7 +36,7 @@ func TestValidNewUser(t *testing.T) {
 }
 
 func TestInvalidNewUser(t *testing.T) {
-	assert.Error(t, validator.ValidateCreateUser(CreateUserRequest{
+	assert.Error(t, validator.ValidateCreateUser(CreateRequest{
 		Username: "a",
 		Email:    "b",
 	}))

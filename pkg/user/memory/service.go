@@ -10,10 +10,12 @@ func New(store *memstore.Store) *user.Service {
 	f := NewFinder(store)
 	d := NewDeleter(store)
 	r := NewCreator(store)
+	u := NewUpdater(store)
 
 	return user.NewService(
 		*f,
 		*d,
 		*r,
+		*u,
 	)
 }

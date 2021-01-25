@@ -17,7 +17,7 @@ type creatorRepository struct {
 }
 
 // Create new user
-func (i *creatorRepository) Create(newUser user.CreateUser) (*user.User, error) {
+func (i *creatorRepository) Create(newUser user.CreateAction) (*user.User, error) {
 	if newUser.Password == "" {
 		return nil, user.ErrPwdNotSet
 	}
@@ -69,11 +69,5 @@ func (i *creatorRepository) Create(newUser user.CreateUser) (*user.User, error) 
 func NewCreator(
 	store *memstore.Store,
 ) *user.Creator {
-	return user.NewCreator(
-		&creatorRepository{
-			store,
-			0,
-		},
-		user.NewDefaultValidator(),
-	)
+	return user.NewCreator(&creatorRepository{store, 0})
 }

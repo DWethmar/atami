@@ -8,8 +8,9 @@ import (
 
 // Validator struct definition
 type Validator struct {
-	usernameValidator *validate.UsernameValidator
-	emailValidator    *validate.EmailValidator
+	usernameValidator  *validate.UsernameValidator
+	emailValidator     *validate.EmailValidator
+	biographyValidator *validate.BiographyValidator
 }
 
 type errValidate struct {
@@ -28,27 +29,8 @@ func (err errValidate) Error() string {
 	return strings.Join(errors, ". ")
 }
 
-// ValidateUser validates a user
-func (v Validator) ValidateUser(user User) error {
-	err := errValidate{}
-
-	if e := v.validateUsername(user); e != nil {
-		err.Errors = append(err.Errors, e)
-	}
-
-	if e := v.validateEmail(user); e != nil {
-		err.Errors = append(err.Errors, e)
-	}
-
-	if err.Valid() {
-		return nil
-	}
-
-	return err
-}
-
 // ValidateCreateUser validates a new user
-func (v Validator) ValidateCreateUser(createUser CreateUserRequest) error {
+func (v Validator) ValidateCreateUser(createUser CreateRequest) error {
 	err := errValidate{}
 
 	if createUser.Password == "" {
@@ -60,6 +42,21 @@ func (v Validator) ValidateCreateUser(createUser CreateUserRequest) error {
 	}
 
 	if e := v.validateEmail(createUser); e != nil {
+		err.Errors = append(err.Errors, e)
+	}
+
+	if err.Valid() {
+		return nil
+	}
+
+	return err
+}
+
+// ValidateUpdateUser validates a new user
+func (v Validator) ValidateUpdateUser(updateUser UpdateRequest) error {
+	err := errValidate{}
+
+	if e := v.biographyValidator.Validate(updateUser.Biography); e != nil {
 		err.Errors = append(err.Errors, e)
 	}
 
@@ -88,10 +85,12 @@ func (v Validator) validateEmail(user hasEmail) error {
 func NewValidator(
 	usernameValidator *validate.UsernameValidator,
 	emailValidator *validate.EmailValidator,
+	biographyValidator *validate.BiographyValidator,
 ) *Validator {
 	return &Validator{
 		usernameValidator,
 		emailValidator,
+		biographyValidator,
 	}
 }
 
@@ -100,5 +99,6 @@ func NewDefaultValidator() *Validator {
 	return NewValidator(
 		validate.NewUsernameValidator(),
 		validate.NewEmailValidator(),
+		validate.NewBiographyValidator(),
 	)
 }
