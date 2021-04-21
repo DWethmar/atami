@@ -11,7 +11,7 @@ import (
 func TestCreate(t *testing.T) {
 	s := memstore.NewStore()
 	register := NewCreator(s)
-	test.TestCreator(t, register, user.CreateRequest{
+	test.TestCreator(t, register, user.CreateUser{
 		Username: "username",
 		Email:    "test@test.nl",
 		Password: "!Test123",
@@ -19,7 +19,7 @@ func TestCreate(t *testing.T) {
 }
 
 func TestDuplicateUsername(t *testing.T) {
-	newUser := user.CreateRequest{
+	newUser := user.CreateUser{
 		Username: "username",
 		Email:    "test@test.nl",
 		Password: "!Test123",
@@ -30,7 +30,7 @@ func TestDuplicateUsername(t *testing.T) {
 }
 
 func TestDuplicateEmail(t *testing.T) {
-	newUser := user.CreateRequest{
+	newUser := user.CreateUser{
 		Username: "username",
 		Email:    "test@test.nl",
 		Password: "!Test123",

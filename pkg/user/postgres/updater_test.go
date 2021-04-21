@@ -13,7 +13,7 @@ import (
 func TestUpdate(t *testing.T) {
 	assert.NoError(t, database.WithTestDB(t, func(db *sql.DB) error {
 		updater := NewUpdater(db)
-		test.TestUpdater(t, updater, user.UpdateRequest{
+		test.TestUpdater(t, updater, user.UpdateUser{
 			Biography: "lorum ipsum",
 		})
 		return nil

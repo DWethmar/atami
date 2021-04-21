@@ -5,7 +5,8 @@ import (
 	"log"
 
 	"github.com/dwethmar/atami/pkg/api"
-	"github.com/dwethmar/atami/pkg/api/beta"
+	"github.com/dwethmar/atami/pkg/api/handler"
+	"github.com/dwethmar/atami/pkg/api/handler/beta"
 	"github.com/dwethmar/atami/pkg/config"
 	"github.com/dwethmar/atami/pkg/database"
 	"github.com/dwethmar/atami/pkg/service"
@@ -38,11 +39,11 @@ func main() {
 	authService := service.NewAuthServicePostgres(db)
 	messageService := service.NewMessageServicePostgres(db)
 
-	handler := chi.NewRouter()
-	handler.Mount("/beta/auth", beta.NewAuthRouter(authService, userService))
-	handler.Mount("/beta/messages", beta.NewMessageRouter(userService, messageService))
+	router := chi.NewRouter()
+	router.Mount("/auth", handler.NewAuthRouter(authService, userService))
+	router.Mount("/beta/messages", beta.NewMessageRouter(userService, messageService))
 
-	srv, err := api.NewServer(":8081", handler)
+	srv, err := api.NewServer(":8081", router)
 	die(err)
 	srv.Start()
 }

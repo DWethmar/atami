@@ -9,7 +9,7 @@ import (
 )
 
 // TestUpdater test the updater repo
-func TestUpdater(t *testing.T, updater *user.Updater, newUser user.UpdateRequest) {
+func TestUpdater(t *testing.T, updater *user.Updater, newUser user.UpdateUser) {
 	now := time.Now().UTC()
 	time.Sleep(1)
 	user, err := updater.Update(1, newUser)

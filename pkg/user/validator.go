@@ -30,7 +30,7 @@ func (err errValidate) Error() string {
 }
 
 // ValidateCreateUser validates a new user
-func (v Validator) ValidateCreateUser(createUser CreateRequest) error {
+func (v Validator) ValidateCreateUser(createUser CreateUser) error {
 	err := errValidate{}
 
 	if createUser.Password == "" {
@@ -53,7 +53,7 @@ func (v Validator) ValidateCreateUser(createUser CreateRequest) error {
 }
 
 // ValidateUpdateUser validates a new user
-func (v Validator) ValidateUpdateUser(updateUser UpdateRequest) error {
+func (v Validator) ValidateUpdateUser(updateUser UpdateUser) error {
 	err := errValidate{}
 
 	if e := v.biographyValidator.Validate(updateUser.Biography); e != nil {

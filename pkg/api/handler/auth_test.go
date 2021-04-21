@@ -1,4 +1,4 @@
-package beta
+package handler
 
 import (
 	"encoding/json"

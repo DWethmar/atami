@@ -12,7 +12,7 @@ type updateRepository struct {
 }
 
 // FindAll get multiple messages
-func (f updateRepository) Update(ID int, action user.UpdateAction) (*user.User, error) {
+func (f updateRepository) Update(ID int, action user.UpdateUser) (*user.User, error) {
 	var usr user.User
 
 	users := f.store.GetUsers()

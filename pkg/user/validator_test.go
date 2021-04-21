@@ -28,7 +28,7 @@ var validator = NewValidator(
 )
 
 func TestValidNewUser(t *testing.T) {
-	assert.NoError(t, validator.ValidateCreateUser(CreateRequest{
+	assert.NoError(t, validator.ValidateCreateUser(CreateUser{
 		Username: "username",
 		Email:    "test@test.nl",
 		Password: "Abcdefgh123@@",
@@ -36,7 +36,7 @@ func TestValidNewUser(t *testing.T) {
 }
 
 func TestInvalidNewUser(t *testing.T) {
-	assert.Error(t, validator.ValidateCreateUser(CreateRequest{
+	assert.Error(t, validator.ValidateCreateUser(CreateUser{
 		Username: "a",
 		Email:    "b",
 	}))

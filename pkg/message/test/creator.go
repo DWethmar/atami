@@ -18,3 +18,9 @@ func Create(t *testing.T, creator *message.Creator, newMessage message.CreateMes
 	assert.Equal(t, message.CreatedByUserID, newMessage.CreatedByUserID)
 	assert.True(t, time.Now().Add(time.Microsecond).After(message.CreatedAt))
 }
+
+// Create test the creator repo
+func InvalidCreate(t *testing.T, creator *message.Creator, newMessage message.CreateMessage) {
+	_, err := creator.Create(newMessage)
+	assert.Error(t, err)
+}

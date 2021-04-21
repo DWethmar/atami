@@ -47,7 +47,7 @@ func (m *Registrator) Register(newUser CreateUser) (*user.User, error) {
 
 	hashedPassword := HashPassword([]byte(newUser.Password))
 
-	createUser := user.CreateRequest{
+	createUser := user.CreateUser{
 		Username: newUser.Username,
 		Email:    newUser.Email,
 		Password: hashedPassword,

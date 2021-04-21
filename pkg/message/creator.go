@@ -8,7 +8,7 @@ import (
 
 // CreatorRepository defines a messsage listing repository
 type CreatorRepository interface {
-	Create(newMessage CreateMessage) (*Message, error) // return int
+	Create(newMessage CreateMessage) (*Message, error)
 }
 
 // Creator creates messages.
@@ -19,7 +19,10 @@ type Creator struct {
 
 // Create a new message
 func (m *Creator) Create(createMessage CreateMessage) (*Message, error) {
-	// TODO validate!
+	if err := m.validator.ValidateCreateMessage(createMessage); err != nil {
+		return nil, err
+	}
+
 	return m.createRepo.Create(CreateMessage{
 		UID:             ksuid.New().String(),
 		Text:            createMessage.Text,

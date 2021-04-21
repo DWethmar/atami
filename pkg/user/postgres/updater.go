@@ -12,7 +12,7 @@ type updateRepository struct {
 }
 
 // Update update user
-func (f updateRepository) Update(ID int, action user.UpdateAction) (*user.User, error) {
+func (f updateRepository) Update(ID int, action user.UpdateUser) (*user.User, error) {
 	return queryRowUpdateUser(
 		f.db,
 		ID,

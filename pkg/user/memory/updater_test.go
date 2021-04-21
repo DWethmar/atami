@@ -13,13 +13,13 @@ func TestUpdate(t *testing.T) {
 	updater := NewUpdater(store)
 
 	register := NewCreator(store)
-	register.Create(user.CreateRequest{
+	register.Create(user.CreateUser{
 		Username: "test",
 		Email:    "test@test.nl",
 		Password: "Passwordz@1",
 	})
 
-	test.TestUpdater(t, updater, user.UpdateRequest{
+	test.TestUpdater(t, updater, user.UpdateUser{
 		Biography: "lorum ipsum",
 	})
 }
