@@ -8,13 +8,14 @@ import (
 
 	"github.com/dwethmar/atami/pkg/database"
 	"github.com/dwethmar/atami/pkg/message"
+	"github.com/dwethmar/atami/pkg/message/test"
 	"github.com/stretchr/testify/assert"
 )
 
-func generateTestMessages(size int) []message.CreateAction {
-	messages := make([]message.CreateAction, size)
+func generateTestMessages(size int) []message.CreateMessage {
+	messages := make([]message.CreateMessage, size)
 	for i := 0; i < size; i++ {
-		messages[i] = message.CreateAction{
+		messages[i] = message.CreateMessage{
 			UID:             fmt.Sprintf("%v", i),
 			Text:            fmt.Sprintf("Lorum ipsum %d", i+1),
 			CreatedByUserID: 1,
@@ -45,7 +46,7 @@ func setup(db *sql.DB, size int) (*message.Finder, []message.Message) {
 func TestFindByID(t *testing.T) {
 	assert.NoError(t, database.WithTestDB(t, func(db *sql.DB) error {
 		finder, messages := setup(db, 100)
-		message.TestFindByID(t, finder, 10, messages[9])
+		test.FindByID(t, finder, 10, messages[9])
 		return nil
 	}))
 }
@@ -53,7 +54,7 @@ func TestFindByID(t *testing.T) {
 func TestNotFound(t *testing.T) {
 	assert.NoError(t, database.WithTestDB(t, func(db *sql.DB) error {
 		finder, _ := setup(db, 100)
-		message.TestNotFound(t, finder)
+		test.NotFound(t, finder)
 		return nil
 	}))
 }
@@ -68,7 +69,7 @@ func TestFind(t *testing.T) {
 			items[i], items[j] = items[j], items[i]
 		}
 
-		message.TestFind(t, finder, 50, items)
+		test.Find(t, finder, 50, items)
 		return nil
 	}))
 }

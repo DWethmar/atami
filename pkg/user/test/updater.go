@@ -1,14 +1,15 @@
-package user
+package test
 
 import (
 	"testing"
 	"time"
 
+	"github.com/dwethmar/atami/pkg/user"
 	"github.com/stretchr/testify/assert"
 )
 
 // TestUpdater test the updater repo
-func TestUpdater(t *testing.T, updater *Updater, newUser UpdateRequest) {
+func TestUpdater(t *testing.T, updater *user.Updater, newUser user.UpdateRequest) {
 	now := time.Now().UTC()
 	time.Sleep(1)
 	user, err := updater.Update(1, newUser)

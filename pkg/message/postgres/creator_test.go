@@ -6,16 +6,17 @@ import (
 
 	"github.com/dwethmar/atami/pkg/database"
 	"github.com/dwethmar/atami/pkg/message"
+	"github.com/dwethmar/atami/pkg/message/test"
 	"github.com/stretchr/testify/assert"
 )
 
 func TestCreate(t *testing.T) {
 	assert.NoError(t, database.WithTestDB(t, func(db *sql.DB) error {
-		newMessage := message.CreateRequest{
+		newMessage := message.CreateMessage{
 			Text:            "wow",
 			CreatedByUserID: 1,
 		}
-		message.TestCreator(t, NewCreator(db), newMessage)
+		test.Create(t, NewCreator(db), newMessage)
 		return nil
 	}))
 }

@@ -1,33 +1,34 @@
-package user
+package test
 
 import (
 	"testing"
 
+	"github.com/dwethmar/atami/pkg/user"
 	"github.com/stretchr/testify/assert"
 )
 
 // TestFindByID tests the find by id function.
-func TestFindByID(t *testing.T, finder *Finder, ID int) {
+func TestFindByID(t *testing.T, finder *user.Finder, ID int) {
 	m, err := finder.FindByID(ID)
 	assert.NoError(t, err)
 	assert.Equal(t, ID, m.ID)
 }
 
 // TestFindByUID tests the find by UID function.
-func TestFindByUID(t *testing.T, finder *Finder, UID string) {
+func TestFindByUID(t *testing.T, finder *user.Finder, UID string) {
 	m, err := finder.FindByUID(UID)
 	assert.NoError(t, err)
 	assert.Equal(t, UID, m.UID)
 }
 
 // TestUserNotFound tests the ReadOne function for a not found error.
-func TestUserNotFound(t *testing.T, finder *Finder) {
+func TestUserNotFound(t *testing.T, finder *user.Finder) {
 	_, err := finder.FindByID(0)
-	assert.Equal(t, ErrCouldNotFind, err)
+	assert.Equal(t, user.ErrCouldNotFind, err)
 }
 
 // TestFind tests the ReadOne function.
-func TestFind(t *testing.T, finder *Finder, length int, users []User) {
+func TestFind(t *testing.T, finder *user.Finder, length int, users []user.User) {
 	list, err := finder.Find()
 
 	assert.Nil(t, err)
@@ -39,7 +40,7 @@ func TestFind(t *testing.T, finder *Finder, length int, users []User) {
 }
 
 // TestFindByEmail tests the search function.
-func TestFindByEmail(t *testing.T, finder *Finder, email string) {
+func TestFindByEmail(t *testing.T, finder *user.Finder, email string) {
 	result, err := finder.FindByEmail(email)
 	assert.NoError(t, err)
 	if assert.NotNil(t, result) {
@@ -49,7 +50,7 @@ func TestFindByEmail(t *testing.T, finder *Finder, email string) {
 }
 
 // TestFindByEmailWithPassword tests the search function.
-func TestFindByEmailWithPassword(t *testing.T, finder *Finder, email string) {
+func TestFindByEmailWithPassword(t *testing.T, finder *user.Finder, email string) {
 	result, err := finder.FindByEmailWithPassword(email)
 	assert.NoError(t, err)
 	if assert.NotNil(t, result) {
@@ -59,7 +60,7 @@ func TestFindByEmailWithPassword(t *testing.T, finder *Finder, email string) {
 }
 
 // TestFindByUsername tests the search function.
-func TestFindByUsername(t *testing.T, finder *Finder, username string) {
+func TestFindByUsername(t *testing.T, finder *user.Finder, username string) {
 	result, err := finder.FindByUsername(username)
 	assert.NoError(t, err)
 	if assert.NotNil(t, result) {

@@ -20,9 +20,7 @@ func main() {
 
 	c := config.Load()
 	if err := c.Valid(); err != nil {
-
 		fmt.Println("Not all env vars are set. Loading .env file.")
-
 		c = config.LoadEnvFile()
 		die(c.Valid())
 	}

@@ -1,13 +1,14 @@
-package message
+package test
 
 import (
 	"testing"
 
+	"github.com/dwethmar/atami/pkg/message"
 	"github.com/stretchr/testify/assert"
 )
 
-// TestFindByID tests the ReadOne function.
-func TestFindByID(t *testing.T, finder *Finder, ID int, message Message) {
+// FindByID tests the ReadOne function.
+func FindByID(t *testing.T, finder *message.Finder, ID int, message message.Message) {
 	m, err := finder.FindByID(ID)
 	assert.NoError(t, err)
 
@@ -35,8 +36,8 @@ func TestFindByID(t *testing.T, finder *Finder, ID int, message Message) {
 	}
 }
 
-// TestFindByUID tests the findByUID function.
-func TestFindByUID(t *testing.T, finder *Finder, UID string, message Message) {
+// FindByUID tests the findByUID function.
+func FindByUID(t *testing.T, finder *message.Finder, UID string, message message.Message) {
 	m, err := finder.FindByUID(UID)
 	assert.NoError(t, err)
 
@@ -64,14 +65,14 @@ func TestFindByUID(t *testing.T, finder *Finder, UID string, message Message) {
 	}
 }
 
-// TestNotFound tests the ReadOne function for a not found error.
-func TestNotFound(t *testing.T, finder *Finder) {
+// NotFound tests the ReadOne function for a not found error.
+func NotFound(t *testing.T, finder *message.Finder) {
 	_, err := finder.FindByID(0)
-	assert.Equal(t, ErrCouldNotFind, err)
+	assert.Equal(t, message.ErrCouldNotFind, err)
 }
 
-// TestFind tests the Find function.
-func TestFind(t *testing.T, finder *Finder, length int, messages []Message) {
+// Find tests the Find function.
+func Find(t *testing.T, finder *message.Finder, length int, messages []message.Message) {
 	list, err := finder.Find(0, length)
 
 	assert.NoError(t, err)

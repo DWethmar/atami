@@ -2,5 +2,7 @@
     "cSpell.words": [
         "Postgres",
         "Registrator"
-    ]
+    ],
+    "editor.formatOnPaste": true,
+    "editor.formatOnSave": true
 }

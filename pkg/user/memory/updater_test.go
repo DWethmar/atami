@@ -5,6 +5,7 @@ import (
 
 	"github.com/dwethmar/atami/pkg/memstore"
 	"github.com/dwethmar/atami/pkg/user"
+	"github.com/dwethmar/atami/pkg/user/test"
 )
 
 func TestUpdate(t *testing.T) {
@@ -18,7 +19,7 @@ func TestUpdate(t *testing.T) {
 		Password: "Passwordz@1",
 	})
 
-	user.TestUpdater(t, updater, user.UpdateRequest{
+	test.TestUpdater(t, updater, user.UpdateRequest{
 		Biography: "lorum ipsum",
 	})
 }

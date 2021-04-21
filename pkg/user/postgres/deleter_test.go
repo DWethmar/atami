@@ -7,6 +7,7 @@ import (
 
 	"github.com/dwethmar/atami/pkg/database"
 	"github.com/dwethmar/atami/pkg/user"
+	"github.com/dwethmar/atami/pkg/user/test"
 	"github.com/stretchr/testify/assert"
 )
 
@@ -29,7 +30,7 @@ func TestDelete(t *testing.T) {
 		}
 
 		deleter := NewDeleter(db)
-		user.TestDelete(t, deleter, u.ID)
+		test.TestDelete(t, deleter, u.ID)
 		return nil
 	}))
 }

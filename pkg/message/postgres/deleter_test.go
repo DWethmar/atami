@@ -7,6 +7,7 @@ import (
 
 	"github.com/dwethmar/atami/pkg/database"
 	"github.com/dwethmar/atami/pkg/message"
+	"github.com/dwethmar/atami/pkg/message/test"
 	"github.com/stretchr/testify/assert"
 )
 
@@ -15,7 +16,7 @@ func TestDelete(t *testing.T) {
 		creator := NewCreator(
 			db,
 		)
-		msg, err := creator.Create(message.CreateRequest{
+		msg, err := creator.Create(message.CreateMessage{
 			Text:            "Lorum ipsum",
 			CreatedByUserID: 1,
 		})
@@ -29,7 +30,7 @@ func TestDelete(t *testing.T) {
 		}
 
 		deleter := NewDeleter(db)
-		message.TestDelete(t, deleter, msg.ID)
+		test.Delete(t, deleter, msg.ID)
 		return nil
 	}))
 }

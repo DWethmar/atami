@@ -5,12 +5,13 @@ import (
 
 	"github.com/dwethmar/atami/pkg/memstore"
 	"github.com/dwethmar/atami/pkg/user"
+	"github.com/dwethmar/atami/pkg/user/test"
 )
 
 func TestCreate(t *testing.T) {
 	s := memstore.NewStore()
 	register := NewCreator(s)
-	user.TestCreator(t, register, user.CreateRequest{
+	test.TestCreator(t, register, user.CreateRequest{
 		Username: "username",
 		Email:    "test@test.nl",
 		Password: "!Test123",
@@ -25,7 +26,7 @@ func TestDuplicateUsername(t *testing.T) {
 	}
 	s := memstore.NewStore()
 	register := NewCreator(s)
-	user.TestDuplicateUsername(t, register, newUser)
+	test.TestDuplicateUsername(t, register, newUser)
 }
 
 func TestDuplicateEmail(t *testing.T) {
@@ -36,12 +37,12 @@ func TestDuplicateEmail(t *testing.T) {
 	}
 	s := memstore.NewStore()
 	register := NewCreator(s)
-	user.TestDuplicateEmail(t, register, newUser)
+	test.TestDuplicateEmail(t, register, newUser)
 }
 
 // TestEmptyPassword test if the correct error is returned
 func TestEmptyPassword(t *testing.T) {
 	s := memstore.NewStore()
 	register := NewCreator(s)
-	user.TestEmptyPassword(t, register)
+	test.TestEmptyPassword(t, register)
 }

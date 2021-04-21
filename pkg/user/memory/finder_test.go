@@ -6,6 +6,7 @@ import (
 
 	"github.com/dwethmar/atami/pkg/memstore"
 	"github.com/dwethmar/atami/pkg/user"
+	"github.com/dwethmar/atami/pkg/user/test"
 )
 
 func generateTestUsers(size int) []user.CreateRequest {
@@ -37,35 +38,35 @@ func setup() (*user.Finder, []user.User) {
 
 func TestFind(t *testing.T) {
 	finder, users := setup()
-	user.TestFind(t, finder, 100, users)
+	test.TestFind(t, finder, 100, users)
 }
 
 func TestFindByUID(t *testing.T) {
 	finder, users := setup()
-	user.TestFindByUID(t, finder, users[0].UID)
+	test.TestFindByUID(t, finder, users[0].UID)
 }
 
 func TestFindByID(t *testing.T) {
 	finder, users := setup()
-	user.TestFindByID(t, finder, users[0].ID)
+	test.TestFindByID(t, finder, users[0].ID)
 }
 
 func TestUserNotFound(t *testing.T) {
 	finder, _ := setup()
-	user.TestUserNotFound(t, finder)
+	test.TestUserNotFound(t, finder)
 }
 
 func TestFindByEmail(t *testing.T) {
 	finder, _ := setup()
-	user.TestFindByEmail(t, finder, "test-44@test.com")
+	test.TestFindByEmail(t, finder, "test-44@test.com")
 }
 
 func TestFindByEmailWithPassword(t *testing.T) {
 	finder, _ := setup()
-	user.TestFindByEmailWithPassword(t, finder, "test-44@test.com")
+	test.TestFindByEmailWithPassword(t, finder, "test-44@test.com")
 }
 
 func TestFindByUsername(t *testing.T) {
 	finder, _ := setup()
-	user.TestFindByUsername(t, finder, "username_44")
+	test.TestFindByUsername(t, finder, "username_44")
 }

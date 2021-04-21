@@ -8,12 +8,13 @@ import (
 	"github.com/dwethmar/atami/pkg/memstore"
 	"github.com/dwethmar/atami/pkg/message"
 	"github.com/dwethmar/atami/pkg/message/memory/util"
+	"github.com/dwethmar/atami/pkg/message/test"
 )
 
-func generateTestMessages(size int) []message.CreateRequest {
-	messages := make([]message.CreateRequest, size)
+func generateTestMessages(size int) []message.CreateMessage {
+	messages := make([]message.CreateMessage, size)
 	for i := 0; i < size; i++ {
-		messages[i] = message.CreateRequest{
+		messages[i] = message.CreateMessage{
 			Text:            fmt.Sprintf("Lorum ipsum %v", i+1),
 			CreatedByUserID: 1,
 		}
@@ -40,12 +41,12 @@ func setup() (*memstore.Store, []message.Message) {
 
 func TestByUID(t *testing.T) {
 	store, messages := setup()
-	message.TestFindByUID(t, NewFinder(store), messages[0].UID, messages[0])
+	test.FindByUID(t, NewFinder(store), messages[0].UID, messages[0])
 }
 
 func TestFindByID(t *testing.T) {
 	store, _ := setup()
-	message.TestFindByID(t, NewFinder(store), 1, message.Message{
+	test.FindByID(t, NewFinder(store), 1, message.Message{
 		ID:              1,
 		UID:             "abcdef",
 		Text:            "Lorum ipsum 1",
@@ -56,10 +57,10 @@ func TestFindByID(t *testing.T) {
 
 func TestNotFound(t *testing.T) {
 	store, _ := setup()
-	message.TestNotFound(t, NewFinder(store))
+	test.NotFound(t, NewFinder(store))
 }
 
 func TestFindAll(t *testing.T) {
 	store, messages := setup()
-	message.TestFind(t, NewFinder(store), 100, messages)
+	test.Find(t, NewFinder(store), 100, messages)
 }

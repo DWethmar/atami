@@ -15,7 +15,7 @@ type creatorRepository struct {
 }
 
 // Create new message
-func (i *creatorRepository) Create(newMsg message.CreateAction) (*message.Message, error) {
+func (i *creatorRepository) Create(newMsg message.CreateMessage) (*message.Message, error) {
 	messages := i.store.GetMessages()
 	users := i.store.GetUsers()
 
@@ -38,7 +38,7 @@ func (i *creatorRepository) Create(newMsg message.CreateAction) (*message.Messag
 		return &msg, nil
 	}
 
-	return nil, errors.New("Could not find message")
+	return nil, errors.New("could not find message")
 }
 
 // NewCreator creates new messages creator.

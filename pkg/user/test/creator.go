@@ -1,14 +1,15 @@
-package user
+package test
 
 import (
 	"testing"
 	"time"
 
+	"github.com/dwethmar/atami/pkg/user"
 	"github.com/stretchr/testify/assert"
 )
 
 // TestCreator test the creator repo
-func TestCreator(t *testing.T, creator *Creator, newUser CreateRequest) {
+func TestCreator(t *testing.T, creator *user.Creator, newUser user.CreateRequest) {
 	user, err := creator.Create(newUser)
 
 	if assert.NoError(t, err) {
@@ -22,33 +23,33 @@ func TestCreator(t *testing.T, creator *Creator, newUser CreateRequest) {
 }
 
 // TestDuplicateUsername check if the correct error is returned
-func TestDuplicateUsername(t *testing.T, creator *Creator, newUser CreateRequest) {
+func TestDuplicateUsername(t *testing.T, creator *user.Creator, newUser user.CreateRequest) {
 	_, errOne := creator.Create(newUser)
 	assert.NoError(t, errOne)
 
 	newUser.Email = "new_" + newUser.Email
 
 	_, errTwo := creator.Create(newUser)
-	assert.Equal(t, ErrUsernameAlreadyTaken, errTwo)
+	assert.Equal(t, user.ErrUsernameAlreadyTaken, errTwo)
 }
 
 // TestDuplicateEmail check if the correct error is returned
-func TestDuplicateEmail(t *testing.T, creator *Creator, newUser CreateRequest) {
+func TestDuplicateEmail(t *testing.T, creator *user.Creator, newUser user.CreateRequest) {
 	_, errOne := creator.Create(newUser)
 	assert.NoError(t, errOne)
 
 	newUser.Username = "new_" + newUser.Username
 
 	_, errTwo := creator.Create(newUser)
-	assert.Equal(t, ErrEmailAlreadyTaken, errTwo)
+	assert.Equal(t, user.ErrEmailAlreadyTaken, errTwo)
 }
 
 // TestEmptyPassword test if the correct error is returned
-func TestEmptyPassword(t *testing.T, creator *Creator) {
-	_, err := creator.Create(CreateRequest{
+func TestEmptyPassword(t *testing.T, creator *user.Creator) {
+	_, err := creator.Create(user.CreateRequest{
 		Username: "wow",
 		Email:    "test@test.nl",
 		Password: "",
 	})
-	assert.EqualError(t, err, ErrPwdNotSet.Error())
+	assert.EqualError(t, err, user.ErrPwdNotSet.Error())
 }

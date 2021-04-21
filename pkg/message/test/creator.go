@@ -1,14 +1,15 @@
-package message
+package test
 
 import (
 	"testing"
 	"time"
 
+	"github.com/dwethmar/atami/pkg/message"
 	"github.com/stretchr/testify/assert"
 )
 
-// TestCreator test the creator repo
-func TestCreator(t *testing.T, creator *Creator, newMessage CreateRequest) {
+// Create test the creator repo
+func Create(t *testing.T, creator *message.Creator, newMessage message.CreateMessage) {
 	message, err := creator.Create(newMessage)
 
 	assert.Nil(t, err)

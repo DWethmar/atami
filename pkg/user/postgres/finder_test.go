@@ -7,6 +7,7 @@ import (
 
 	"github.com/dwethmar/atami/pkg/database"
 	"github.com/dwethmar/atami/pkg/user"
+	"github.com/dwethmar/atami/pkg/user/test"
 	"github.com/stretchr/testify/assert"
 )
 
@@ -50,7 +51,7 @@ func TestFind(t *testing.T) {
 
 		finder, users := setup(db)
 		users = append(existingUsers, users...)
-		user.TestFind(t, finder, 100+len(existingUsers), users)
+		test.TestFind(t, finder, 100+len(existingUsers), users)
 
 		return nil
 	}))
@@ -59,7 +60,7 @@ func TestFind(t *testing.T) {
 func TestFindByUID(t *testing.T) {
 	assert.NoError(t, database.WithTestDB(t, func(db *sql.DB) error {
 		finder, users := setup(db)
-		user.TestFindByUID(t, finder, users[0].UID)
+		test.TestFindByUID(t, finder, users[0].UID)
 
 		return nil
 	}))
@@ -68,7 +69,7 @@ func TestFindByUID(t *testing.T) {
 func TestFindByID(t *testing.T) {
 	assert.NoError(t, database.WithTestDB(t, func(db *sql.DB) error {
 		finder, users := setup(db)
-		user.TestFindByID(t, finder, users[0].ID)
+		test.TestFindByID(t, finder, users[0].ID)
 
 		return nil
 	}))
@@ -77,7 +78,7 @@ func TestFindByID(t *testing.T) {
 func TestUserNotFound(t *testing.T) {
 	assert.NoError(t, database.WithTestDB(t, func(db *sql.DB) error {
 		finder, _ := setup(db)
-		user.TestUserNotFound(t, finder)
+		test.TestUserNotFound(t, finder)
 
 		return nil
 	}))
@@ -86,7 +87,7 @@ func TestUserNotFound(t *testing.T) {
 func TestFindByEmail(t *testing.T) {
 	assert.NoError(t, database.WithTestDB(t, func(db *sql.DB) error {
 		finder, _ := setup(db)
-		user.TestFindByEmail(t, finder, "test-44@test.com")
+		test.TestFindByEmail(t, finder, "test-44@test.com")
 
 		return nil
 	}))
@@ -95,7 +96,7 @@ func TestFindByEmail(t *testing.T) {
 func TestFindByUsername(t *testing.T) {
 	assert.NoError(t, database.WithTestDB(t, func(db *sql.DB) error {
 		finder, _ := setup(db)
-		user.TestFindByUsername(t, finder, "username_44")
+		test.TestFindByUsername(t, finder, "username_44")
 
 		return nil
 	}))

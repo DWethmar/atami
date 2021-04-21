@@ -6,13 +6,14 @@ import (
 
 	"github.com/dwethmar/atami/pkg/database"
 	"github.com/dwethmar/atami/pkg/user"
+	"github.com/dwethmar/atami/pkg/user/test"
 	"github.com/stretchr/testify/assert"
 )
 
 func TestCreate(t *testing.T) {
 	assert.NoError(t, database.WithTestDB(t, func(db *sql.DB) error {
 		creator := NewCreator(db)
-		user.TestCreator(t, creator, user.CreateRequest{
+		test.TestCreator(t, creator, user.CreateRequest{
 			Username: "username",
 			Email:    "test@test.nl",
 			Password: "!Test123",
@@ -29,7 +30,7 @@ func TestDuplicateUsername(t *testing.T) {
 			Password: "!Test123",
 		}
 		creator := NewCreator(db)
-		user.TestDuplicateUsername(t, creator, newUser)
+		test.TestDuplicateUsername(t, creator, newUser)
 		return nil
 	}))
 }
@@ -42,7 +43,7 @@ func TestDuplicateEmail(t *testing.T) {
 			Password: "!Test123",
 		}
 		creator := NewCreator(db)
-		user.TestDuplicateEmail(t, creator, newUser)
+		test.TestDuplicateEmail(t, creator, newUser)
 		return nil
 	}))
 }
@@ -51,7 +52,7 @@ func TestDuplicateEmail(t *testing.T) {
 func TestEmptyPassword(t *testing.T) {
 	assert.NoError(t, database.WithTestDB(t, func(db *sql.DB) error {
 		creator := NewCreator(db)
-		user.TestEmptyPassword(t, creator)
+		test.TestEmptyPassword(t, creator)
 		return nil
 	}))
 }

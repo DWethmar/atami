@@ -7,6 +7,7 @@ import (
 	"github.com/dwethmar/atami/pkg/memstore"
 	"github.com/dwethmar/atami/pkg/message"
 	"github.com/dwethmar/atami/pkg/message/memory/util"
+	"github.com/dwethmar/atami/pkg/message/test"
 	"github.com/stretchr/testify/assert"
 )
 
@@ -21,5 +22,5 @@ func TestDelete(t *testing.T) {
 	assert.True(t, store.GetMessages().Put(a.ID, util.ToMemory(a)))
 
 	deleter := NewDeleter(store)
-	message.TestDelete(t, deleter, a.ID)
+	test.Delete(t, deleter, a.ID)
 }

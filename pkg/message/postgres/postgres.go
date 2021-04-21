@@ -1,13 +1,7 @@
 package postgres
 
 import (
-	"errors"
-
 	"github.com/dwethmar/atami/pkg/message"
-)
-
-var (
-	errCouldNotParse = errors.New("could not parse user")
 )
 
 func defaultMap(row Row) (*message.Message, error) {

@@ -22,14 +22,8 @@ type User struct {
 	Username string
 }
 
-// CreateRequest model
-type CreateRequest struct {
-	Text            string
-	CreatedByUserID int
-}
-
-// CreateAction model
-type CreateAction struct {
+// CreateMessage model
+type CreateMessage struct {
 	UID             string
 	Text            string
 	CreatedByUserID int

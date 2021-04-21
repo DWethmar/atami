@@ -15,10 +15,12 @@ services:
     ports:
       - "8080:8081"
     # restart: unless-stopped
-    depends_on: 
+    depends_on:
       - postgres
     networks:
       - backend
+    links:
+      - postgres
 
   postgres:
     image: postgres:latest
@@ -39,7 +41,7 @@ services:
     container_name: pgadmin_container
     image: dpage/pgadmin4
     environment:
-      PGADMIN_DEFAULT_EMAIL: ${PGADMIN_DEFAULT_EMAIL:-postgres@localhost}
+      PGADMIN_DEFAULT_EMAIL: ${PGADMIN_DEFAULT_EMAIL:-postgres@denniswethmar.nl}
       PGADMIN_DEFAULT_PASSWORD: ${PGADMIN_DEFAULT_PASSWORD:-postgres}
     volumes:
       - ./pgadmin4/servers.json:/pgadmin4/servers.json
@@ -48,7 +50,9 @@ services:
     restart: unless-stopped
     networks:
       - backend
-      
+    links:
+      - postgres
+
 networks:
   backend:
 
