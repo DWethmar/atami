@@ -18,7 +18,7 @@ type Row interface {
 }
 
 // selectUsernameUniqueCheck sql query
-var selectUsernameUniqueCheck = `\nSELECT
+var selectUsernameUniqueCheck = `SELECT
 	1
 FROM app_user
 WHERE app_user.username = $1
@@ -39,7 +39,7 @@ func queryRowSelectUsernameUniqueCheck(
 }
 
 // selectEmailUniqueCheck sql query
-var selectEmailUniqueCheck = `\nSELECT
+var selectEmailUniqueCheck = `SELECT
 	1
 FROM app_user
 WHERE app_user.email = $1
@@ -60,8 +60,7 @@ func queryRowSelectEmailUniqueCheck(
 }
 
 // insertUser sql query
-var insertUser = `
-INSERT INTO app_user
+var insertUser = `INSERT INTO app_user
 (
 	uid,
 	username,
@@ -105,7 +104,7 @@ func queryRowInsertUser(
 }
 
 // deleteUser sql query
-var deleteUser = `\nDELETE FROM app_user
+var deleteUser = `DELETE FROM app_user
 WHERE app_user.id = $1`
 
 func execDeleteUser(
@@ -119,7 +118,7 @@ func execDeleteUser(
 }
 
 // selectUsers sql query
-var selectUsers = `\nSELECT
+var selectUsers = `SELECT
 	app_user.id,
 	app_user.uid,
 	app_user.username,
@@ -165,7 +164,7 @@ func querySelectUsers(
 }
 
 // selectUserByID sql query
-var selectUserByID = `\nSELECT
+var selectUserByID = `SELECT
 	app_user.id,
 	app_user.uid,
 	app_user.username,
@@ -192,7 +191,7 @@ func queryRowSelectUserByID(
 }
 
 // selectUserByUID sql query
-var selectUserByUID = `\nSELECT
+var selectUserByUID = `SELECT
 	app_user.id,
 	app_user.uid,
 	app_user.username,
@@ -219,7 +218,7 @@ func queryRowSelectUserByUID(
 }
 
 // selectUserByEmail sql query
-var selectUserByEmail = `\nSELECT
+var selectUserByEmail = `SELECT
 	app_user.id,
 	app_user.uid,
 	app_user.username,
@@ -246,7 +245,7 @@ func queryRowSelectUserByEmail(
 }
 
 // selectUserByEmailWithPassword sql query
-var selectUserByEmailWithPassword = `\nSELECT
+var selectUserByEmailWithPassword = `SELECT
 	app_user.id,
 	app_user.uid,
 	app_user.username,
@@ -274,7 +273,7 @@ func queryRowSelectUserByEmailWithPassword(
 }
 
 // selectUserByUsername sql query
-var selectUserByUsername = `\nSELECT
+var selectUserByUsername = `SELECT
 	app_user.id,
 	app_user.uid,
 	app_user.username,
@@ -301,7 +300,7 @@ func queryRowSelectUserByUsername(
 }
 
 // updateUser sql query
-var updateUser = `\nUPDATE app_user
+var updateUser = `UPDATE app_user
 SET
 	biography = $2,
 	updated_at = $3

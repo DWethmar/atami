@@ -18,7 +18,7 @@ type Row interface {
 }
 
 // selectMessages sql query
-var selectMessages = `\nSELECT
+var selectMessages = `SELECT
 	message.id,
 	message.uid,
 	message.text,
@@ -66,7 +66,7 @@ func querySelectMessages(
 }
 
 // selectMessageByID sql query
-var selectMessageByID = `\nSELECT
+var selectMessageByID = `SELECT
 	message.id,
 	message.uid,
 	message.text,
@@ -94,7 +94,7 @@ func queryRowSelectMessageByID(
 }
 
 // selectMessageByUID sql query
-var selectMessageByUID = `\nSELECT
+var selectMessageByUID = `SELECT
 	message.id,
 	message.uid,
 	message.text,
@@ -122,7 +122,7 @@ func queryRowSelectMessageByUID(
 }
 
 // deleteMessage sql query
-var deleteMessage = `\nDELETE FROM message
+var deleteMessage = `DELETE FROM message
 WHERE message.id = $1`
 
 func execDeleteMessage(
@@ -136,8 +136,7 @@ func execDeleteMessage(
 }
 
 // insertMessage sql query
-var insertMessage = `
-INSERT INTO message
+var insertMessage = `INSERT INTO message
 (
 	uid,
 	text,
