@@ -7,7 +7,7 @@ import (
 
 // DeleteQuery defines the fields to build a delete sql query
 type DeleteQuery struct {
-	From      string
+	From      From
 	Where     *Where
 	Returning []string
 }
@@ -17,7 +17,7 @@ func Delete(dq DeleteQuery) string {
 	queryParts := []string{}
 
 	if dq.From != "" {
-		fromPart := fmt.Sprintf(`DELETE FROM %s`, dq.From)
+		fromPart := fmt.Sprintf(`DELETE %s`, dq.From.String())
 		queryParts = append(queryParts, fromPart)
 	}
 

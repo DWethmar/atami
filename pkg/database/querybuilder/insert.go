@@ -8,7 +8,7 @@ import (
 // InsertQuery defines the fields to build a insert sql query
 type InsertQuery struct {
 	Into        string
-	Select      []string
+	InsertCols  InsertCols
 	Values      []interface{}
 	SelectQuery *SelectQuery // If populated than instead of values, a select will be print
 	Returning   []string
@@ -23,8 +23,8 @@ func Insert(iq InsertQuery) string {
 		queryParts = append(queryParts, fromPart)
 	}
 
-	if len(iq.Select) > 0 {
-		selectPart := fmt.Sprintf(`(%s)`, "\n\t"+strings.Join(iq.Select, ",\n\t")+"\n")
+	if len(iq.InsertCols) > 0 {
+		selectPart := iq.InsertCols.String()
 		queryParts = append(queryParts, selectPart)
 	}
 

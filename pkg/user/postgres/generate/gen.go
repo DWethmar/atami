@@ -4,12 +4,14 @@ import (
 	"fmt"
 	"strconv"
 
+	"github.com/dwethmar/atami/pkg/database/querybuilder"
 	qb "github.com/dwethmar/atami/pkg/database/querybuilder"
 	qg "github.com/dwethmar/atami/pkg/database/querygenerator"
 	"github.com/dwethmar/atami/pkg/user/postgres/schema"
 )
 
 var defaultCols = schema.SelectCols
+var defaultFrom = querybuilder.From(schema.Table);
 
 var usernameCol = schema.WithTbl(schema.ColUsername)
 var biographyCol = schema.WithTbl(schema.ColBiography)
@@ -33,8 +35,8 @@ func main() {
 				Name: "selectUsernameUniqueCheck",
 				SQL: qb.Select(
 					qb.SelectQuery{
-						From:   schema.Table,
-						Select: []string{"1"},
+						From: defaultFrom,
+						SelectCols: []string{"1"},
 						Where: qb.NewWhere().
 							And(fmt.Sprintf("%s = $1", usernameCol)),
 						Limit: strconv.Itoa(1),
@@ -55,8 +57,8 @@ func main() {
 				Name: "selectEmailUniqueCheck",
 				SQL: qb.Select(
 					qb.SelectQuery{
-						From:   schema.Table,
-						Select: []string{"1"},
+						From: defaultFrom,
+						SelectCols: []string{"1"},
 						Where: qb.NewWhere().
 							And(fmt.Sprintf("%s = $1", emailCol)),
 						Limit: strconv.Itoa(1),
@@ -78,7 +80,7 @@ func main() {
 				SQL: qb.Insert(
 					qb.InsertQuery{
 						Into: schema.Table,
-						Select: []string{
+						InsertCols: []string{
 							schema.ColUID,
 							schema.ColUsername,
 							schema.ColEmail,
@@ -127,7 +129,7 @@ func main() {
 				Name: "deleteUser",
 				SQL: qb.Delete(
 					qb.DeleteQuery{
-						From:  schema.Table,
+						From:  defaultFrom,
 						Where: qb.NewWhere().And(fmt.Sprintf("%s = $1", idCol)),
 					},
 				),
@@ -146,8 +148,8 @@ func main() {
 				Name: "selectUsers",
 				SQL: qb.Select(
 					qb.SelectQuery{
-						Select:  defaultCols,
-						From:    schema.Table,
+						SelectCols:  defaultCols,
+						From: defaultFrom,
 						OrderBy: []string{fmt.Sprintf("%s ASC", createdAtCol)},
 						Limit:   "$1",
 						Offset:  "$2",
@@ -172,8 +174,8 @@ func main() {
 				Name: "selectUserByID",
 				SQL: qb.Select(
 					qb.SelectQuery{
-						From:   schema.Table,
-						Select: defaultCols,
+						From: defaultFrom,
+						SelectCols: defaultCols,
 						Where: qb.NewWhere().And(
 							fmt.Sprintf("%s = $1", idCol),
 						),
@@ -195,8 +197,8 @@ func main() {
 				Name: "selectUserByUID",
 				SQL: qb.Select(
 					qb.SelectQuery{
-						From:   schema.Table,
-						Select: defaultCols,
+						From: defaultFrom,
+						SelectCols: defaultCols,
 						Where: qb.NewWhere().And(
 							fmt.Sprintf("%s = $1", uidCol),
 						),
@@ -218,8 +220,8 @@ func main() {
 				Name: "selectUserByEmail",
 				SQL: qb.Select(
 					qb.SelectQuery{
-						From:   schema.Table,
-						Select: defaultCols,
+						From: defaultFrom,
+						SelectCols: defaultCols,
 						Where: qb.NewWhere().And(
 							fmt.Sprintf("%s = $1", emailCol),
 						),
@@ -241,8 +243,8 @@ func main() {
 				Name: "selectUserByEmailWithPassword",
 				SQL: qb.Select(
 					qb.SelectQuery{
-						From:   schema.Table,
-						Select: append(schema.SelectCols, passwordCol),
+						From: defaultFrom,
+						SelectCols: append(schema.SelectCols, passwordCol),
 						Where: qb.NewWhere().And(
 							fmt.Sprintf("%s = $1", emailCol),
 						),
@@ -264,8 +266,8 @@ func main() {
 				Name: "selectUserByUsername",
 				SQL: qb.Select(
 					qb.SelectQuery{
-						From:   schema.Table,
-						Select: schema.SelectCols,
+						From: defaultFrom,
+						SelectCols: schema.SelectCols,
 						Where: qb.NewWhere().And(
 							fmt.Sprintf("%s = $1", usernameCol),
 						),

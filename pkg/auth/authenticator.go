@@ -11,7 +11,6 @@ type Authenticator struct {
 
 // Authenticate by credentials
 func (m *Authenticator) Authenticate(credentials Credentials) (bool, error) {
-
 	if credentials.Email == "" {
 		return false, ErrEmailRequired
 	}

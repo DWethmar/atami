@@ -24,7 +24,7 @@ var defaultCols = append(
 	userSchema.WithTbl(userSchema.ColUID),
 	userSchema.WithTbl(userSchema.ColUsername),
 )
-
+var defaultFrom = qb.From(schema.Table)
 var defaultJoin = qb.NewJoin().
 	Left(fmt.Sprintf(
 		"%s ON %v = %v",
@@ -48,8 +48,8 @@ func main() {
 				Name: "selectMessages",
 				SQL: qb.Select(
 					qb.SelectQuery{
-						Select:  defaultCols,
-						From:    schema.Table,
+						SelectCols:  defaultCols,
+						From:    defaultFrom,
 						Joins:   defaultJoin,
 						Where:   nil,
 						GroupBy: []string{},
@@ -77,8 +77,8 @@ func main() {
 				Name: "selectMessageByID",
 				SQL: qb.Select(
 					qb.SelectQuery{
-						Select: defaultCols,
-						From:   schema.Table,
+						SelectCols: defaultCols,
+						From:    defaultFrom,
 						Joins:  defaultJoin,
 						Where: qb.NewWhere().And(
 							fmt.Sprintf("%s = $1", IDCol),
@@ -104,8 +104,8 @@ func main() {
 				Name: "selectMessageByUID",
 				SQL: qb.Select(
 					qb.SelectQuery{
-						Select: defaultCols,
-						From:   schema.Table,
+						SelectCols: defaultCols,
+						From:    defaultFrom,
 						Joins:  defaultJoin,
 						Where: qb.NewWhere().And(
 							fmt.Sprintf("%s = $1", UIDCol),
@@ -131,7 +131,7 @@ func main() {
 				Name: "deleteMessage",
 				SQL: qb.Delete(
 					qb.DeleteQuery{
-						From: schema.Table,
+						From: defaultFrom,
 						Where: qb.NewWhere().And(
 							fmt.Sprintf("%s = $1", IDCol),
 						)},
@@ -151,7 +151,7 @@ func main() {
 				SQL: qb.Insert(
 					qb.InsertQuery{
 						Into: schema.Table,
-						Select: []string{
+						InsertCols: []string{
 							schema.ColUID,
 							schema.ColText,
 							schema.ColCreatedByUserID,

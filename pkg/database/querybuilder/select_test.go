@@ -10,8 +10,7 @@ import (
 
 // Select returns a select sql query
 func TestSelect(t *testing.T) {
-	expect :=
-		`SELECT
+	expect := `SELECT
 	public.user.id,
 	username
 FROM public.message
@@ -27,7 +26,7 @@ OFFSET 1`
 
 	received := Select(
 		SelectQuery{
-			Select: []string{"public.user.id", "username"},
+			SelectCols: []string{"public.user.id", "username"},
 			From:   "public.message",
 			Joins: NewJoin().
 				Left("public.user ON public.user.id = public.message.created_by_user_id"),

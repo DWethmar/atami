@@ -7,8 +7,8 @@ import (
 
 // SelectQuery defines the fields to build a sql query
 type SelectQuery struct {
-	Select  []string
-	From    string
+	SelectCols  SelectCols
+	From    From
 	Joins   *Join
 	Where   *Where
 	GroupBy []string
@@ -22,15 +22,11 @@ type SelectQuery struct {
 func Select(sq SelectQuery) string {
 	queryParts := []string{}
 
-	if len(sq.Select) > 0 {
-		selectPart := fmt.Sprintf(`SELECT%s`, "\n\t"+strings.Join(sq.Select, ",\n\t"))
-		queryParts = append(queryParts, selectPart)
-	} else {
-		queryParts = append(queryParts, "SELECT *")
-	}
+	selectPart := sq.SelectCols.String()
+	queryParts = append(queryParts, selectPart)
 
 	if sq.From != "" {
-		fromPart := fmt.Sprintf(`FROM %s`, sq.From)
+		fromPart := sq.From.String()
 		queryParts = append(queryParts, fromPart)
 	}
 
