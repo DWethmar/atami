@@ -4,7 +4,7 @@ import (
 	"strings"
 
 	"github.com/dwethmar/atami/pkg/auth/validate"
-	userValidator "github.com/dwethmar/atami/pkg/user/validate"
+	userValidator "github.com/dwethmar/atami/pkg/domain/user/validate"
 )
 
 // Validator struct definition

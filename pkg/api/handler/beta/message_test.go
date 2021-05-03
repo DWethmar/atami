@@ -10,11 +10,11 @@ import (
 
 	"github.com/dwethmar/atami/pkg/api/middleware"
 	"github.com/dwethmar/atami/pkg/api/response"
+	"github.com/dwethmar/atami/pkg/domain/message"
+	messageUtil "github.com/dwethmar/atami/pkg/domain/message/memory/util"
+	"github.com/dwethmar/atami/pkg/domain/user/memory/util"
+	userUtil "github.com/dwethmar/atami/pkg/domain/user/memory/util"
 	"github.com/dwethmar/atami/pkg/memstore"
-	"github.com/dwethmar/atami/pkg/message"
-	messageUtil "github.com/dwethmar/atami/pkg/message/memory/util"
-	"github.com/dwethmar/atami/pkg/user/memory/util"
-	userUtil "github.com/dwethmar/atami/pkg/user/memory/util"
 
 	"github.com/dwethmar/atami/pkg/service"
 	"github.com/stretchr/testify/assert"

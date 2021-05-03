@@ -9,7 +9,7 @@ import (
 
 	"github.com/dwethmar/atami/pkg/api/response"
 	"github.com/dwethmar/atami/pkg/auth"
-	"github.com/dwethmar/atami/pkg/user"
+	"github.com/dwethmar/atami/pkg/domain/user"
 
 	"github.com/go-chi/chi"
 	"github.com/go-chi/cors"

@@ -39,6 +39,8 @@ func main() {
 	authService := service.NewAuthServicePostgres(db)
 	messageService := service.NewMessageServicePostgres(db)
 
+	// store := domain.NewStore(db);
+
 	router := chi.NewRouter()
 	router.Mount("/auth", handler.NewAuthRouter(authService, userService))
 	router.Mount("/beta/messages", beta.NewMessageRouter(userService, messageService))

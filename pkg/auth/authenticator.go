@@ -1,7 +1,7 @@
 package auth
 
 import (
-	"github.com/dwethmar/atami/pkg/user"
+	"github.com/dwethmar/atami/pkg/domain/user"
 )
 
 // Authenticator authenticate with credentials.

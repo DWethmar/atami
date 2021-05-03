@@ -9,7 +9,7 @@ import (
 
 	"github.com/dwethmar/atami/pkg/api/response"
 	"github.com/dwethmar/atami/pkg/auth"
-	"github.com/dwethmar/atami/pkg/user"
+	"github.com/dwethmar/atami/pkg/domain/user"
 )
 
 type userCTXKeyType string

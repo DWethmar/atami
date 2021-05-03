@@ -3,7 +3,7 @@ package auth
 import (
 	"errors"
 
-	"github.com/dwethmar/atami/pkg/user"
+	"github.com/dwethmar/atami/pkg/domain/user"
 )
 
 var (

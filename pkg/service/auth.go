@@ -4,10 +4,10 @@ import (
 	"database/sql"
 
 	"github.com/dwethmar/atami/pkg/auth"
+	userMemory "github.com/dwethmar/atami/pkg/domain/user/memory"
 	"github.com/dwethmar/atami/pkg/memstore"
-	userMemory "github.com/dwethmar/atami/pkg/user/memory"
 
-	userPostgres "github.com/dwethmar/atami/pkg/user/postgres"
+	userPostgres "github.com/dwethmar/atami/pkg/domain/user/postgres"
 )
 
 // NewAuthServiceMemory create a new in memory auth service

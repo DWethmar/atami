@@ -8,9 +8,9 @@ import (
 	"time"
 
 	"github.com/dwethmar/atami/pkg/auth"
+	"github.com/dwethmar/atami/pkg/domain/user"
 	"github.com/dwethmar/atami/pkg/memstore"
 	"github.com/dwethmar/atami/pkg/service"
-	"github.com/dwethmar/atami/pkg/user"
 	"github.com/stretchr/testify/assert"
 )
 

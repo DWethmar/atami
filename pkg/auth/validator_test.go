@@ -4,7 +4,7 @@ import (
 	"testing"
 
 	"github.com/dwethmar/atami/pkg/auth/validate"
-	userValidate "github.com/dwethmar/atami/pkg/user/validate"
+	userValidate "github.com/dwethmar/atami/pkg/domain/user/validate"
 	"github.com/stretchr/testify/assert"
 )
 

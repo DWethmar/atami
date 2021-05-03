@@ -3,9 +3,9 @@ package service
 import (
 	"database/sql"
 
-	"github.com/dwethmar/atami/pkg/message"
-	messageMemory "github.com/dwethmar/atami/pkg/message/memory"
-	messagePostgres "github.com/dwethmar/atami/pkg/message/postgres"
+	"github.com/dwethmar/atami/pkg/domain/message"
+	messageMemory "github.com/dwethmar/atami/pkg/domain/message/memory"
+	messagePostgres "github.com/dwethmar/atami/pkg/domain/message/postgres"
 
 	"github.com/dwethmar/atami/pkg/memstore"
 )

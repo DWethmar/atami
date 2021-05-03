@@ -9,8 +9,8 @@ import (
 
 	"github.com/dwethmar/atami/pkg/api/middleware"
 	"github.com/dwethmar/atami/pkg/api/response"
-	"github.com/dwethmar/atami/pkg/message"
-	"github.com/dwethmar/atami/pkg/user"
+	"github.com/dwethmar/atami/pkg/domain/message"
+	"github.com/dwethmar/atami/pkg/domain/user"
 	"github.com/go-chi/chi"
 	"github.com/go-chi/cors"
 	"github.com/go-chi/httplog"

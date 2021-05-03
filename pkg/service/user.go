@@ -3,11 +3,11 @@ package service
 import (
 	"database/sql"
 
+	"github.com/dwethmar/atami/pkg/domain/user"
 	"github.com/dwethmar/atami/pkg/memstore"
-	"github.com/dwethmar/atami/pkg/user"
 
-	userMemory "github.com/dwethmar/atami/pkg/user/memory"
-	userPostgres "github.com/dwethmar/atami/pkg/user/postgres"
+	userMemory "github.com/dwethmar/atami/pkg/domain/user/memory"
+	userPostgres "github.com/dwethmar/atami/pkg/domain/user/postgres"
 )
 
 // NewUserServiceMemory create a new in memory auth service
