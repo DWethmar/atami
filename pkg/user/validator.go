@@ -3,7 +3,7 @@ package user
 import (
 	"strings"
 
-	"github.com/dwethmar/atami/pkg/validate"
+	"github.com/dwethmar/atami/pkg/user/validate"
 )
 
 // Validator struct definition

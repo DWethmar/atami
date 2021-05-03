@@ -53,6 +53,10 @@ func passwordComplexity(s string) bool {
 func (v PasswordValidator) Validate(password string) error {
 	var err error
 	len := len(password)
+
+	fmt.Printf("PASSWORD: %v", password)
+	fmt.Printf("PASSWORD LEN: %v", len)
+
 	switch {
 	case password == "":
 		err = ErrPasswordRequired

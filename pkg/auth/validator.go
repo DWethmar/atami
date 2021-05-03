@@ -3,13 +3,14 @@ package auth
 import (
 	"strings"
 
-	"github.com/dwethmar/atami/pkg/validate"
+	"github.com/dwethmar/atami/pkg/auth/validate"
+	userValidator "github.com/dwethmar/atami/pkg/user/validate"
 )
 
 // Validator struct definition
 type Validator struct {
-	usernameValidator *validate.UsernameValidator
-	emailValidator    *validate.EmailValidator
+	usernameValidator *userValidator.UsernameValidator
+	emailValidator    *userValidator.EmailValidator
 	passwordValidator *validate.PasswordValidator
 }
 
@@ -54,8 +55,8 @@ func (v Validator) ValidateNewUser(newUser CreateUser) error {
 
 // NewValidator creates a new validator
 func NewValidator(
-	usernameValidator *validate.UsernameValidator,
-	emailValidator *validate.EmailValidator,
+	usernameValidator *userValidator.UsernameValidator,
+	emailValidator *userValidator.EmailValidator,
 	passwordValidator *validate.PasswordValidator,
 ) *Validator {
 	return &Validator{
@@ -68,8 +69,8 @@ func NewValidator(
 // NewDefaultValidator creates a new validator
 func NewDefaultValidator() *Validator {
 	return NewValidator(
-		validate.NewUsernameValidator(),
-		validate.NewEmailValidator(),
+		userValidator.NewUsernameValidator(),
+		userValidator.NewEmailValidator(),
 		validate.NewPasswordValidator(),
 	)
 }

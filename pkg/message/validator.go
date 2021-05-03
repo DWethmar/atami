@@ -4,7 +4,7 @@ import (
 	"errors"
 	"strings"
 
-	"github.com/dwethmar/atami/pkg/validate"
+	"github.com/dwethmar/atami/pkg/message/validate"
 )
 
 // Validator struct definition
