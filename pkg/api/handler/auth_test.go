@@ -83,17 +83,18 @@ var invalidUser1 = NewUser{
 
 func TestRegisterUser(t *testing.T) {
 	store := domain.NewInMemoryStore(memstore.NewStore())
-	handler := http.HandlerFunc(Register(store))
+	authService := auth.NewService(store.User.Finder)
+	router := NewAuthRouter(authService, store)
 
 	form := url.Values{}
 	form.Add("email", newUser.Email)
 	form.Add("password", newUser.Password)
 	form.Add("username", newUser.Username)
 
-	req := httptest.NewRequest("POST", "/", strings.NewReader(form.Encode()))
+	req := httptest.NewRequest("POST", "/register", strings.NewReader(form.Encode()))
 	req.Header.Set("Content-Type", "application/x-www-form-urlencoded")
 	rr := httptest.NewRecorder()
-	handler.ServeHTTP(rr, req)
+	router.ServeHTTP(rr, req)
 
 	assert.Equal(t, http.StatusCreated, rr.Code, rr.Body.String())
 	assert.Equal(t, "application/json", rr.Header().Get("Content-Type"))
@@ -106,7 +107,8 @@ func TestRegisterUser(t *testing.T) {
 
 func TestRegisterInvalidUser(t *testing.T) {
 	store := domain.NewInMemoryStore(memstore.NewStore())
-	handler := http.HandlerFunc(Register(store))
+	authService := auth.NewService(store.User.Finder)
+	router := NewAuthRouter(authService, store)
 
 	requests := []*NewUser{
 		{
@@ -145,10 +147,10 @@ func TestRegisterInvalidUser(t *testing.T) {
 		form.Add("password", r.Password)
 		form.Add("username", r.Username)
 
-		req := httptest.NewRequest("POST", "/", strings.NewReader(form.Encode()))
+		req := httptest.NewRequest("POST", "/register", strings.NewReader(form.Encode()))
 		req.Header.Set("Content-Type", "application/x-www-form-urlencoded")
 		rr := httptest.NewRecorder()
-		handler.ServeHTTP(rr, req)
+		router.ServeHTTP(rr, req)
 
 		assert.Equal(t, http.StatusBadRequest, rr.Code, rr.Body.String())
 		assert.Equal(t, "application/json", rr.Header().Get("Content-Type"))
@@ -167,6 +169,7 @@ func TestLogin(t *testing.T) {
 	os.Setenv("ACCESS_SECRET", "abc")
 	store := domain.NewInMemoryStore(memstore.NewStore())
 	authService := auth.NewService(store.User.Finder)
+	router := NewAuthRouter(authService, store)
 
 	_, err := store.User.Create(user.CreateUser{
 		Username: "test_username",
@@ -175,17 +178,16 @@ func TestLogin(t *testing.T) {
 	})
 
 	assert.NoError(t, err)
-	handler := http.HandlerFunc(Login(authService, store))
 
 	form := url.Values{}
 	form.Add("email", "test@test.com")
 	form.Add("password", "test123!@#ABC")
 
-	req := httptest.NewRequest("POST", "/auth/login", strings.NewReader(form.Encode()))
+	req := httptest.NewRequest("POST", "/login", strings.NewReader(form.Encode()))
 	req.Header.Set("Content-Type", "application/x-www-form-urlencoded")
 
 	rr := httptest.NewRecorder()
-	handler.ServeHTTP(rr, req)
+	router.ServeHTTP(rr, req)
 
 	if assert.Equal(t, http.StatusOK, rr.Code, rr.Body.String()) {
 		assert.Equal(t, "application/json", rr.Header().Get("Content-Type"))
@@ -200,6 +202,7 @@ func TestRefresh(t *testing.T) {
 	os.Setenv("ACCESS_SECRET", "abc")
 	store := domain.NewInMemoryStore(memstore.NewStore())
 	authService := auth.NewService(store.User.Finder)
+	router := NewAuthRouter(authService, store)
 
 	u, err := store.User.Create(user.CreateUser{
 		Username: "test_username",
@@ -208,8 +211,6 @@ func TestRefresh(t *testing.T) {
 	})
 	assert.NoError(t, err)
 
-	handler := http.HandlerFunc(Refresh(authService, store))
-
 	refreshToken, err := auth.CreateRefreshToken(
 		u.UID,
 		"abcdefg",
@@ -217,7 +218,7 @@ func TestRefresh(t *testing.T) {
 	)
 	assert.NoError(t, err)
 
-	req := httptest.NewRequest("POST", "/beta/auth/refresh", nil)
+	req := httptest.NewRequest("POST", "/refresh", nil)
 	req.Header.Set("Content-Type", "application/x-www-form-urlencoded")
 	req.AddCookie(createRefreshCookie(
 		time.Now().Add(time.Hour*2),
@@ -226,7 +227,7 @@ func TestRefresh(t *testing.T) {
 	))
 
 	rr := httptest.NewRecorder()
-	handler.ServeHTTP(rr, req)
+	router.ServeHTTP(rr, req)
 
 	if assert.Equal(t, http.StatusOK, rr.Code, rr.Body.String()) {
 		assert.Equal(t, "application/json", rr.Header().Get("Content-Type"))
@@ -250,14 +251,13 @@ func TestInvalidRefresh(t *testing.T) {
 	os.Setenv("ACCESS_SECRET", "abc")
 	store := domain.NewInMemoryStore(memstore.NewStore())
 	authService := auth.NewService(store.User.Finder)
+	router := NewAuthRouter(authService, store)
 
-	handler := http.HandlerFunc(Refresh(authService, store))
-
-	req := httptest.NewRequest("POST", "/beta/auth/refresh", nil)
+	req := httptest.NewRequest("POST", "/refresh", nil)
 	req.Header.Set("Content-Type", "application/x-www-form-urlencoded")
 
 	rr := httptest.NewRecorder()
-	handler.ServeHTTP(rr, req)
+	router.ServeHTTP(rr, req)
 	assert.Equal(t, http.StatusBadRequest, rr.Code, rr.Body.String())
 
 	responds := response.ErrorResponds{}
@@ -270,6 +270,7 @@ func TestRefreshWithExpiredToken(t *testing.T) {
 	os.Setenv("ACCESS_SECRET", "abc")
 	store := domain.NewInMemoryStore(memstore.NewStore())
 	authService := auth.NewService(store.User.Finder)
+	router := NewAuthRouter(authService, store)
 
 	u, err := store.User.Create(user.CreateUser{
 		Username: "test",
@@ -279,8 +280,6 @@ func TestRefreshWithExpiredToken(t *testing.T) {
 
 	assert.NoError(t, err)
 
-	handler := http.HandlerFunc(Refresh(authService, store))
-
 	refreshToken, err := auth.CreateRefreshToken(
 		u.UID,
 		"abcdefg",
@@ -289,7 +288,7 @@ func TestRefreshWithExpiredToken(t *testing.T) {
 
 	assert.NoError(t, err)
 
-	req := httptest.NewRequest("POST", "/beta/auth/refresh", nil)
+	req := httptest.NewRequest("POST", "/refresh", nil)
 	req.Header.Set("Content-Type", "application/x-www-form-urlencoded")
 	req.AddCookie(createRefreshCookie(
 		time.Now().Add(time.Hour*2),
@@ -298,7 +297,7 @@ func TestRefreshWithExpiredToken(t *testing.T) {
 	))
 
 	rr := httptest.NewRecorder()
-	handler.ServeHTTP(rr, req)
+	router.ServeHTTP(rr, req)
 
 	if assert.Equal(t, http.StatusBadRequest, rr.Code, rr.Body.String()) {
 		assert.Equal(t, "application/json", rr.Header().Get("Content-Type"))

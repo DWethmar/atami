@@ -36,10 +36,15 @@ func Authenticated(userStore *domain.UserStore) func(next http.Handler) http.Han
 	return func(next http.Handler) http.Handler {
 		fn := func(w http.ResponseWriter, r *http.Request) {
 			reqToken := r.Header.Get("Authorization")
+			if reqToken == "" {
+				response.UnauthorizedError(w, r, errors.New("unauthorized"))
+				return
+			}
+
 			splitToken := strings.Split(reqToken, "Bearer ")
 
 			if len(splitToken) != 2 {
-				response.UnauthorizedError(w, r, errors.New("Invalid authorization header"))
+				response.UnauthorizedError(w, r, errors.New("invalid authorization header"))
 				return
 			}
 

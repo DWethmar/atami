@@ -30,7 +30,7 @@ func getAccessSecret() ([]byte, error) {
 }
 
 // CreateAccessToken creates a new authentication token
-func CreateAccessToken(UID string, session string, expiresOn int64) (string, error) {
+func CreateAccessToken(userUID string, session string, expiresOn int64) (string, error) {
 	var err error
 
 	accessSecret, err := getAccessSecret()
@@ -44,7 +44,7 @@ func CreateAccessToken(UID string, session string, expiresOn int64) (string, err
 	}
 
 	claims.StandardClaims = jwt.StandardClaims{
-		Subject:   UID,
+		Subject:   userUID,
 		ExpiresAt: expiresOn,
 		IssuedAt:  time.Now().Unix(),
 	}

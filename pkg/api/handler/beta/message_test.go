@@ -9,8 +9,8 @@ import (
 	"testing"
 	"time"
 
-	"github.com/dwethmar/atami/pkg/api/middleware"
 	"github.com/dwethmar/atami/pkg/api/response"
+	"github.com/dwethmar/atami/pkg/auth"
 	"github.com/dwethmar/atami/pkg/domain"
 	"github.com/dwethmar/atami/pkg/domain/message"
 	"github.com/dwethmar/atami/pkg/domain/user"
@@ -68,14 +68,11 @@ func TestListMessages(t *testing.T) {
 	req, err := http.NewRequest("GET", "/", nil)
 	assert.NoError(t, err)
 
-	// Add user to context
-	ctx := req.Context()
-	ctx = middleware.WithUser(ctx, user)
-	req = req.WithContext(ctx)
+	token, _ := auth.CreateAccessToken(user.UID, "1", time.Now().Add(1000000).Unix())
+	req.Header.Add("Authorization", fmt.Sprintf("Bearer %s", token))
 
 	rr := httptest.NewRecorder()
-	handler := http.HandlerFunc(ListMessages(store))
-	handler.ServeHTTP(rr, req)
+	NewMessageRouter(store).ServeHTTP(rr, req)
 
 	assert.Equal(t, http.StatusOK, rr.Code)
 	assert.Equal(t, "application/json", rr.Header().Get("Content-Type"))
@@ -148,19 +145,11 @@ func TestGetMessage(t *testing.T) {
 	req, err := http.NewRequest("GET", fmt.Sprintf("/%s", messages[0].UID), nil)
 	assert.NoError(t, err)
 
-	// Add user to context
-	ctx := req.Context()
-	ctx = middleware.WithUser(ctx, user)
-	req = req.WithContext(ctx)
-
-	// Add message UID to context
-	ctx = req.Context()
-	ctx = middleware.WithUID(ctx, messages[0].UID)
-	req = req.WithContext(ctx)
+	token, _ := auth.CreateAccessToken(user.UID, "1", time.Now().Add(1000000).Unix())
+	req.Header.Add("Authorization", fmt.Sprintf("Bearer %s", token))
 
 	rr := httptest.NewRecorder()
-	handler := http.HandlerFunc(GetMessage(store))
-	handler.ServeHTTP(rr, req)
+	NewMessageRouter(store).ServeHTTP(rr, req)
 
 	assert.Equal(t, http.StatusOK, rr.Code)
 	assert.Equal(t, "application/json", rr.Header().Get("Content-Type"))
@@ -183,26 +172,18 @@ func TestNotFoundGetMessage(t *testing.T) {
 	req, err := http.NewRequest("GET", "/notexistinguid", nil)
 	assert.NoError(t, err)
 
-	// Add user to context
-	ctx := req.Context()
-	ctx = middleware.WithUser(ctx, user)
-	req = req.WithContext(ctx)
-
-	// Add UID to context
-	ctx = req.Context()
-	ctx = middleware.WithUID(ctx, "notexistinguid")
-	req = req.WithContext(ctx)
+	token, _ := auth.CreateAccessToken(user.UID, "1", time.Now().Add(1000000).Unix())
+	req.Header.Add("Authorization", fmt.Sprintf("Bearer %s", token))
 
 	rr := httptest.NewRecorder()
-	handler := http.HandlerFunc(GetMessage(store))
-	handler.ServeHTTP(rr, req)
+	NewMessageRouter(store).ServeHTTP(rr, req)
 
 	assert.Equal(t, "application/json", rr.Header().Get("Content-Type"))
 	assert.Equal(t, http.StatusNotFound, rr.Code)
 
 	expectedResponds := response.ErrorResponds{
 		Error:   http.StatusText(http.StatusNotFound),
-		Message: "",
+		Message: "resource not found or unavailable",
 	}
 	// Check the response body is what we expect.
 	expected, _ := json.Marshal(expectedResponds)
@@ -224,14 +205,11 @@ func TestCreateMessage(t *testing.T) {
 	body, _ := json.Marshal(addEntry)
 	req := httptest.NewRequest("POST", "/", bytes.NewBuffer(body))
 
-	// Add user to context.
-	ctx := req.Context()
-	ctx = middleware.WithUser(ctx, user)
-	req = req.WithContext(ctx)
+	token, _ := auth.CreateAccessToken(user.UID, "1", time.Now().Add(1000000).Unix())
+	req.Header.Add("Authorization", fmt.Sprintf("Bearer %s", token))
 
 	rr := httptest.NewRecorder()
-	handler := http.HandlerFunc(CreateMessage(store))
-	handler.ServeHTTP(rr, req)
+	NewMessageRouter(store).ServeHTTP(rr, req)
 
 	assert.Equal(t, http.StatusCreated, rr.Code)
 	assert.Equal(t, "application/json", rr.Header().Get("Content-Type"))
@@ -251,8 +229,7 @@ func TestUnauthorizedCreateMessage(t *testing.T) {
 	req := httptest.NewRequest("POST", "/", bytes.NewBuffer(body))
 
 	rr := httptest.NewRecorder()
-	handler := http.HandlerFunc(CreateMessage(store))
-	handler.ServeHTTP(rr, req)
+	NewMessageRouter(store).ServeHTTP(rr, req)
 
 	assert.Equal(t, "application/json", rr.Header().Get("Content-Type"))
 	assert.Equal(t, http.StatusUnauthorized, rr.Code)
@@ -308,19 +285,11 @@ func TestDeleteMessage(t *testing.T) {
 	req, err := http.NewRequest("DELETE", fmt.Sprintf("/%s", messages[0].UID), nil)
 	assert.NoError(t, err)
 
-	// Add user to context
-	ctx := req.Context()
-	ctx = middleware.WithUser(ctx, user)
-	req = req.WithContext(ctx)
-
-	// Add UID to context
-	ctx = req.Context()
-	ctx = middleware.WithUID(ctx, messages[0].UID)
-	req = req.WithContext(ctx)
+	token, _ := auth.CreateAccessToken(user.UID, "1", time.Now().Add(1000000).Unix())
+	req.Header.Add("Authorization", fmt.Sprintf("Bearer %s", token))
 
 	rr := httptest.NewRecorder()
-	handler := http.HandlerFunc(GetMessage(store))
-	handler.ServeHTTP(rr, req)
+	NewMessageRouter(store).ServeHTTP(rr, req)
 
 	assert.Equal(t, http.StatusOK, rr.Code)
 	assert.Equal(t, "application/json", rr.Header().Get("Content-Type"))
@@ -380,19 +349,11 @@ func TestUnauthorizedDeleteMessage(t *testing.T) {
 	req, err := http.NewRequest("DELETE", fmt.Sprintf("/%s", messages[0].UID), nil)
 	assert.NoError(t, err)
 
-	// Add user to context
-	ctx := req.Context()
-	ctx = middleware.WithUser(ctx, user2)
-	req = req.WithContext(ctx)
-
-	// Add message UID to context
-	ctx = req.Context()
-	ctx = middleware.WithUID(ctx, messages[0].UID)
-	req = req.WithContext(ctx)
+	token, _ := auth.CreateAccessToken(user2.UID, "1", time.Now().Add(1000000).Unix())
+	req.Header.Add("Authorization", fmt.Sprintf("Bearer %s", token))
 
 	rr := httptest.NewRecorder()
-	handler := http.HandlerFunc(DeleteMessage(store))
-	handler.ServeHTTP(rr, req)
+	NewMessageRouter(store).ServeHTTP(rr, req)
 
 	assert.Equal(t, "application/json", rr.Header().Get("Content-Type"))
 	assert.Equal(t, http.StatusUnauthorized, rr.Code)
@@ -417,20 +378,20 @@ func TestNotFoundDeleteMessage(t *testing.T) {
 	req, err := http.NewRequest("DELETE", "/abcdefg1234", nil)
 	assert.NoError(t, err)
 
-	// Add user to context
-	ctx := req.Context()
-	ctx = middleware.WithUser(ctx, u)
-	req = req.WithContext(ctx)
-
-	// Add UID to context
-	ctx = req.Context()
-	ctx = middleware.WithUID(ctx, "abcdefg1234")
-	req = req.WithContext(ctx)
+	token, _ := auth.CreateAccessToken(u.UID, "1", time.Now().Add(1000000).Unix())
+	req.Header.Add("Authorization", fmt.Sprintf("Bearer %s", token))
 
 	rr := httptest.NewRecorder()
-	handler := http.HandlerFunc(DeleteMessage(store))
-	handler.ServeHTTP(rr, req)
+	NewMessageRouter(store).ServeHTTP(rr, req)
 
 	assert.Equal(t, "application/json", rr.Header().Get("Content-Type"))
 	assert.Equal(t, http.StatusNotFound, rr.Code)
+
+	expectedResponds := response.ErrorResponds{
+		Error:   http.StatusText(http.StatusNotFound),
+		Message: "resource not found or unavailable",
+	}
+	// Check the response body is what we expect.
+	expected, _ := json.Marshal(expectedResponds)
+	assert.Equal(t, string(expected), rr.Body.String(), rr.Body.String())
 }
