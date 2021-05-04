@@ -12,6 +12,7 @@ import (
 
 	"github.com/dwethmar/atami/pkg/api/response"
 	"github.com/dwethmar/atami/pkg/auth"
+	"github.com/dwethmar/atami/pkg/domain"
 	"github.com/dwethmar/atami/pkg/memstore"
 	"github.com/dwethmar/atami/pkg/service"
 	"github.com/stretchr/testify/assert"
@@ -38,9 +39,10 @@ var users = []*auth.CreateUser{
 }
 
 func TestList(t *testing.T) {
-	store := memstore.NewStore()
-	userService := service.NewUserServiceMemory(store)
-	authService := service.NewAuthServiceMemory(store)
+	memstore := memstore.NewStore()
+	store := domain.NewInMemoryStore(memstore)
+	userService := service.NewUserServiceMemory(memstore)
+	authService := service.NewAuthService(store.User.Finder, store.User.Creator)
 
 	var expectedResponds = make([]*Responds, len(users))
 	for i, user := range users {
@@ -76,8 +78,10 @@ var invalidUser1 = NewUser{
 }
 
 func TestRegisterUser(t *testing.T) {
-	store := memstore.NewStore()
-	authService := service.NewAuthServiceMemory(store)
+	memstore := memstore.NewStore()
+	store := domain.NewInMemoryStore(memstore)
+	authService := service.NewAuthService(store.User.Finder, store.User.Creator)
+
 	handler := http.HandlerFunc(Register(authService))
 
 	form := url.Values{}
@@ -100,8 +104,10 @@ func TestRegisterUser(t *testing.T) {
 }
 
 func TestRegisterInvalidUser(t *testing.T) {
-	store := memstore.NewStore()
-	authService := service.NewAuthServiceMemory(store)
+	memstore := memstore.NewStore()
+	store := domain.NewInMemoryStore(memstore)
+	authService := service.NewAuthService(store.User.Finder, store.User.Creator)
+	
 	handler := http.HandlerFunc(Register(authService))
 
 	requests := []*NewUser{
@@ -161,9 +167,10 @@ func TestRegisterInvalidUser(t *testing.T) {
 
 func TestLogin(t *testing.T) {
 	os.Setenv("ACCESS_SECRET", "abc")
-	store := memstore.NewStore()
-	userService := service.NewUserServiceMemory(store)
-	authService := service.NewAuthServiceMemory(store)
+	memstore := memstore.NewStore()
+	store := domain.NewInMemoryStore(memstore)
+	authService := service.NewAuthService(store.User.Finder, store.User.Creator)
+	userService := service.NewUserServiceMemory(memstore)
 
 	_, err := authService.Register(auth.CreateUser{
 		Username: "test_username",
@@ -194,9 +201,10 @@ func TestLogin(t *testing.T) {
 
 func TestRefresh(t *testing.T) {
 	os.Setenv("ACCESS_SECRET", "abc")
-	store := memstore.NewStore()
-	userService := service.NewUserServiceMemory(store)
-	authService := service.NewAuthServiceMemory(store)
+	memstore := memstore.NewStore()
+	store := domain.NewInMemoryStore(memstore)
+	authService := service.NewAuthService(store.User.Finder, store.User.Creator)
+	userService := service.NewUserServiceMemory(memstore)
 
 	user, err := authService.Register(auth.CreateUser{
 		Username: "test_username",
@@ -245,9 +253,10 @@ func TestRefresh(t *testing.T) {
 
 func TestInvalidRefresh(t *testing.T) {
 	os.Setenv("ACCESS_SECRET", "abc")
-	store := memstore.NewStore()
-	userService := service.NewUserServiceMemory(store)
-	authService := service.NewAuthServiceMemory(store)
+	memstore := memstore.NewStore()
+	store := domain.NewInMemoryStore(memstore)
+	authService := service.NewAuthService(store.User.Finder, store.User.Creator)
+	userService := service.NewUserServiceMemory(memstore)
 
 	handler := http.HandlerFunc(Refresh(authService, userService))
 
@@ -266,9 +275,10 @@ func TestInvalidRefresh(t *testing.T) {
 
 func TestRefreshWithExpiredToken(t *testing.T) {
 	os.Setenv("ACCESS_SECRET", "abc")
-	store := memstore.NewStore()
-	userService := service.NewUserServiceMemory(store)
-	authService := service.NewAuthServiceMemory(store)
+	memstore := memstore.NewStore()
+	store := domain.NewInMemoryStore(memstore)
+	authService := service.NewAuthService(store.User.Finder, store.User.Creator)
+	userService := service.NewUserServiceMemory(memstore)
 
 	user, err := authService.Register(auth.CreateUser{
 		Username: "test_username",

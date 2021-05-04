@@ -137,7 +137,7 @@ func CreateMessage(ms *message.Service) http.HandlerFunc {
 			CreatedByUserID: usr.ID,
 		}
 
-		if err := ms.ValidateCreateMessage(newMsg); err == nil {
+		if err := ms.ValidateCreate(newMsg); err == nil {
 			if msg, err := ms.Create(newMsg); err == nil {
 				response.JSON(w, r, CreatMessageSuccess{
 					UID: msg.UID,

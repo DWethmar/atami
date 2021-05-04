@@ -9,6 +9,7 @@ import (
 	"github.com/dwethmar/atami/pkg/api/handler/beta"
 	"github.com/dwethmar/atami/pkg/config"
 	"github.com/dwethmar/atami/pkg/database"
+	"github.com/dwethmar/atami/pkg/domain"
 	"github.com/dwethmar/atami/pkg/service"
 
 	"github.com/go-chi/chi"
@@ -35,11 +36,10 @@ func main() {
 	err = database.RunMigrations(db, c.DBName, c.MigrationFiles, c.DBMigrationVersion)
 	die(err)
 
-	userService := service.NewUserServicePostgres(db)
-	authService := service.NewAuthServicePostgres(db)
+	store := domain.NewStore(db);
+	authService := service.NewAuthService(store.User.Finder, store.User.Creator)
 	messageService := service.NewMessageServicePostgres(db)
-
-	// store := domain.NewStore(db);
+	userService := service.NewUserServicePostgres(db)
 
 	router := chi.NewRouter()
 	router.Mount("/auth", handler.NewAuthRouter(authService, userService))

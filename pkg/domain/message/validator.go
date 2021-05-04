@@ -28,8 +28,8 @@ func (err errValidate) Error() string {
 	return strings.Join(errors, ". ")
 }
 
-// ValidateCreateMessage validates a new message
-func (v Validator) ValidateCreateMessage(msg CreateMessage) error {
+// ValidateCreate validates a new message
+func (v Validator) ValidateCreate(msg CreateMessage) error {
 	err := errValidate{}
 
 	if e := v.messageTextValidator.Validate(msg.Text); e != nil {

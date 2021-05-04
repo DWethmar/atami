@@ -19,7 +19,7 @@ type Creator struct {
 
 // Create a new message
 func (m *Creator) Create(createMessage CreateMessage) (*Message, error) {
-	if err := m.validator.ValidateCreateMessage(createMessage); err != nil {
+	if err := m.validator.ValidateCreate(createMessage); err != nil {
 		return nil, err
 	}
 
