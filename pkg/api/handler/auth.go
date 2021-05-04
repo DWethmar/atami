@@ -97,7 +97,7 @@ func createRefreshCookie(expires time.Time, domain, token string) *http.Cookie {
 		Name:     "refresh_token",
 		Value:    token,
 		Domain:   domain,
-		Path:     "/beta/auth/refresh",
+		Path:     "/auth/refresh",
 		Expires:  expires,
 		HttpOnly: true,
 		MaxAge:   90000,
@@ -135,6 +135,8 @@ func Login(authService *auth.Service, store *domain.Store) http.HandlerFunc {
 			authenticated = true
 		} else {
 			fmt.Println(err)
+			response.BadRequestError(w, r, errors.New("could not login"))
+			return
 		}
 
 		if !authenticated {
@@ -186,7 +188,8 @@ func Refresh(authService *auth.Service, store *domain.Store) http.HandlerFunc {
 
 		cookie, err := r.Cookie("refresh_token")
 		if err != nil {
-			response.BadRequestError(w, r, errors.New("error setting cookie"))
+			fmt.Print(err)
+			response.BadRequestError(w, r, err)
 			return
 		}
 
