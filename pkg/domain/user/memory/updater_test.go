@@ -9,17 +9,16 @@ import (
 )
 
 func TestUpdate(t *testing.T) {
-	store := memstore.NewStore()
-	updater := NewUpdater(store)
+	memstore := memstore.NewStore()
+	creator := NewCreator(memstore, NewFinder(memstore))
 
-	register := NewCreator(store)
-	register.Create(user.CreateUser{
+	creator.Create(user.CreateUser{
 		Username: "test",
 		Email:    "test@test.nl",
 		Password: "Passwordz@1",
 	})
 
-	test.TestUpdater(t, updater, user.UpdateUser{
+	test.TestUpdater(t, NewUpdater(memstore), user.UpdateUser{
 		Biography: "lorum ipsum",
 	})
 }

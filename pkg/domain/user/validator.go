@@ -11,6 +11,7 @@ type Validator struct {
 	usernameValidator  *validate.UsernameValidator
 	emailValidator     *validate.EmailValidator
 	biographyValidator *validate.BiographyValidator
+	passwordValidator  *validate.PasswordValidator
 }
 
 type errValidate struct {
@@ -33,15 +34,15 @@ func (err errValidate) Error() string {
 func (v Validator) ValidateCreateUser(createUser CreateUser) error {
 	err := errValidate{}
 
-	if createUser.Password == "" {
-		return ErrPwdNotSet
-	}
-
 	if e := v.validateUsername(createUser); e != nil {
 		err.Errors = append(err.Errors, e)
 	}
 
 	if e := v.validateEmail(createUser); e != nil {
+		err.Errors = append(err.Errors, e)
+	}
+
+	if e := v.passwordValidator.Validate(createUser.Password); e != nil {
 		err.Errors = append(err.Errors, e)
 	}
 
@@ -81,24 +82,27 @@ func (v Validator) validateEmail(user hasEmail) error {
 	return nil
 }
 
-// NewValidator creates a new validator
-func NewValidator(
+// CreateValidator creates a new validator
+func CreateValidator(
 	usernameValidator *validate.UsernameValidator,
 	emailValidator *validate.EmailValidator,
 	biographyValidator *validate.BiographyValidator,
+	passwordValidator *validate.PasswordValidator,
 ) *Validator {
 	return &Validator{
 		usernameValidator,
 		emailValidator,
 		biographyValidator,
+		passwordValidator,
 	}
 }
 
-// NewDefaultValidator creates a new validator
-func NewDefaultValidator() *Validator {
-	return NewValidator(
+// NewValidator creates a new validator
+func NewValidator() *Validator {
+	return CreateValidator(
 		validate.NewUsernameValidator(),
 		validate.NewEmailValidator(),
 		validate.NewBiographyValidator(),
+		validate.NewPasswordValidator(),
 	)
 }

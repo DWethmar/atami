@@ -5,11 +5,12 @@ import (
 	"time"
 
 	"github.com/dwethmar/atami/pkg/domain/user"
+	"github.com/dwethmar/atami/pkg/domain/user/validate"
 	"github.com/stretchr/testify/assert"
 )
 
-// TestCreator test the creator repo
-func TestCreator(t *testing.T, creator *user.Creator, newUser user.CreateUser) {
+// Creator test the creator repo
+func Creator(t *testing.T, creator *user.Creator, newUser user.CreateUser) {
 	user, err := creator.Create(newUser)
 
 	if assert.NoError(t, err) {
@@ -22,8 +23,8 @@ func TestCreator(t *testing.T, creator *user.Creator, newUser user.CreateUser) {
 	}
 }
 
-// TestDuplicateUsername check if the correct error is returned
-func TestDuplicateUsername(t *testing.T, creator *user.Creator, newUser user.CreateUser) {
+// DuplicateUsername check if the correct error is returned
+func DuplicateUsername(t *testing.T, creator *user.Creator, newUser user.CreateUser) {
 	_, errOne := creator.Create(newUser)
 	assert.NoError(t, errOne)
 
@@ -33,8 +34,8 @@ func TestDuplicateUsername(t *testing.T, creator *user.Creator, newUser user.Cre
 	assert.Equal(t, user.ErrUsernameAlreadyTaken, errTwo)
 }
 
-// TestDuplicateEmail check if the correct error is returned
-func TestDuplicateEmail(t *testing.T, creator *user.Creator, newUser user.CreateUser) {
+// DuplicateEmail check if the correct error is returned
+func DuplicateEmail(t *testing.T, creator *user.Creator, newUser user.CreateUser) {
 	_, errOne := creator.Create(newUser)
 	assert.NoError(t, errOne)
 
@@ -44,12 +45,12 @@ func TestDuplicateEmail(t *testing.T, creator *user.Creator, newUser user.Create
 	assert.Equal(t, user.ErrEmailAlreadyTaken, errTwo)
 }
 
-// TestEmptyPassword test if the correct error is returned
-func TestEmptyPassword(t *testing.T, creator *user.Creator) {
+// EmptyPassword test if the correct error is returned
+func EmptyPassword(t *testing.T, creator *user.Creator) {
 	_, err := creator.Create(user.CreateUser{
 		Username: "wow",
 		Email:    "test@test.nl",
 		Password: "",
 	})
-	assert.EqualError(t, err, user.ErrPwdNotSet.Error())
+	assert.EqualError(t, err, validate.ErrPasswordRequired.Error())
 }

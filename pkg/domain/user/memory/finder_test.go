@@ -22,18 +22,19 @@ func generateTestUsers(size int) []user.CreateUser {
 }
 
 func setup() (*user.Finder, []user.User) {
-	store := memstore.NewStore()
-	service := New(store)
+	memstore := memstore.NewStore()
+	creator := NewCreator(memstore, NewFinder(memstore))
+
 	users := make([]user.User, 100)
 	for i, testUser := range generateTestUsers(100) {
-		user, err := service.Create(testUser)
+		user, err := creator.Create(testUser)
 		if err != nil {
 			fmt.Printf("error: %s", err)
 			panic(1)
 		}
 		users[i] = *user
 	}
-	return NewFinder(store), users
+	return NewFinder(memstore), users
 }
 
 func TestFind(t *testing.T) {

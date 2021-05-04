@@ -58,7 +58,7 @@ func ListUsers(store *domain.Store) http.HandlerFunc {
 }
 
 // Register handler handles the request to create new user
-func Register(authService *auth.Service) http.HandlerFunc {
+func Register(store *domain.Store) http.HandlerFunc {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		if err := r.ParseForm(); err != nil {
 			fmt.Fprintf(w, "ParseForm() err: %v", err)
@@ -69,18 +69,18 @@ func Register(authService *auth.Service) http.HandlerFunc {
 		username := r.FormValue("username")
 		password := r.FormValue("password")
 
-		createUser := auth.RegisterUser{
+		createUser := user.CreateUser{
 			Username: username,
 			Email:    email,
 			Password: password,
 		}
 
-		if err := authService.ValidateNewUser(createUser); err != nil {
+		if err := store.User.ValidateCreateUser(createUser); err != nil {
 			response.BadRequestError(w, r, err)
 			return
 		}
 
-		user, err := authService.Register(createUser)
+		user, err := store.User.Create(createUser)
 
 		if err != nil || user == nil {
 			fmt.Printf("Error registering user: %v\n", err)
@@ -273,7 +273,7 @@ func NewAuthRouter(authService *auth.Service, store *domain.Store) http.Handler 
 		MaxAge:           300, // Maximum value not ignored by any of major browsers
 	}))
 
-	r.Post("/register", Register(authService))
+	r.Post("/register", Register(store))
 	r.Post("/login", Login(authService, store))
 	r.Post("/refresh", Refresh(authService, store))
 

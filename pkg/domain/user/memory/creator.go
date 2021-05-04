@@ -18,10 +18,6 @@ type creatorRepository struct {
 
 // Create new user
 func (i *creatorRepository) Create(newUser user.CreateUser) (*user.User, error) {
-	if newUser.Password == "" {
-		return nil, user.ErrPwdNotSet
-	}
-
 	users := i.store.GetUsers()
 
 	// Check for user with same username or email
@@ -66,6 +62,7 @@ func (i *creatorRepository) Create(newUser user.CreateUser) (*user.User, error) 
 // NewCreator creates new creator.
 func NewCreator(
 	store *memstore.Store,
+	finder *user.Finder,
 ) *user.Creator {
-	return user.NewCreator(&creatorRepository{store, 0})
+	return user.NewCreator(&creatorRepository{store, 0}, finder)
 }

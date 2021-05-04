@@ -24,10 +24,10 @@ func generateTestUsers(size int) []user.CreateUser {
 }
 
 func setup(db *sql.DB) (*user.Finder, []user.User) {
-	service := New(db)
+	creator := NewCreator(db, NewFinder(db))
 	users := make([]user.User, 100)
 	for i, testUser := range generateTestUsers(100) {
-		user, err := service.Create(testUser)
+		user, err := creator.Create(testUser)
 		if err != nil {
 			fmt.Printf("error: %s", err)
 			panic(1)

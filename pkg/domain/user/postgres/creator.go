@@ -13,10 +13,6 @@ type creatorRepository struct {
 
 // Create new user
 func (i *creatorRepository) Create(newUser user.CreateUser) (*user.User, error) {
-	if newUser.Password == "" {
-		return nil, user.ErrPwdNotSet
-	}
-
 	if unique, err := queryRowSelectUsernameUniqueCheck(i.db, newUser.Username); err == nil {
 		if !unique {
 			return nil, user.ErrUsernameAlreadyTaken
@@ -47,6 +43,7 @@ func (i *creatorRepository) Create(newUser user.CreateUser) (*user.User, error) 
 // NewCreator creates new creator.
 func NewCreator(
 	db *sql.DB,
+	finder *user.Finder,
 ) *user.Creator {
-	return user.NewCreator(&creatorRepository{db})
+	return user.NewCreator(&creatorRepository{db}, finder)
 }

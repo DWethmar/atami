@@ -12,8 +12,8 @@ import (
 
 func TestCreate(t *testing.T) {
 	assert.NoError(t, database.WithTestDB(t, func(db *sql.DB) error {
-		creator := NewCreator(db)
-		test.TestCreator(t, creator, user.CreateUser{
+		creator := NewCreator(db, NewFinder(db))
+		test.Creator(t, creator, user.CreateUser{
 			Username: "username",
 			Email:    "test@test.nl",
 			Password: "!Test123",
@@ -29,8 +29,8 @@ func TestDuplicateUsername(t *testing.T) {
 			Email:    "test@test.nl",
 			Password: "!Test123",
 		}
-		creator := NewCreator(db)
-		test.TestDuplicateUsername(t, creator, newUser)
+		creator := NewCreator(db, NewFinder(db))
+		test.DuplicateUsername(t, creator, newUser)
 		return nil
 	}))
 }
@@ -42,8 +42,8 @@ func TestDuplicateEmail(t *testing.T) {
 			Email:    "test@test.nl",
 			Password: "!Test123",
 		}
-		creator := NewCreator(db)
-		test.TestDuplicateEmail(t, creator, newUser)
+		creator := NewCreator(db, NewFinder(db))
+		test.DuplicateEmail(t, creator, newUser)
 		return nil
 	}))
 }
@@ -51,8 +51,8 @@ func TestDuplicateEmail(t *testing.T) {
 // TestEmptyPassword test if the correct error is returned
 func TestEmptyPassword(t *testing.T) {
 	assert.NoError(t, database.WithTestDB(t, func(db *sql.DB) error {
-		creator := NewCreator(db)
-		test.TestEmptyPassword(t, creator)
+		creator := NewCreator(db, NewFinder(db))
+		test.EmptyPassword(t, creator)
 		return nil
 	}))
 }

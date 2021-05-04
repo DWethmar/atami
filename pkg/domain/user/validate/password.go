@@ -9,7 +9,7 @@ import (
 var (
 	// PasswordMinimunLength default minimun length of the password
 	PasswordMinimunLength = 8
-	// PasswordMaximumLength default minimun length of the username
+	// PasswordMaximumLength default maximum length of the password
 	PasswordMaximumLength = 50
 	// ErrPasswordRequired error used when there is no username
 	ErrPasswordRequired = errors.New("password is required")
@@ -53,9 +53,6 @@ func passwordComplexity(s string) bool {
 func (v PasswordValidator) Validate(password string) error {
 	var err error
 	len := len(password)
-
-	fmt.Printf("PASSWORD: %v", password)
-	fmt.Printf("PASSWORD LEN: %v", len)
 
 	switch {
 	case password == "":

@@ -11,13 +11,6 @@ var (
 	ErrPasswordRequired = errors.New("password is required")
 )
 
-// RegisterUser struct declaration
-type RegisterUser struct {
-	Username string
-	Email    string
-	Password string
-}
-
 // Credentials is information used to authenticate an user
 type Credentials struct {
 	Email    string

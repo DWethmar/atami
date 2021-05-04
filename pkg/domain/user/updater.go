@@ -28,6 +28,6 @@ func (m *Updater) Update(ID int, request UpdateUser) (*User, error) {
 func NewUpdater(r UpdaterRepository) *Updater {
 	return &Updater{
 		updaterRepo: r,
-		validator:   NewDefaultValidator(),
+		validator:   NewValidator(),
 	}
 }

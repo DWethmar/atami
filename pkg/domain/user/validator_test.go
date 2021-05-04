@@ -20,11 +20,13 @@ var validUser = User{
 var emailValidator = validate.NewEmailValidator()
 var usernameValidator = validate.NewUsernameValidator()
 var biographyValidator = validate.NewBiographyValidator()
+var PasswordValidator = validate.NewPasswordValidator()
 
-var validator = NewValidator(
+var validator = CreateValidator(
 	usernameValidator,
 	emailValidator,
 	biographyValidator,
+	PasswordValidator,
 )
 
 func TestValidNewUser(t *testing.T) {

@@ -19,7 +19,7 @@ type FindRepository interface {
 	FindByUID(UID string) (*User, error)
 }
 
-// Finder searches messages.
+// Finder searches messages. // TODO: rename to reader
 type Finder struct {
 	findRepo FindRepository
 }

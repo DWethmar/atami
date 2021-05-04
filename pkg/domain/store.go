@@ -8,6 +8,7 @@ import (
 	messagePostgres "github.com/dwethmar/atami/pkg/domain/message/postgres"
 	userMemory "github.com/dwethmar/atami/pkg/domain/user/memory"
 	userPostgres "github.com/dwethmar/atami/pkg/domain/user/postgres"
+
 	"github.com/dwethmar/atami/pkg/memstore"
 
 	"github.com/dwethmar/atami/pkg/domain/user"
@@ -27,6 +28,7 @@ type UserStore struct {
 	*user.Deleter
 	*user.Finder
 	*user.Updater
+	*user.Validator
 }
 
 // Store allows the mutation and reads of domain data.
@@ -37,36 +39,56 @@ type Store struct {
 
 // NewStore create new Store
 func NewStore(db *sql.DB) *Store {
+	var messageCreator = messagePostgres.NewCreator(db)
+	var messageDeleter = messagePostgres.NewDeleter(db)
+	var messageFinder = messagePostgres.NewFinder(db)
+	var messageValidator = message.NewValidator()
+
+	var userFinder = userPostgres.NewFinder(db)
+	var userCreator = userPostgres.NewCreator(db, userFinder)
+	var userDeleter = userPostgres.NewDeleter(db)
+	var userValidator = user.NewValidator()
+
 	return &Store{
 		Message: &MessageStore{
-			Creator:   messagePostgres.NewCreator(db),
-			Deleter:   messagePostgres.NewDeleter(db),
-			Finder:    messagePostgres.NewFinder(db),
-			Validator: message.NewValidator(),
+			Creator:   messageCreator,
+			Deleter:   messageDeleter,
+			Finder:    messageFinder,
+			Validator: messageValidator,
 		},
 		User: &UserStore{
-			Creator: userPostgres.NewCreator(db),
-			Deleter: userPostgres.NewDeleter(db),
-			Finder:  userPostgres.NewFinder(db),
-			Updater: userPostgres.NewUpdater(db),
+			Creator:   userCreator,
+			Deleter:   userDeleter,
+			Finder:    userFinder,
+			Validator: userValidator,
 		},
 	}
 }
 
 // NewInMemoryStore creates a store that uses inmemory storage.
 func NewInMemoryStore(store *memstore.Store) *Store {
+	var messageCreator = messageMemory.NewCreator(store)
+	var messageDeleter = messageMemory.NewDeleter(store)
+	var messageFinder = messageMemory.NewFinder(store)
+	var messageValidator = message.NewValidator()
+
+	var userFinder = userMemory.NewFinder(store)
+	var userCreator = userMemory.NewCreator(store, userFinder)
+	var userDeleter = userMemory.NewDeleter(store)
+	var userValidator = user.NewValidator()
+
 	return &Store{
 		Message: &MessageStore{
-			Creator:   messageMemory.NewCreator(store),
-			Deleter:   messageMemory.NewDeleter(store),
-			Finder:    messageMemory.NewFinder(store),
-			Validator: message.NewValidator(),
+			Creator:   messageCreator,
+			Deleter:   messageDeleter,
+			Finder:    messageFinder,
+			Validator: messageValidator,
 		},
 		User: &UserStore{
-			Creator: userMemory.NewCreator(store),
-			Deleter: userMemory.NewDeleter(store),
-			Finder:  userMemory.NewFinder(store),
-			Updater: userMemory.NewUpdater(store),
+			Creator:   userCreator,
+			Deleter:   userDeleter,
+			Finder:    userFinder,
+			Validator: userValidator,
 		},
 	}
 }

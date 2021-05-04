@@ -16,10 +16,9 @@ import (
 
 func TestAuthenticated(t *testing.T) {
 	store := domain.NewInMemoryStore(memstore.NewStore())
-	authService := auth.NewService(store.User.Finder, store.User.Creator)
 
 	var accessToken string
-	if user, err := authService.Register(auth.RegisterUser{
+	if user, err := store.User.Create(user.CreateUser{
 		Username: "userx",
 		Email:    "test@test.nl",
 		Password: "Abcd1234!@#$",

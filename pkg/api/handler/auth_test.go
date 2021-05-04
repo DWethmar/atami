@@ -13,6 +13,7 @@ import (
 	"github.com/dwethmar/atami/pkg/api/response"
 	"github.com/dwethmar/atami/pkg/auth"
 	"github.com/dwethmar/atami/pkg/domain"
+	"github.com/dwethmar/atami/pkg/domain/user"
 	"github.com/dwethmar/atami/pkg/memstore"
 	"github.com/stretchr/testify/assert"
 )
@@ -24,27 +25,32 @@ type NewUser struct {
 	Password string
 }
 
-var users = []*auth.RegisterUser{
+var users = []user.CreateUser{
 	{
 		Username: "Test1",
 		Email:    "test1@test.com",
-		Password: "abcd123!@#A",
+		Password: "ABCabcd123!@#A",
 	},
 	{
 		Username: "Test2",
 		Email:    "test2@test.com",
-		Password: "abcd123!@#A",
+		Password: "ABCabcd123!@#A",
 	},
 }
 
 func TestList(t *testing.T) {
 	memstore := memstore.NewStore()
 	store := domain.NewInMemoryStore(memstore)
-	authService := auth.NewService(store.User.Finder, store.User.Creator)
 
 	var expectedResponds = make([]*Responds, len(users))
+
 	for i, user := range users {
-		r, _ := authService.Register(*user)
+		r, err := store.User.Create(user)
+
+		if err != nil {
+			assert.Fail(t, err.Error())
+		}
+
 		expectedResponds[i] = toRespond(r)
 	}
 
@@ -77,9 +83,7 @@ var invalidUser1 = NewUser{
 
 func TestRegisterUser(t *testing.T) {
 	store := domain.NewInMemoryStore(memstore.NewStore())
-	authService := auth.NewService(store.User.Finder, store.User.Creator)
-
-	handler := http.HandlerFunc(Register(authService))
+	handler := http.HandlerFunc(Register(store))
 
 	form := url.Values{}
 	form.Add("email", newUser.Email)
@@ -102,9 +106,7 @@ func TestRegisterUser(t *testing.T) {
 
 func TestRegisterInvalidUser(t *testing.T) {
 	store := domain.NewInMemoryStore(memstore.NewStore())
-	authService := auth.NewService(store.User.Finder, store.User.Creator)
-
-	handler := http.HandlerFunc(Register(authService))
+	handler := http.HandlerFunc(Register(store))
 
 	requests := []*NewUser{
 		{
@@ -164,9 +166,9 @@ func TestRegisterInvalidUser(t *testing.T) {
 func TestLogin(t *testing.T) {
 	os.Setenv("ACCESS_SECRET", "abc")
 	store := domain.NewInMemoryStore(memstore.NewStore())
-	authService := auth.NewService(store.User.Finder, store.User.Creator)
+	authService := auth.NewService(store.User.Finder)
 
-	_, err := authService.Register(auth.RegisterUser{
+	_, err := store.User.Create(user.CreateUser{
 		Username: "test_username",
 		Email:    "test@test.com",
 		Password: "test123!@#ABC",
@@ -197,9 +199,9 @@ func TestLogin(t *testing.T) {
 func TestRefresh(t *testing.T) {
 	os.Setenv("ACCESS_SECRET", "abc")
 	store := domain.NewInMemoryStore(memstore.NewStore())
-	authService := auth.NewService(store.User.Finder, store.User.Creator)
+	authService := auth.NewService(store.User.Finder)
 
-	user, err := authService.Register(auth.RegisterUser{
+	u, err := store.User.Create(user.CreateUser{
 		Username: "test_username",
 		Email:    "test@test.com",
 		Password: "test123!@#ABC",
@@ -209,7 +211,7 @@ func TestRefresh(t *testing.T) {
 	handler := http.HandlerFunc(Refresh(authService, store))
 
 	refreshToken, err := auth.CreateRefreshToken(
-		user.UID,
+		u.UID,
 		"abcdefg",
 		time.Now().Add(time.Hour*1).Unix(),
 	)
@@ -247,7 +249,7 @@ func TestRefresh(t *testing.T) {
 func TestInvalidRefresh(t *testing.T) {
 	os.Setenv("ACCESS_SECRET", "abc")
 	store := domain.NewInMemoryStore(memstore.NewStore())
-	authService := auth.NewService(store.User.Finder, store.User.Creator)
+	authService := auth.NewService(store.User.Finder)
 
 	handler := http.HandlerFunc(Refresh(authService, store))
 
@@ -267,19 +269,20 @@ func TestInvalidRefresh(t *testing.T) {
 func TestRefreshWithExpiredToken(t *testing.T) {
 	os.Setenv("ACCESS_SECRET", "abc")
 	store := domain.NewInMemoryStore(memstore.NewStore())
-	authService := auth.NewService(store.User.Finder, store.User.Creator)
+	authService := auth.NewService(store.User.Finder)
 
-	user, err := authService.Register(auth.RegisterUser{
-		Username: "test_username",
-		Email:    "test@test.com",
-		Password: "test123!@#ABC",
+	u, err := store.User.Create(user.CreateUser{
+		Username: "test",
+		Email:    "test@test.nl",
+		Password: "ABC123PXPXdddd@",
 	})
+
 	assert.NoError(t, err)
 
 	handler := http.HandlerFunc(Refresh(authService, store))
 
 	refreshToken, err := auth.CreateRefreshToken(
-		user.UID,
+		u.UID,
 		"abcdefg",
 		667184461,
 	)

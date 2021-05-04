@@ -11,9 +11,9 @@ import (
 
 	"github.com/dwethmar/atami/pkg/api/middleware"
 	"github.com/dwethmar/atami/pkg/api/response"
-	"github.com/dwethmar/atami/pkg/auth"
 	"github.com/dwethmar/atami/pkg/domain"
 	"github.com/dwethmar/atami/pkg/domain/message"
+	"github.com/dwethmar/atami/pkg/domain/user"
 	"github.com/dwethmar/atami/pkg/memstore"
 	"github.com/stretchr/testify/assert"
 )
@@ -21,8 +21,7 @@ import (
 // ListMessages handler
 func TestListMessages(t *testing.T) {
 	store := domain.NewInMemoryStore(memstore.NewStore())
-	authService := auth.NewService(store.User.Finder, store.User.Creator)
-	user, err := authService.Register(auth.RegisterUser{
+	user, err := store.User.Create(user.CreateUser{
 		Username: "test",
 		Email:    "test@test.nl",
 		Password: "ABC123PXPXdddd@",
@@ -93,8 +92,7 @@ func TestListMessages(t *testing.T) {
 
 func TestGetMessage(t *testing.T) {
 	store := domain.NewInMemoryStore(memstore.NewStore())
-	authService := auth.NewService(store.User.Finder, store.User.Creator)
-	user, err := authService.Register(auth.RegisterUser{
+	user, err := store.User.Create(user.CreateUser{
 		Username: "test",
 		Email:    "test@test.nl",
 		Password: "ABC123PXPXdddd@",
@@ -176,9 +174,7 @@ func TestGetMessage(t *testing.T) {
 
 func TestNotFoundGetMessage(t *testing.T) {
 	store := domain.NewInMemoryStore(memstore.NewStore())
-	authService := auth.NewService(store.User.Finder, store.User.Creator)
-
-	user, _ := authService.Register(auth.RegisterUser{
+	user, err := store.User.Create(user.CreateUser{
 		Username: "test",
 		Email:    "test@test.nl",
 		Password: "ABC123PXPXdddd@",
@@ -215,8 +211,7 @@ func TestNotFoundGetMessage(t *testing.T) {
 
 func TestCreateMessage(t *testing.T) {
 	store := domain.NewInMemoryStore(memstore.NewStore())
-	authService := auth.NewService(store.User.Finder, store.User.Creator)
-	user, _ := authService.Register(auth.RegisterUser{
+	user, _ := store.User.Create(user.CreateUser{
 		Username: "test",
 		Email:    "test@test.nl",
 		Password: "ABC123PXPXdddd@",
@@ -273,9 +268,7 @@ func TestUnauthorizedCreateMessage(t *testing.T) {
 
 func TestDeleteMessage(t *testing.T) {
 	store := domain.NewInMemoryStore(memstore.NewStore())
-	authService := auth.NewService(store.User.Finder, store.User.Creator)
-
-	user, _ := authService.Register(auth.RegisterUser{
+	user, _ := store.User.Create(user.CreateUser{
 		Username: "test",
 		Email:    "test@test.nl",
 		Password: "ABC123PXPXdddd@",
@@ -341,9 +334,7 @@ func TestDeleteMessage(t *testing.T) {
 
 func TestUnauthorizedDeleteMessage(t *testing.T) {
 	store := domain.NewInMemoryStore(memstore.NewStore())
-	authService := auth.NewService(store.User.Finder, store.User.Creator)
-
-	user, _ := authService.Register(auth.RegisterUser{
+	user1, _ := store.User.Create(user.CreateUser{
 		Username: "test",
 		Email:    "test@test.nl",
 		Password: "ABC123PXPXdddd@",
@@ -355,16 +346,16 @@ func TestUnauthorizedDeleteMessage(t *testing.T) {
 			UID:             "<to be replaced>",
 			Text:            "lorum ipsum",
 			CreatedAt:       time.Now(),
-			CreatedByUserID: user.ID,
+			CreatedByUserID: user1.ID,
 			User: &message.User{
-				ID:       user.ID,
-				UID:      user.UID,
-				Username: user.Username,
+				ID:       user1.ID,
+				UID:      user1.UID,
+				Username: user1.Username,
 			},
 		},
 	}
 
-	user2, _ := authService.Register(auth.RegisterUser{
+	user2, _ := store.User.Create(user.CreateUser{
 		Username: "test2",
 		Email:    "test2@test.nl",
 		Password: "ABC123PXPXdddd@",
@@ -417,9 +408,7 @@ func TestUnauthorizedDeleteMessage(t *testing.T) {
 
 func TestNotFoundDeleteMessage(t *testing.T) {
 	store := domain.NewInMemoryStore(memstore.NewStore())
-	authService := auth.NewService(store.User.Finder, store.User.Creator)
-
-	user, _ := authService.Register(auth.RegisterUser{
+	u, _ := store.User.Create(user.CreateUser{
 		Username: "test",
 		Email:    "test@test.nl",
 		Password: "ABC123PXPXdddd@",
@@ -430,7 +419,7 @@ func TestNotFoundDeleteMessage(t *testing.T) {
 
 	// Add user to context
 	ctx := req.Context()
-	ctx = middleware.WithUser(ctx, user)
+	ctx = middleware.WithUser(ctx, u)
 	req = req.WithContext(ctx)
 
 	// Add UID to context

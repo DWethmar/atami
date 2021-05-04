@@ -37,7 +37,7 @@ func main() {
 	die(err)
 
 	store := domain.NewStore(db)
-	authService := auth.NewService(store.User.Finder, store.User.Creator)
+	authService := auth.NewService(store.User.Finder)
 
 	router := chi.NewRouter()
 	router.Mount("/auth", handler.NewAuthRouter(authService, store))

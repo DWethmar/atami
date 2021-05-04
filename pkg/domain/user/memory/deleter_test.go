@@ -12,7 +12,7 @@ import (
 
 func TestDelete(t *testing.T) {
 	memstore := memstore.NewStore()
-	creator := NewCreator(memstore)
+	creator := NewCreator(memstore, NewFinder(memstore))
 	user, err := creator.Create(user.CreateUser{
 		UID:       "UID1",
 		Username:  "test",

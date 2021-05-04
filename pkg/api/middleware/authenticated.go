@@ -33,7 +33,6 @@ func GetUser(ctx context.Context) (*user.User, error) {
 
 // Authenticated handles auth requests
 func Authenticated(userStore *domain.UserStore) func(next http.Handler) http.Handler {
-
 	return func(next http.Handler) http.Handler {
 		fn := func(w http.ResponseWriter, r *http.Request) {
 			reqToken := r.Header.Get("Authorization")
