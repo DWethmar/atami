@@ -3,6 +3,8 @@ package validate
 import (
 	"errors"
 	"fmt"
+
+	"github.com/dwethmar/atami/pkg/msgtxt"
 )
 
 var (
@@ -28,12 +30,16 @@ type MessageTextValidator struct {
 
 // Validate validates a email
 func (v MessageTextValidator) Validate(txt string) error {
-	if txt == "" {
+	r := msgtxt.Parse(txt)
+
+	if r.NormalizedLength == 0 {
 		return ErrMsgTxtRequired
 	}
-	if len(txt) < v.minimumLength || len(txt) > v.maximumLength {
+
+	if r.NormalizedLength < v.minimumLength || r.NormalizedLength > v.maximumLength {
 		return ErrMsgTxtInvalid
 	}
+
 	return nil
 }
 

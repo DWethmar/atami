@@ -189,7 +189,7 @@ func Refresh(authService *auth.Service, store *domain.Store) http.HandlerFunc {
 		cookie, err := r.Cookie("refresh_token")
 		if err != nil {
 			fmt.Print(err)
-			response.BadRequestError(w, r, err)
+			response.BadRequestError(w, r, errors.New("error setting cookie"))
 			return
 		}
 
