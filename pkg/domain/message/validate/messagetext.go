@@ -36,8 +36,12 @@ func (v MessageTextValidator) Validate(txt string) error {
 		return ErrMsgTxtRequired
 	}
 
-	if r.NormalizedLength < v.minimumLength || r.NormalizedLength > v.maximumLength {
-		return ErrMsgTxtInvalid
+	if r.NormalizedLength < v.minimumLength {
+		return ErrMsgTxtFailsMinLength
+	}
+
+	if r.NormalizedLength > v.maximumLength {
+		return ErrMsgTxtExceedMaxLength
 	}
 
 	return nil

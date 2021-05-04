@@ -6,8 +6,146 @@
 	},
 	"item": [
 		{
+			"name": "messages",
+			"item": [
+				{
+					"name": "message",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzaWQiOiIxNjA2MDg0MDI3NDExNTUxMjM1IiwicmVmIjoiMCIsImV4cCI6MTYwNjA4NjIxNywiaWF0IjoxNjA2MDg1MzE3LCJzdWIiOiIxa2V2WjgyWmh3MGxHUUZ6ZE93QUMzdzgwcncifQ.Nqlx0YLFLbcmyebsfD4OV0yTY8gkQFoeR76d_Ro3AIk",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "http://localhost:{{Port}}/beta/messages",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "{{Port}}",
+							"path": [
+								"beta",
+								"messages"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Create message",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"let jsonData = pm.response.json()",
+									"pm.collectionVariables.set(\"last_created_message_uid\", jsonData.uid);",
+									" "
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"text\": \"{{$randomPhrase}}\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:{{Port}}/beta/messages",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "{{Port}}",
+							"path": [
+								"beta",
+								"messages"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get message",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:{{Port}}/beta/messages/{{last_created_message_uid}}",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "{{Port}}",
+							"path": [
+								"beta",
+								"messages",
+								"{{last_created_message_uid}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Delete message",
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:{{Port}}/beta/messages/{{last_created_message_uid}}",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "{{Port}}",
+							"path": [
+								"beta",
+								"messages",
+								"{{last_created_message_uid}}"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
 			"name": "register",
 			"request": {
+				"auth": {
+					"type": "noauth"
+				},
 				"method": "POST",
 				"header": [],
 				"body": {
@@ -36,14 +174,13 @@
 					}
 				},
 				"url": {
-					"raw": "http://localhost:{{Port}}/beta/auth/register",
+					"raw": "http://localhost:{{Port}}/auth/register",
 					"protocol": "http",
 					"host": [
 						"localhost"
 					],
 					"port": "{{Port}}",
 					"path": [
-						"beta",
 						"auth",
 						"register"
 					],
@@ -60,15 +197,22 @@
 		},
 		{
 			"name": "login",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"let jsonData = pm.response.json()",
+							"pm.collectionVariables.set(\"access_token\", jsonData.access_token);",
+							" "
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
 			"request": {
 				"method": "POST",
-				"header": [
-					{
-						"key": "Authorization",
-						"value": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJhdXRob3JpemVkIjp0cnVlLCJleHAiOjE2MDUwNDc1NDMsImlhdCI6MTYwNTA0NzQ4MywidWlkIjoiMWs3TjU0OURtU2N5V1Bic0czRkNzR1ZheUVUIn0.BsqcJNRzdYjysZwo44CTLb-JXQWDnSDUgkIG2oyE-yk",
-						"type": "text"
-					}
-				],
+				"header": [],
 				"body": {
 					"mode": "urlencoded",
 					"urlencoded": [
@@ -85,12 +229,12 @@
 					]
 				},
 				"url": {
-					"raw": "http://localhost:8080/auth/login",
+					"raw": "http://localhost:{{Port}}/auth/login",
 					"protocol": "http",
 					"host": [
 						"localhost"
 					],
-					"port": "8080",
+					"port": "{{Port}}",
 					"path": [
 						"auth",
 						"login"
@@ -101,195 +245,48 @@
 		},
 		{
 			"name": "refresh",
-			"request": {
-				"method": "POST",
-				"header": [],
-				"url": {
-					"raw": "http://localhost:{{Port}}/beta/auth/refresh",
-					"protocol": "http",
-					"host": [
-						"localhost"
-					],
-					"port": "{{Port}}",
-					"path": [
-						"beta",
-						"auth",
-						"refresh"
-					]
-				}
-			},
-			"response": []
-		},
-		{
-			"name": "message",
 			"event": [
 				{
-					"listen": "prerequest",
+					"listen": "test",
 					"script": {
 						"exec": [
-							""
+							"let jsonData = pm.response.json()",
+							"pm.collectionVariables.set(\"access_token\", jsonData.access_token);",
+							" "
 						],
 						"type": "text/javascript"
 					}
 				}
 			],
 			"request": {
-				"method": "GET",
-				"header": [
-					{
-						"key": "Authorization",
-						"value": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzaWQiOiIxNjA2MDg0MDI3NDExNTUxMjM1IiwicmVmIjoiMCIsImV4cCI6MTYwNjA4NjIxNywiaWF0IjoxNjA2MDg1MzE3LCJzdWIiOiIxa2V2WjgyWmh3MGxHUUZ6ZE93QUMzdzgwcncifQ.Nqlx0YLFLbcmyebsfD4OV0yTY8gkQFoeR76d_Ro3AIk",
-						"type": "text"
-					}
-				],
-				"url": {
-					"raw": "http://localhost:{{Port}}/beta/messages",
-					"protocol": "http",
-					"host": [
-						"localhost"
-					],
-					"port": "{{Port}}",
-					"path": [
-						"beta",
-						"messages"
-					]
-				}
-			},
-			"response": []
-		},
-		{
-			"name": "Create message",
-			"request": {
 				"method": "POST",
-				"header": [
-					{
-						"key": "Authorization",
-						"value": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzaWQiOiIxNjA2MDg0MDI3NDExNTUxMjM1IiwicmVmIjoiMCIsImV4cCI6MTYwNjA4NjIxNywiaWF0IjoxNjA2MDg1MzE3LCJzdWIiOiIxa2V2WjgyWmh3MGxHUUZ6ZE93QUMzdzgwcncifQ.Nqlx0YLFLbcmyebsfD4OV0yTY8gkQFoeR76d_Ro3AIk",
-						"type": "text"
-					}
-				],
-				"body": {
-					"mode": "raw",
-					"raw": "{\n    \"text\": \"anal lol 420\"\n}",
-					"options": {
-						"raw": {
-							"language": "json"
-						}
-					}
-				},
+				"header": [],
 				"url": {
-					"raw": "http://localhost:{{Port}}/beta/messages",
+					"raw": "http://localhost:{{Port}}/auth/refresh",
 					"protocol": "http",
 					"host": [
 						"localhost"
 					],
 					"port": "{{Port}}",
 					"path": [
-						"beta",
-						"messages"
-					]
-				}
-			},
-			"response": []
-		},
-		{
-			"name": "Get message",
-			"protocolProfileBehavior": {
-				"disableBodyPruning": true
-			},
-			"request": {
-				"auth": {
-					"type": "bearer",
-					"bearer": [
-						{
-							"key": "token",
-							"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzaWQiOiIxNjExNjAxNjY4MTMzNzYzNzIxIiwicmVmIjoiMCIsImV4cCI6MTYxMTYwMjU3NCwiaWF0IjoxNjExNjAxNjc0LCJzdWIiOiIxblpicVlJSkRNWE9nRU40dXh5TFhNV2pHQ2cifQ.lU3s0A2jtGSjdfJzymPAAi7XQYFNh0RCx6Lj5ZmFD3c",
-							"type": "string"
-						}
-					]
-				},
-				"method": "GET",
-				"header": [
-					{
-						"key": "Authorization",
-						"type": "text",
-						"value": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzaWQiOiIxNjA2MDg0MDI3NDExNTUxMjM1IiwicmVmIjoiMCIsImV4cCI6MTYwNjA4NjIxNywiaWF0IjoxNjA2MDg1MzE3LCJzdWIiOiIxa2V2WjgyWmh3MGxHUUZ6ZE93QUMzdzgwcncifQ.Nqlx0YLFLbcmyebsfD4OV0yTY8gkQFoeR76d_Ro3AIk",
-						"disabled": true
-					}
-				],
-				"body": {
-					"mode": "raw",
-					"raw": "{\n    \"text\": \"anal lol 420\"\n}",
-					"options": {
-						"raw": {
-							"language": "json"
-						}
-					}
-				},
-				"url": {
-					"raw": "http://localhost:{{Port}}/beta/messages/1nZe2HUFR0vFiEbmpU7eeBb73mZ",
-					"protocol": "http",
-					"host": [
-						"localhost"
-					],
-					"port": "{{Port}}",
-					"path": [
-						"beta",
-						"messages",
-						"1nZe2HUFR0vFiEbmpU7eeBb73mZ"
-					]
-				}
-			},
-			"response": []
-		},
-		{
-			"name": "Delete message",
-			"request": {
-				"auth": {
-					"type": "bearer",
-					"bearer": [
-						{
-							"key": "token",
-							"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzaWQiOiIxNjExNjAxNjY4MTMzNzYzNzIxIiwicmVmIjoiMCIsImV4cCI6MTYxMTYwMjU3NCwiaWF0IjoxNjExNjAxNjc0LCJzdWIiOiIxblpicVlJSkRNWE9nRU40dXh5TFhNV2pHQ2cifQ.lU3s0A2jtGSjdfJzymPAAi7XQYFNh0RCx6Lj5ZmFD3c",
-							"type": "string"
-						}
-					]
-				},
-				"method": "DELETE",
-				"header": [
-					{
-						"key": "Authorization",
-						"type": "text",
-						"value": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzaWQiOiIxNjA2MDg0MDI3NDExNTUxMjM1IiwicmVmIjoiMCIsImV4cCI6MTYwNjA4NjIxNywiaWF0IjoxNjA2MDg1MzE3LCJzdWIiOiIxa2V2WjgyWmh3MGxHUUZ6ZE93QUMzdzgwcncifQ.Nqlx0YLFLbcmyebsfD4OV0yTY8gkQFoeR76d_Ro3AIk",
-						"disabled": true
-					}
-				],
-				"body": {
-					"mode": "raw",
-					"raw": "{\n    \"text\": \"anal lol 420\"\n}",
-					"options": {
-						"raw": {
-							"language": "json"
-						}
-					}
-				},
-				"url": {
-					"raw": "http://localhost:{{Port}}/beta/messages/1nZe2HUFR0vFiEbmpU7eeBb73mZ",
-					"protocol": "http",
-					"host": [
-						"localhost"
-					],
-					"port": "{{Port}}",
-					"path": [
-						"beta",
-						"messages",
-						"1nZe2HUFR0vFiEbmpU7eeBb73mZ"
+						"auth",
+						"refresh"
 					]
 				}
 			},
 			"response": []
 		}
 	],
+	"auth": {
+		"type": "bearer",
+		"bearer": [
+			{
+				"key": "token",
+				"value": "{{access_token}}",
+				"type": "string"
+			}
+		]
+	},
 	"event": [
 		{
 			"listen": "prerequest",
@@ -312,8 +309,8 @@
 	],
 	"variable": [
 		{
-			"key": "Authorization bearer token",
-			"value": "Bearer..."
+			"key": "access_token",
+			"value": "<not set>"
 		},
 		{
 			"key": "Test user password",
@@ -330,6 +327,14 @@
 		{
 			"key": "Port",
 			"value": "8080"
+		},
+		{
+			"key": "Authorization token",
+			"value": ""
+		},
+		{
+			"key": "last_created_message_uid",
+			"value": ""
 		}
 	]
 }
