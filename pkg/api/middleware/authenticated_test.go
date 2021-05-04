@@ -8,19 +8,18 @@ import (
 	"time"
 
 	"github.com/dwethmar/atami/pkg/auth"
+	"github.com/dwethmar/atami/pkg/domain"
 	"github.com/dwethmar/atami/pkg/domain/user"
 	"github.com/dwethmar/atami/pkg/memstore"
-	"github.com/dwethmar/atami/pkg/service"
 	"github.com/stretchr/testify/assert"
 )
 
 func TestAuthenticated(t *testing.T) {
-	store := memstore.NewStore()
-	userService := service.NewUserServiceMemory(store)
-	authService := service.NewAuthServiceMemory(store)
+	store := domain.NewInMemoryStore(memstore.NewStore())
+	authService := auth.NewService(store.User.Finder, store.User.Creator)
 
 	var accessToken string
-	if user, err := authService.Register(auth.CreateUser{
+	if user, err := authService.Register(auth.RegisterUser{
 		Username: "userx",
 		Email:    "test@test.nl",
 		Password: "Abcd1234!@#$",
@@ -45,7 +44,7 @@ func TestAuthenticated(t *testing.T) {
 		}
 	})
 
-	middleware := Authenticated(userService)
+	middleware := Authenticated(store.User)
 	handlerToTest := middleware(nextHandler)
 
 	req := httptest.NewRequest("GET", "/", nil)

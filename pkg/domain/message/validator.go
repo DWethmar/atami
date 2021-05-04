@@ -7,11 +7,6 @@ import (
 	"github.com/dwethmar/atami/pkg/domain/message/validate"
 )
 
-// Validator struct definition
-type Validator struct {
-	messageTextValidator *validate.MessageTextValidator
-}
-
 type errValidate struct {
 	Errors []error
 }
@@ -26,6 +21,11 @@ func (err errValidate) Error() string {
 		errors[i] = e.Error()
 	}
 	return strings.Join(errors, ". ")
+}
+
+// Validator struct definition
+type Validator struct {
+	messageTextValidator *validate.MessageTextValidator
 }
 
 // ValidateCreate validates a new message
@@ -47,8 +47,8 @@ func (v Validator) ValidateCreate(msg CreateMessage) error {
 	return err
 }
 
-// NewValidator creates a new validator
-func NewValidator(
+// CreateValidator creates a new validator
+func CreateValidator(
 	messageTextValidator *validate.MessageTextValidator,
 ) *Validator {
 	return &Validator{
@@ -56,9 +56,9 @@ func NewValidator(
 	}
 }
 
-// NewDefaultValidator creates a new validator
-func NewDefaultValidator() *Validator {
-	return NewValidator(
+// NewValidator creates a new validator
+func NewValidator() *Validator {
+	return CreateValidator(
 		validate.NewMessageTextValidator(),
 	)
 }

@@ -34,7 +34,7 @@ func (m *Creator) Create(createMessage CreateMessage) (*Message, error) {
 // NewCreator returns a new Listing
 func NewCreator(r CreatorRepository) *Creator {
 	return &Creator{
-		NewDefaultValidator(),
+		NewValidator(),
 		r,
 	}
 }

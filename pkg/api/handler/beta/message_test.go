@@ -3,6 +3,7 @@ package beta
 import (
 	"bytes"
 	"encoding/json"
+	"fmt"
 	"net/http"
 	"net/http/httptest"
 	"testing"
@@ -10,51 +11,61 @@ import (
 
 	"github.com/dwethmar/atami/pkg/api/middleware"
 	"github.com/dwethmar/atami/pkg/api/response"
+	"github.com/dwethmar/atami/pkg/auth"
+	"github.com/dwethmar/atami/pkg/domain"
 	"github.com/dwethmar/atami/pkg/domain/message"
-	messageUtil "github.com/dwethmar/atami/pkg/domain/message/memory/util"
-	"github.com/dwethmar/atami/pkg/domain/user/memory/util"
-	userUtil "github.com/dwethmar/atami/pkg/domain/user/memory/util"
 	"github.com/dwethmar/atami/pkg/memstore"
-
-	"github.com/dwethmar/atami/pkg/service"
 	"github.com/stretchr/testify/assert"
 )
 
 // ListMessages handler
 func TestListMessages(t *testing.T) {
+	store := domain.NewInMemoryStore(memstore.NewStore())
+	authService := auth.NewService(store.User.Finder, store.User.Creator)
+	user, err := authService.Register(auth.RegisterUser{
+		Username: "test",
+		Email:    "test@test.nl",
+		Password: "ABC123PXPXdddd@",
+	})
+
 	messages := []*message.Message{
 		{
 			ID:              1,
-			UID:             "abcdefg1234",
+			UID:             "<to be replaced>",
 			Text:            "lorum ipsum",
 			CreatedAt:       time.Now(),
-			CreatedByUserID: 1,
+			CreatedByUserID: user.ID,
 			User: &message.User{
-				ID:       1,
-				UID:      "UID1",
-				Username: "test",
+				ID:       user.ID,
+				UID:      user.UID,
+				Username: user.Username,
 			},
 		},
 		{
 			ID:              2,
-			UID:             "abcdefg12345",
+			UID:             "<to be replaced>",
 			Text:            "lorum ipsum 2",
 			CreatedAt:       time.Now(),
-			CreatedByUserID: 1,
+			CreatedByUserID: user.ID,
 			User: &message.User{
-				ID:       1,
-				UID:      "UID1",
-				Username: "test",
+				ID:       user.ID,
+				UID:      user.UID,
+				Username: user.Username,
 			},
 		},
 	}
-	store := memstore.NewStore()
-	user := userUtil.AddTestUser(store, 1)
 
-	for _, msg := range messages {
-		store.GetMessages().Put(msg.ID, messageUtil.ToMemory(*msg))
+	for i, msg := range messages {
+		m, _ := store.Message.Create(message.CreateMessage{
+			UID:             msg.UID,
+			Text:            msg.Text,
+			CreatedByUserID: msg.CreatedByUserID,
+			CreatedAt:       msg.CreatedAt,
+		})
+		messages[i].UID = m.UID
+		messages[i].CreatedAt = m.CreatedAt
 	}
-	ms := service.NewMessageServiceMemory(store)
+
 	req, err := http.NewRequest("GET", "/", nil)
 	assert.NoError(t, err)
 
@@ -64,7 +75,7 @@ func TestListMessages(t *testing.T) {
 	req = req.WithContext(ctx)
 
 	rr := httptest.NewRecorder()
-	handler := http.HandlerFunc(ListMessages(ms))
+	handler := http.HandlerFunc(ListMessages(store))
 	handler.ServeHTTP(rr, req)
 
 	assert.Equal(t, http.StatusOK, rr.Code)
@@ -81,40 +92,62 @@ func TestListMessages(t *testing.T) {
 }
 
 func TestGetMessage(t *testing.T) {
+	store := domain.NewInMemoryStore(memstore.NewStore())
+	authService := auth.NewService(store.User.Finder, store.User.Creator)
+	user, err := authService.Register(auth.RegisterUser{
+		Username: "test",
+		Email:    "test@test.nl",
+		Password: "ABC123PXPXdddd@",
+	})
+
+	if err != nil {
+		assert.Fail(t, err.Error())
+	}
+
 	messages := []*message.Message{
 		{
 			ID:              1,
-			UID:             "abcdefg1234",
+			UID:             "<to be replaced>",
 			Text:            "lorum ipsum",
 			CreatedAt:       time.Now(),
-			CreatedByUserID: 1,
+			CreatedByUserID: user.ID,
 			User: &message.User{
-				ID:       1,
-				UID:      "UID1",
-				Username: "test",
+				ID:       user.ID,
+				UID:      user.UID,
+				Username: user.Username,
 			},
 		},
 		{
 			ID:              2,
-			UID:             "abcdefg12345",
+			UID:             "<to be replaced>",
 			Text:            "lorum ipsum 2",
 			CreatedAt:       time.Now(),
-			CreatedByUserID: 1,
+			CreatedByUserID: user.ID,
 			User: &message.User{
-				ID:       1,
-				UID:      "UID1",
-				Username: "test",
+				ID:       user.ID,
+				UID:      user.UID,
+				Username: user.Username,
 			},
 		},
 	}
-	store := memstore.NewStore()
-	user := util.AddTestUser(store, 1)
 
-	for _, msg := range messages {
-		store.GetMessages().Put(msg.ID, messageUtil.ToMemory(*msg))
+	for i, msg := range messages {
+		m, err := store.Message.Create(message.CreateMessage{
+			UID:             msg.UID,
+			Text:            msg.Text,
+			CreatedByUserID: msg.CreatedByUserID,
+			CreatedAt:       msg.CreatedAt,
+		})
+
+		if err != nil {
+			assert.Fail(t, err.Error())
+		}
+
+		messages[i].UID = m.UID
+		messages[i].CreatedAt = m.CreatedAt
 	}
-	ms := service.NewMessageServiceMemory(store)
-	req, err := http.NewRequest("GET", "/abcdefg1234", nil)
+
+	req, err := http.NewRequest("GET", fmt.Sprintf("/%s", messages[0].UID), nil)
 	assert.NoError(t, err)
 
 	// Add user to context
@@ -122,13 +155,13 @@ func TestGetMessage(t *testing.T) {
 	ctx = middleware.WithUser(ctx, user)
 	req = req.WithContext(ctx)
 
-	// Add UID to context
+	// Add message UID to context
 	ctx = req.Context()
-	ctx = middleware.WithUID(ctx, "abcdefg1234")
+	ctx = middleware.WithUID(ctx, messages[0].UID)
 	req = req.WithContext(ctx)
 
 	rr := httptest.NewRecorder()
-	handler := http.HandlerFunc(GetMessage(ms))
+	handler := http.HandlerFunc(GetMessage(store))
 	handler.ServeHTTP(rr, req)
 
 	assert.Equal(t, http.StatusOK, rr.Code)
@@ -142,10 +175,15 @@ func TestGetMessage(t *testing.T) {
 }
 
 func TestNotFoundGetMessage(t *testing.T) {
-	store := memstore.NewStore()
-	user := util.AddTestUser(store, 1)
+	store := domain.NewInMemoryStore(memstore.NewStore())
+	authService := auth.NewService(store.User.Finder, store.User.Creator)
 
-	ms := service.NewMessageServiceMemory(store)
+	user, _ := authService.Register(auth.RegisterUser{
+		Username: "test",
+		Email:    "test@test.nl",
+		Password: "ABC123PXPXdddd@",
+	})
+
 	req, err := http.NewRequest("GET", "/notexistinguid", nil)
 	assert.NoError(t, err)
 
@@ -160,7 +198,7 @@ func TestNotFoundGetMessage(t *testing.T) {
 	req = req.WithContext(ctx)
 
 	rr := httptest.NewRecorder()
-	handler := http.HandlerFunc(GetMessage(ms))
+	handler := http.HandlerFunc(GetMessage(store))
 	handler.ServeHTTP(rr, req)
 
 	assert.Equal(t, "application/json", rr.Header().Get("Content-Type"))
@@ -176,13 +214,18 @@ func TestNotFoundGetMessage(t *testing.T) {
 }
 
 func TestCreateMessage(t *testing.T) {
-	store := memstore.NewStore()
-	user := util.AddTestUser(store, 1)
-	ms := service.NewMessageServiceMemory(store)
+	store := domain.NewInMemoryStore(memstore.NewStore())
+	authService := auth.NewService(store.User.Finder, store.User.Creator)
+	user, _ := authService.Register(auth.RegisterUser{
+		Username: "test",
+		Email:    "test@test.nl",
+		Password: "ABC123PXPXdddd@",
+	})
 
 	addEntry := CreatMessageInput{
 		Text: "lorum ipsum",
 	}
+
 	body, _ := json.Marshal(addEntry)
 	req := httptest.NewRequest("POST", "/", bytes.NewBuffer(body))
 
@@ -192,7 +235,7 @@ func TestCreateMessage(t *testing.T) {
 	req = req.WithContext(ctx)
 
 	rr := httptest.NewRecorder()
-	handler := http.HandlerFunc(CreateMessage(ms))
+	handler := http.HandlerFunc(CreateMessage(store))
 	handler.ServeHTTP(rr, req)
 
 	assert.Equal(t, http.StatusCreated, rr.Code)
@@ -204,8 +247,7 @@ func TestCreateMessage(t *testing.T) {
 }
 
 func TestUnauthorizedCreateMessage(t *testing.T) {
-	store := memstore.NewStore()
-	ms := service.NewMessageServiceMemory(store)
+	store := domain.NewInMemoryStore(memstore.NewStore())
 
 	addEntry := CreatMessageInput{
 		Text: "sadsdkjskjdskjsjdsjkskjkjdkjkjsdkjjdsk",
@@ -214,7 +256,7 @@ func TestUnauthorizedCreateMessage(t *testing.T) {
 	req := httptest.NewRequest("POST", "/", bytes.NewBuffer(body))
 
 	rr := httptest.NewRecorder()
-	handler := http.HandlerFunc(CreateMessage(ms))
+	handler := http.HandlerFunc(CreateMessage(store))
 	handler.ServeHTTP(rr, req)
 
 	assert.Equal(t, "application/json", rr.Header().Get("Content-Type"))
@@ -230,28 +272,47 @@ func TestUnauthorizedCreateMessage(t *testing.T) {
 }
 
 func TestDeleteMessage(t *testing.T) {
+	store := domain.NewInMemoryStore(memstore.NewStore())
+	authService := auth.NewService(store.User.Finder, store.User.Creator)
+
+	user, _ := authService.Register(auth.RegisterUser{
+		Username: "test",
+		Email:    "test@test.nl",
+		Password: "ABC123PXPXdddd@",
+	})
+
 	messages := []*message.Message{
 		{
 			ID:              1,
-			UID:             "abcdefg1234",
+			UID:             "<to be replaced>",
 			Text:            "lorum ipsum",
 			CreatedAt:       time.Now(),
-			CreatedByUserID: 1,
+			CreatedByUserID: user.ID,
 			User: &message.User{
-				ID:       1,
-				UID:      "UID1",
-				Username: "test",
+				ID:       user.ID,
+				UID:      user.UID,
+				Username: user.Username,
 			},
 		},
 	}
-	store := memstore.NewStore()
-	user := util.AddTestUser(store, 1)
 
-	for _, msg := range messages {
-		store.GetMessages().Put(msg.ID, messageUtil.ToMemory(*msg))
+	for i, msg := range messages {
+		m, err := store.Message.Create(message.CreateMessage{
+			UID:             msg.UID,
+			Text:            msg.Text,
+			CreatedByUserID: msg.CreatedByUserID,
+			CreatedAt:       msg.CreatedAt,
+		})
+
+		if err != nil {
+			assert.Fail(t, err.Error())
+		}
+
+		messages[i].UID = m.UID
+		messages[i].CreatedAt = m.CreatedAt
 	}
-	ms := service.NewMessageServiceMemory(store)
-	req, err := http.NewRequest("DELETE", "/abcdefg1234", nil)
+
+	req, err := http.NewRequest("DELETE", fmt.Sprintf("/%s", messages[0].UID), nil)
 	assert.NoError(t, err)
 
 	// Add user to context
@@ -261,11 +322,11 @@ func TestDeleteMessage(t *testing.T) {
 
 	// Add UID to context
 	ctx = req.Context()
-	ctx = middleware.WithUID(ctx, "abcdefg1234")
+	ctx = middleware.WithUID(ctx, messages[0].UID)
 	req = req.WithContext(ctx)
 
 	rr := httptest.NewRecorder()
-	handler := http.HandlerFunc(GetMessage(ms))
+	handler := http.HandlerFunc(GetMessage(store))
 	handler.ServeHTTP(rr, req)
 
 	assert.Equal(t, http.StatusOK, rr.Code)
@@ -279,43 +340,67 @@ func TestDeleteMessage(t *testing.T) {
 }
 
 func TestUnauthorizedDeleteMessage(t *testing.T) {
+	store := domain.NewInMemoryStore(memstore.NewStore())
+	authService := auth.NewService(store.User.Finder, store.User.Creator)
+
+	user, _ := authService.Register(auth.RegisterUser{
+		Username: "test",
+		Email:    "test@test.nl",
+		Password: "ABC123PXPXdddd@",
+	})
+
 	messages := []*message.Message{
 		{
 			ID:              1,
-			UID:             "abcdefg1234",
+			UID:             "<to be replaced>",
 			Text:            "lorum ipsum",
 			CreatedAt:       time.Now(),
-			CreatedByUserID: 2,
+			CreatedByUserID: user.ID,
 			User: &message.User{
-				ID:       2,
-				UID:      "UID1",
-				Username: "test",
+				ID:       user.ID,
+				UID:      user.UID,
+				Username: user.Username,
 			},
 		},
 	}
-	store := memstore.NewStore()
-	user := util.AddTestUser(store, 1)
-	util.AddTestUser(store, 2)
 
-	for _, msg := range messages {
-		store.GetMessages().Put(msg.ID, messageUtil.ToMemory(*msg))
+	user2, _ := authService.Register(auth.RegisterUser{
+		Username: "test2",
+		Email:    "test2@test.nl",
+		Password: "ABC123PXPXdddd@",
+	})
+
+	for i, msg := range messages {
+		m, err := store.Message.Create(message.CreateMessage{
+			UID:             msg.UID,
+			Text:            msg.Text,
+			CreatedByUserID: msg.CreatedByUserID,
+			CreatedAt:       msg.CreatedAt,
+		})
+
+		if err != nil {
+			assert.Fail(t, err.Error())
+		}
+
+		messages[i].UID = m.UID
+		messages[i].CreatedAt = m.CreatedAt
 	}
-	ms := service.NewMessageServiceMemory(store)
-	req, err := http.NewRequest("DELETE", "/abcdefg1234", nil)
+
+	req, err := http.NewRequest("DELETE", fmt.Sprintf("/%s", messages[0].UID), nil)
 	assert.NoError(t, err)
 
 	// Add user to context
 	ctx := req.Context()
-	ctx = middleware.WithUser(ctx, user)
+	ctx = middleware.WithUser(ctx, user2)
 	req = req.WithContext(ctx)
 
-	// Add UID to context
+	// Add message UID to context
 	ctx = req.Context()
-	ctx = middleware.WithUID(ctx, "abcdefg1234")
+	ctx = middleware.WithUID(ctx, messages[0].UID)
 	req = req.WithContext(ctx)
 
 	rr := httptest.NewRecorder()
-	handler := http.HandlerFunc(DeleteMessage(ms))
+	handler := http.HandlerFunc(DeleteMessage(store))
 	handler.ServeHTTP(rr, req)
 
 	assert.Equal(t, "application/json", rr.Header().Get("Content-Type"))
@@ -331,10 +416,15 @@ func TestUnauthorizedDeleteMessage(t *testing.T) {
 }
 
 func TestNotFoundDeleteMessage(t *testing.T) {
-	store := memstore.NewStore()
-	user := util.AddTestUser(store, 1)
+	store := domain.NewInMemoryStore(memstore.NewStore())
+	authService := auth.NewService(store.User.Finder, store.User.Creator)
 
-	ms := service.NewMessageServiceMemory(store)
+	user, _ := authService.Register(auth.RegisterUser{
+		Username: "test",
+		Email:    "test@test.nl",
+		Password: "ABC123PXPXdddd@",
+	})
+
 	req, err := http.NewRequest("DELETE", "/abcdefg1234", nil)
 	assert.NoError(t, err)
 
@@ -349,7 +439,7 @@ func TestNotFoundDeleteMessage(t *testing.T) {
 	req = req.WithContext(ctx)
 
 	rr := httptest.NewRecorder()
-	handler := http.HandlerFunc(DeleteMessage(ms))
+	handler := http.HandlerFunc(DeleteMessage(store))
 	handler.ServeHTTP(rr, req)
 
 	assert.Equal(t, "application/json", rr.Header().Get("Content-Type"))

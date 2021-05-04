@@ -9,8 +9,8 @@ import (
 
 	"github.com/dwethmar/atami/pkg/api/middleware"
 	"github.com/dwethmar/atami/pkg/api/response"
+	"github.com/dwethmar/atami/pkg/domain"
 	"github.com/dwethmar/atami/pkg/domain/message"
-	"github.com/dwethmar/atami/pkg/domain/user"
 	"github.com/go-chi/chi"
 	"github.com/go-chi/cors"
 	"github.com/go-chi/httplog"
@@ -58,7 +58,7 @@ type CreatMessageSuccess struct {
 }
 
 // ListMessages handler
-func ListMessages(ms *message.Service) http.HandlerFunc {
+func ListMessages(store *domain.Store) http.HandlerFunc {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		usr, err := middleware.GetUser(r.Context())
 		if err != nil || usr == nil {
@@ -69,7 +69,7 @@ func ListMessages(ms *message.Service) http.HandlerFunc {
 
 		messages := make([]*Message, 0)
 
-		if result, err := ms.Find(0, 100); err == nil {
+		if result, err := store.Message.Find(0, 100); err == nil {
 			for _, msg := range result {
 				messages = append(messages, mapMessage(msg))
 			}
@@ -83,7 +83,7 @@ func ListMessages(ms *message.Service) http.HandlerFunc {
 }
 
 // GetMessage handler
-func GetMessage(ms *message.Service) http.HandlerFunc {
+func GetMessage(store *domain.Store) http.HandlerFunc {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 
 		usr, err := middleware.GetUser(r.Context())
@@ -100,7 +100,7 @@ func GetMessage(ms *message.Service) http.HandlerFunc {
 			return
 		}
 
-		if msg, err := ms.FindByUID(uid); err == message.ErrCouldNotFind {
+		if msg, err := store.Message.FindByUID(uid); err == message.ErrCouldNotFind {
 			response.NotFoundError(w, r)
 			return
 		} else if msg != nil && err == nil {
@@ -115,7 +115,7 @@ func GetMessage(ms *message.Service) http.HandlerFunc {
 }
 
 // CreateMessage handler
-func CreateMessage(ms *message.Service) http.HandlerFunc {
+func CreateMessage(store *domain.Store) http.HandlerFunc {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 
 		usr, err := middleware.GetUser(r.Context())
@@ -137,8 +137,8 @@ func CreateMessage(ms *message.Service) http.HandlerFunc {
 			CreatedByUserID: usr.ID,
 		}
 
-		if err := ms.ValidateCreate(newMsg); err == nil {
-			if msg, err := ms.Create(newMsg); err == nil {
+		if err := store.Message.ValidateCreate(newMsg); err == nil {
+			if msg, err := store.Message.Create(newMsg); err == nil {
 				response.JSON(w, r, CreatMessageSuccess{
 					UID: msg.UID,
 				}, http.StatusCreated)
@@ -154,7 +154,7 @@ func CreateMessage(ms *message.Service) http.HandlerFunc {
 }
 
 // DeleteMessage handler
-func DeleteMessage(ms *message.Service) http.HandlerFunc {
+func DeleteMessage(store *domain.Store) http.HandlerFunc {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 
 		usr, err := middleware.GetUser(r.Context())
@@ -174,14 +174,14 @@ func DeleteMessage(ms *message.Service) http.HandlerFunc {
 			return
 		}
 
-		if msg, err := ms.FindByUID(uid); err == nil {
+		if msg, err := store.Message.FindByUID(uid); err == nil {
 			if msg == nil {
 				response.NotFoundError(w, r)
 				return
 			}
 
 			if msg.CreatedByUserID == usr.ID {
-				if err := ms.Delete(msg.ID); err == nil {
+				if err := store.Message.Delete(msg.ID); err == nil {
 					response.JSON(w, r, mapMessage(msg), http.StatusOK)
 				} else {
 					response.ServerError(w, r)
@@ -203,12 +203,12 @@ func DeleteMessage(ms *message.Service) http.HandlerFunc {
 }
 
 // NewMessageRouter creates new message router
-func NewMessageRouter(userService *user.Service, messageService *message.Service) http.Handler {
+func NewMessageRouter(store *domain.Store) http.Handler {
 	r := chi.NewRouter()
 
 	logger := httplog.NewLogger("message", httplog.Options{})
 	r.Use(httplog.RequestLogger(logger))
-	r.Use(middleware.Authenticated(userService))
+	r.Use(middleware.Authenticated(store.User))
 	r.Use(cors.Handler(cors.Options{
 		AllowOriginFunc: func(r *http.Request, origin string) bool {
 			return true
@@ -220,10 +220,10 @@ func NewMessageRouter(userService *user.Service, messageService *message.Service
 		MaxAge:           300,
 	}))
 
-	r.Get("/", ListMessages(messageService))
-	r.Get("/{uid}", middleware.RequireUID(GetMessage(messageService)))
-	r.Post("/", CreateMessage(messageService))
-	r.Delete("/{uid}", middleware.RequireUID(DeleteMessage(messageService)))
+	r.Get("/", ListMessages(store))
+	r.Get("/{uid}", middleware.RequireUID(GetMessage(store)))
+	r.Post("/", CreateMessage(store))
+	r.Delete("/{uid}", middleware.RequireUID(DeleteMessage(store)))
 
 	return r
 }

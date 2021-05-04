@@ -13,52 +13,60 @@ import (
 	"github.com/dwethmar/atami/pkg/domain/user"
 )
 
-type messageStore struct {
+// MessageStore allows the mutation and reads on message data.
+type MessageStore struct {
 	*message.Creator
 	*message.Deleter
 	*message.Finder
+	*message.Validator
 }
 
-type userStore struct {
+// UserStore allows the mutation and reads on user data.
+type UserStore struct {
 	*user.Creator
 	*user.Deleter
 	*user.Finder
 	*user.Updater
 }
 
+// Store allows the mutation and reads of domain data.
 type Store struct {
-	Message messageStore
-	User userStore
+	Message *MessageStore
+	User    *UserStore
 }
 
+// NewStore create new Store
 func NewStore(db *sql.DB) *Store {
 	return &Store{
-		Message: messageStore{
-			Creator: messagePostgres.NewCreator(db),
-			Deleter: messagePostgres.NewDeleter(db),
-			Finder: messagePostgres.NewFinder(db),
+		Message: &MessageStore{
+			Creator:   messagePostgres.NewCreator(db),
+			Deleter:   messagePostgres.NewDeleter(db),
+			Finder:    messagePostgres.NewFinder(db),
+			Validator: message.NewValidator(),
 		},
-		User: userStore{
+		User: &UserStore{
 			Creator: userPostgres.NewCreator(db),
 			Deleter: userPostgres.NewDeleter(db),
-			Finder: userPostgres.NewFinder(db),
-			Updater: userPostgres.NewUpdater(db),	
+			Finder:  userPostgres.NewFinder(db),
+			Updater: userPostgres.NewUpdater(db),
 		},
 	}
 }
 
+// NewInMemoryStore creates a store that uses inmemory storage.
 func NewInMemoryStore(store *memstore.Store) *Store {
 	return &Store{
-		Message: messageStore{
-			Creator: messageMemory.NewCreator(store),
-			Deleter: messageMemory.NewDeleter(store),
-			Finder: messageMemory.NewFinder(store),
+		Message: &MessageStore{
+			Creator:   messageMemory.NewCreator(store),
+			Deleter:   messageMemory.NewDeleter(store),
+			Finder:    messageMemory.NewFinder(store),
+			Validator: message.NewValidator(),
 		},
-		User: userStore{
+		User: &UserStore{
 			Creator: userMemory.NewCreator(store),
 			Deleter: userMemory.NewDeleter(store),
-			Finder: userMemory.NewFinder(store),
-			Updater: userMemory.NewUpdater(store),	
+			Finder:  userMemory.NewFinder(store),
+			Updater: userMemory.NewUpdater(store),
 		},
 	}
 }

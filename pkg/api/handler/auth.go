@@ -9,6 +9,7 @@ import (
 
 	"github.com/dwethmar/atami/pkg/api/response"
 	"github.com/dwethmar/atami/pkg/auth"
+	"github.com/dwethmar/atami/pkg/domain"
 	"github.com/dwethmar/atami/pkg/domain/user"
 
 	"github.com/go-chi/chi"
@@ -45,9 +46,9 @@ func toRespond(u *user.User) *Responds {
 }
 
 // ListUsers handler
-func ListUsers(userService *user.Service) http.HandlerFunc {
+func ListUsers(store *domain.Store) http.HandlerFunc {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		if users, err := userService.Find(); err == nil {
+		if users, err := store.User.Find(); err == nil {
 			response.JSON(w, r, toResponds(users), 200)
 		} else {
 			fmt.Printf("Error: %v \n", err)
@@ -68,7 +69,7 @@ func Register(authService *auth.Service) http.HandlerFunc {
 		username := r.FormValue("username")
 		password := r.FormValue("password")
 
-		createUser := auth.CreateUser{
+		createUser := auth.RegisterUser{
 			Username: username,
 			Email:    email,
 			Password: password,
@@ -105,7 +106,7 @@ func createRefreshCookie(expires time.Time, domain, token string) *http.Cookie {
 }
 
 // Login handles login requests
-func Login(authService *auth.Service, userService *user.Service) http.HandlerFunc {
+func Login(authService *auth.Service, store *domain.Store) http.HandlerFunc {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 
 		if err := r.ParseForm(); err != nil {
@@ -141,7 +142,7 @@ func Login(authService *auth.Service, userService *user.Service) http.HandlerFun
 			return
 		}
 
-		user, err := userService.FindByEmail(email)
+		user, err := store.User.FindByEmail(email)
 		if err != nil || user == nil {
 			fmt.Printf("error while retrieving user: %v\n", err)
 			response.ServerError(w, r)
@@ -180,7 +181,7 @@ func Login(authService *auth.Service, userService *user.Service) http.HandlerFun
 }
 
 // Refresh handles refresh requests
-func Refresh(authService *auth.Service, userService *user.Service) http.HandlerFunc {
+func Refresh(authService *auth.Service, store *domain.Store) http.HandlerFunc {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 
 		cookie, err := r.Cookie("refresh_token")
@@ -202,7 +203,7 @@ func Refresh(authService *auth.Service, userService *user.Service) http.HandlerF
 			return
 		}
 
-		user, err := userService.FindByUID(claims.Subject)
+		user, err := store.User.FindByUID(claims.Subject)
 		if err != nil || user == nil {
 			fmt.Printf("error while retrieving user: %v\n", err)
 			response.ServerError(w, r)
@@ -254,7 +255,7 @@ func ResetPassword(authService *auth.Service) http.HandlerFunc {
 }
 
 // NewAuthRouter returns the api routes handler
-func NewAuthRouter(authService *auth.Service, userService *user.Service) http.Handler {
+func NewAuthRouter(authService *auth.Service, store *domain.Store) http.Handler {
 	r := chi.NewRouter()
 
 	logger := httplog.NewLogger("auth", httplog.Options{})
@@ -273,8 +274,8 @@ func NewAuthRouter(authService *auth.Service, userService *user.Service) http.Ha
 	}))
 
 	r.Post("/register", Register(authService))
-	r.Post("/login", Login(authService, userService))
-	r.Post("/refresh", Refresh(authService, userService))
+	r.Post("/login", Login(authService, store))
+	r.Post("/refresh", Refresh(authService, store))
 
 	return r
 }

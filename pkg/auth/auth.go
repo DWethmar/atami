@@ -11,8 +11,8 @@ var (
 	ErrPasswordRequired = errors.New("password is required")
 )
 
-// CreateUser struct declaration
-type CreateUser struct {
+// RegisterUser struct declaration
+type RegisterUser struct {
 	Username string
 	Email    string
 	Password string

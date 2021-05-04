@@ -31,7 +31,7 @@ func (err errValidate) Error() string {
 }
 
 // ValidateNewUser validates a new user
-func (v Validator) ValidateNewUser(newUser CreateUser) error {
+func (v Validator) ValidateNewUser(newUser RegisterUser) error {
 	err := errValidate{}
 
 	if e := v.usernameValidator.Validate(newUser.Username); e != nil {

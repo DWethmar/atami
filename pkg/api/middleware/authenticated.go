@@ -9,6 +9,7 @@ import (
 
 	"github.com/dwethmar/atami/pkg/api/response"
 	"github.com/dwethmar/atami/pkg/auth"
+	"github.com/dwethmar/atami/pkg/domain"
 	"github.com/dwethmar/atami/pkg/domain/user"
 )
 
@@ -31,7 +32,7 @@ func GetUser(ctx context.Context) (*user.User, error) {
 }
 
 // Authenticated handles auth requests
-func Authenticated(userService *user.Service) func(next http.Handler) http.Handler {
+func Authenticated(userStore *domain.UserStore) func(next http.Handler) http.Handler {
 
 	return func(next http.Handler) http.Handler {
 		fn := func(w http.ResponseWriter, r *http.Request) {
@@ -56,7 +57,7 @@ func Authenticated(userService *user.Service) func(next http.Handler) http.Handl
 			}
 
 			if UID != "" {
-				if user, err := userService.FindByUID(UID); err == nil {
+				if user, err := userStore.FindByUID(UID); err == nil {
 					ctx := WithUser(r.Context(), user)
 					next.ServeHTTP(w, r.WithContext(ctx))
 				} else {

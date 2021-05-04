@@ -26,10 +26,10 @@ func setup() (*memstore.Store, []message.Message) {
 	store := memstore.NewStore()
 	util.AddTestUser(store, 1)
 
-	service := New(store)
+	creator := NewCreator(store)
 	msgs := make([]message.Message, 100)
 	for i, newMsg := range generateTestMessages(100) {
-		if msg, err := service.Create(newMsg); err == nil {
+		if msg, err := creator.Create(newMsg); err == nil {
 			msgs[i] = *msg
 		} else {
 			fmt.Printf("error: %s", err)

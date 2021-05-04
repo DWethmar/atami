@@ -8,7 +8,7 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
-var validUser = CreateUser{
+var validUser = RegisterUser{
 	Username: "username",
 	Email:    "test@test.nl",
 	Password: "Abc123QWERRTY@#1",
@@ -51,7 +51,7 @@ func TestInvalidEmail(t *testing.T) {
 }
 
 func TestValidNewUser(t *testing.T) {
-	assert.NoError(t, validator.ValidateNewUser(CreateUser{
+	assert.NoError(t, validator.ValidateNewUser(RegisterUser{
 		Username: "username",
 		Email:    "test@test.nl",
 		Password: "Abcdefgh123@@",
@@ -59,7 +59,7 @@ func TestValidNewUser(t *testing.T) {
 }
 
 func TestInvalidNewUser(t *testing.T) {
-	assert.Error(t, validator.ValidateNewUser(CreateUser{
+	assert.Error(t, validator.ValidateNewUser(RegisterUser{
 		Username: "a",
 		Email:    "b",
 	}))

@@ -1,0 +1,335 @@
+{
+	"info": {
+		"_postman_id": "314ec60d-f2ce-475e-918b-51461cc7b2d6",
+		"name": "atami",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "register",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "urlencoded",
+					"urlencoded": [
+						{
+							"key": "username",
+							"value": "{{Test user username}}",
+							"type": "text"
+						},
+						{
+							"key": "email",
+							"value": "{{Test user email}}",
+							"type": "text"
+						},
+						{
+							"key": "password",
+							"value": "{{Test user password}}",
+							"type": "text"
+						}
+					],
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:{{Port}}/beta/auth/register",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "{{Port}}",
+					"path": [
+						"beta",
+						"auth",
+						"register"
+					],
+					"query": [
+						{
+							"key": "",
+							"value": null,
+							"disabled": true
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "login",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJhdXRob3JpemVkIjp0cnVlLCJleHAiOjE2MDUwNDc1NDMsImlhdCI6MTYwNTA0NzQ4MywidWlkIjoiMWs3TjU0OURtU2N5V1Bic0czRkNzR1ZheUVUIn0.BsqcJNRzdYjysZwo44CTLb-JXQWDnSDUgkIG2oyE-yk",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "urlencoded",
+					"urlencoded": [
+						{
+							"key": "email",
+							"value": "{{Test user email}}",
+							"type": "text"
+						},
+						{
+							"key": "password",
+							"value": "{{Test user password}}",
+							"type": "text"
+						}
+					]
+				},
+				"url": {
+					"raw": "http://localhost:8080/auth/login",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"auth",
+						"login"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "refresh",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"url": {
+					"raw": "http://localhost:{{Port}}/beta/auth/refresh",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "{{Port}}",
+					"path": [
+						"beta",
+						"auth",
+						"refresh"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "message",
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzaWQiOiIxNjA2MDg0MDI3NDExNTUxMjM1IiwicmVmIjoiMCIsImV4cCI6MTYwNjA4NjIxNywiaWF0IjoxNjA2MDg1MzE3LCJzdWIiOiIxa2V2WjgyWmh3MGxHUUZ6ZE93QUMzdzgwcncifQ.Nqlx0YLFLbcmyebsfD4OV0yTY8gkQFoeR76d_Ro3AIk",
+						"type": "text"
+					}
+				],
+				"url": {
+					"raw": "http://localhost:{{Port}}/beta/messages",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "{{Port}}",
+					"path": [
+						"beta",
+						"messages"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Create message",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzaWQiOiIxNjA2MDg0MDI3NDExNTUxMjM1IiwicmVmIjoiMCIsImV4cCI6MTYwNjA4NjIxNywiaWF0IjoxNjA2MDg1MzE3LCJzdWIiOiIxa2V2WjgyWmh3MGxHUUZ6ZE93QUMzdzgwcncifQ.Nqlx0YLFLbcmyebsfD4OV0yTY8gkQFoeR76d_Ro3AIk",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"text\": \"anal lol 420\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:{{Port}}/beta/messages",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "{{Port}}",
+					"path": [
+						"beta",
+						"messages"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Get message",
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzaWQiOiIxNjExNjAxNjY4MTMzNzYzNzIxIiwicmVmIjoiMCIsImV4cCI6MTYxMTYwMjU3NCwiaWF0IjoxNjExNjAxNjc0LCJzdWIiOiIxblpicVlJSkRNWE9nRU40dXh5TFhNV2pHQ2cifQ.lU3s0A2jtGSjdfJzymPAAi7XQYFNh0RCx6Lj5ZmFD3c",
+							"type": "string"
+						}
+					]
+				},
+				"method": "GET",
+				"header": [
+					{
+						"key": "Authorization",
+						"type": "text",
+						"value": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzaWQiOiIxNjA2MDg0MDI3NDExNTUxMjM1IiwicmVmIjoiMCIsImV4cCI6MTYwNjA4NjIxNywiaWF0IjoxNjA2MDg1MzE3LCJzdWIiOiIxa2V2WjgyWmh3MGxHUUZ6ZE93QUMzdzgwcncifQ.Nqlx0YLFLbcmyebsfD4OV0yTY8gkQFoeR76d_Ro3AIk",
+						"disabled": true
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"text\": \"anal lol 420\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:{{Port}}/beta/messages/1nZe2HUFR0vFiEbmpU7eeBb73mZ",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "{{Port}}",
+					"path": [
+						"beta",
+						"messages",
+						"1nZe2HUFR0vFiEbmpU7eeBb73mZ"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Delete message",
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzaWQiOiIxNjExNjAxNjY4MTMzNzYzNzIxIiwicmVmIjoiMCIsImV4cCI6MTYxMTYwMjU3NCwiaWF0IjoxNjExNjAxNjc0LCJzdWIiOiIxblpicVlJSkRNWE9nRU40dXh5TFhNV2pHQ2cifQ.lU3s0A2jtGSjdfJzymPAAi7XQYFNh0RCx6Lj5ZmFD3c",
+							"type": "string"
+						}
+					]
+				},
+				"method": "DELETE",
+				"header": [
+					{
+						"key": "Authorization",
+						"type": "text",
+						"value": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzaWQiOiIxNjA2MDg0MDI3NDExNTUxMjM1IiwicmVmIjoiMCIsImV4cCI6MTYwNjA4NjIxNywiaWF0IjoxNjA2MDg1MzE3LCJzdWIiOiIxa2V2WjgyWmh3MGxHUUZ6ZE93QUMzdzgwcncifQ.Nqlx0YLFLbcmyebsfD4OV0yTY8gkQFoeR76d_Ro3AIk",
+						"disabled": true
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"text\": \"anal lol 420\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:{{Port}}/beta/messages/1nZe2HUFR0vFiEbmpU7eeBb73mZ",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "{{Port}}",
+					"path": [
+						"beta",
+						"messages",
+						"1nZe2HUFR0vFiEbmpU7eeBb73mZ"
+					]
+				}
+			},
+			"response": []
+		}
+	],
+	"event": [
+		{
+			"listen": "prerequest",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		},
+		{
+			"listen": "test",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		}
+	],
+	"variable": [
+		{
+			"key": "Authorization bearer token",
+			"value": "Bearer..."
+		},
+		{
+			"key": "Test user password",
+			"value": "8'e8r2kDrA:#,VBW"
+		},
+		{
+			"key": "Test user email",
+			"value": "test@test.nl"
+		},
+		{
+			"key": "Test user username",
+			"value": "testuser"
+		},
+		{
+			"key": "Port",
+			"value": "8080"
+		}
+	]
+}
