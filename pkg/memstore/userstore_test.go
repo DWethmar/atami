@@ -149,7 +149,7 @@ func TestUserSort(t *testing.T) {
 			return false
 		}
 
-		return a.CreatedAt.Before(b.CreatedAt)
+		return a.Username < b.Username
 	})
 
 	if value, ok := store.FromIndex(0); ok {
@@ -171,6 +171,6 @@ func TestUserSort(t *testing.T) {
 	}
 
 	if _, ok := store.FromIndex(3); ok {
-		assert.Fail(t, "there should be no fourth value")
+		assert.Fail(t, "there should be no fourth value!!")
 	}
 }
