@@ -96,7 +96,7 @@ func NewStore(db *sql.DB) *Store {
 }
 
 // NewInMemoryStore creates a store that uses inmemory storage.
-func NewInMemoryStore(store *memstore.Store) *Store {
+func NewInMemoryStore(store *memstore.Memstore) *Store {
 	var messageCreator = messageMemory.NewCreator(store)
 	var messageDeleter = messageMemory.NewDeleter(store)
 	var messageFinder = messageMemory.NewFinder(store)

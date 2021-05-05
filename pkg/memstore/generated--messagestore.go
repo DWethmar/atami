@@ -4,41 +4,60 @@
 package memstore
 
 import (
+	"fmt"
+	"sort"
 	"strconv"
+	"sync"
 )
 
 // MessageStore stores data in memory by key and value
 type MessageStore struct {
-	kv *KvStore
+	kv  *KvStore
+	IDs []int
+	mux *sync.Mutex
 }
 
 // All returns all entries.
-func (h *MessageStore) All() []Message {
-	r := make([]Message, h.Len())
+func (h *MessageStore) All() ([]Message, error) {
+	entries := make([]Message, h.Len())
 
-	for i, item := range h.kv.All() {
-		if record, ok := item.(Message); ok {
-			r[i] = record
+	for i, ID := range h.IDs {
+		record, ok := h.kv.Get(strconv.Itoa(ID))
+		if ok {
+			e, ok := record.(Message)
+			if ok {
+				entries[i] = e
+			} else {
+				return nil, fmt.Errorf("entry Message with id: %d could not be parsed", ID)
+			}
+		} else {
+			return nil, fmt.Errorf("entry Message with id: %d was not found in kvstore", ID)
 		}
 	}
 
-	return r
+	return entries, nil
 }
 
 // Slice returns entries within the range.
-func (h *MessageStore) Slice(low, high int) []Message {
-	r := make([]Message, h.Len())
+func (h *MessageStore) Slice(low, high int) ([]Message, error) {
+	entries := make([]Message, high-low)
 
-	for i, item := range h.kv.Slice(low, high) {
-		if record, ok := item.(Message); ok {
-			r[i] = record
+	for i, ID := range h.IDs[low:high] {
+		if record, ok := h.kv.Get(strconv.Itoa(ID)); ok {
+			if record, ok := record.(Message); ok {
+				entries[i] = record
+			} else {
+				return nil, fmt.Errorf("entry Message with id: %d could not be parsed", ID)
+			}
+		} else {
+			return nil, fmt.Errorf("entry Message with id: %d was not found in kvstore", ID)
 		}
 	}
 
-	return r
+	return entries, nil
 }
 
-// Get a single value.
+// Get a single Message.
 func (h *MessageStore) Get(ID int) (Message, bool) {
 	if record, ok := h.kv.Get(strconv.Itoa(ID)); ok {
 		if record, ok := record.(Message); ok {
@@ -50,24 +69,36 @@ func (h *MessageStore) Get(ID int) (Message, bool) {
 
 // Put new Message
 func (h *MessageStore) Put(ID int, value Message) bool {
+	h.IDs = append(h.IDs, ID)
 	return h.kv.Put(strconv.Itoa(ID), value)
 }
 
 // Delete a Message
 func (h *MessageStore) Delete(ID int) bool {
-	return h.kv.Delete(strconv.Itoa(ID))
+	ok := h.kv.Delete(strconv.Itoa(ID))
+
+	if ok {
+		for i, n := range h.IDs {
+			if n == ID {
+				h.IDs = append(h.IDs[:i], h.IDs[i+1:]...)
+			}
+		}
+	}
+
+	return ok
 }
 
 // Len gets number of entries
 func (h *MessageStore) Len() int {
-	return h.kv.Len()
+	return len(h.IDs)
 }
 
 // FromIndex gets value by index
 func (h *MessageStore) FromIndex(i int) (Message, bool) {
-	if record, ok := h.kv.FromIndex(i); ok {
-		if record, ok := record.(Message); ok {
-			return record, true
+	if i >= 0 && i < h.Len() {
+		entry, ok := h.Get(h.IDs[i])
+		if ok {
+			return entry, true
 		}
 	}
 	return Message{}, false
@@ -75,12 +106,14 @@ func (h *MessageStore) FromIndex(i int) (Message, bool) {
 
 // Sort items in memory
 func (h *MessageStore) Sort(less func(i, j int) bool) {
-	h.kv.Sort(less)
+	sort.SliceStable(h.IDs, less)
 }
 
 // NewMessageStore returns a new in memory repository for Message records.
-func NewMessageStore() *MessageStore {
+func NewMessageStore(mux *sync.Mutex) *MessageStore {
 	return &MessageStore{
-		kv: NewKvStore(),
+		kv:  NewKvStore(mux),
+		IDs: make([]int, 0),
+		mux: mux,
 	}
 }

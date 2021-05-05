@@ -12,16 +12,20 @@ var layoutISO = "2006-01-02"
 
 // creatorRepository stores new messages
 type creatorRepository struct {
-	store *memstore.Store
+	store *memstore.Memstore
 	newID int
 }
 
 // Create new user
 func (i *creatorRepository) Create(newUser user.CreateUser) (*user.User, error) {
-	users := i.store.GetUsers()
+	userStore := i.store.GetUsers()
+	users, err := userStore.All()
+	if err != nil {
+		return nil, err
+	}
 
 	// Check for user with same username or email
-	if match, err := filterList(users.All(), func(record user.User) bool {
+	if match, err := filterList(users, func(record user.User) bool {
 		return newUser.Username == record.Username || newUser.Email == record.Email
 	}); match != nil {
 
@@ -49,9 +53,9 @@ func (i *creatorRepository) Create(newUser user.CreateUser) (*user.User, error) 
 		Password:  newUser.Password,
 	}
 
-	users.Put(usr.ID, util.ToMemory(usr))
+	userStore.Put(usr.ID, util.ToMemory(usr))
 
-	if r, ok := users.Get(usr.ID); ok {
+	if r, ok := userStore.Get(usr.ID); ok {
 		user := util.FromMemory(r)
 		return &user, nil
 	}
@@ -61,7 +65,7 @@ func (i *creatorRepository) Create(newUser user.CreateUser) (*user.User, error) 
 
 // NewCreator creates new creator.
 func NewCreator(
-	store *memstore.Store,
+	store *memstore.Memstore,
 	finder *user.Finder,
 ) *user.Creator {
 	return user.NewCreator(&creatorRepository{store, 0}, finder)

@@ -7,7 +7,7 @@ import (
 
 // deleterRepository deletes messages from memory
 type deleterRepository struct {
-	store *memstore.Store
+	store *memstore.Memstore
 }
 
 // Delete deletes one message
@@ -20,6 +20,6 @@ func (i deleterRepository) Delete(ID int) error {
 }
 
 // NewDeleter return a new deleter
-func NewDeleter(store *memstore.Store) *message.Deleter {
+func NewDeleter(store *memstore.Memstore) *message.Deleter {
 	return message.NewDeleter(&deleterRepository{store})
 }

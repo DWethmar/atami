@@ -4,41 +4,60 @@
 package memstore
 
 import (
+	"fmt"
+	"sort"
 	"strconv"
+	"sync"
 )
 
 // UserStore stores data in memory by key and value
 type UserStore struct {
-	kv *KvStore
+	kv  *KvStore
+	IDs []int
+	mux *sync.Mutex
 }
 
 // All returns all entries.
-func (h *UserStore) All() []User {
-	r := make([]User, h.Len())
+func (h *UserStore) All() ([]User, error) {
+	entries := make([]User, h.Len())
 
-	for i, item := range h.kv.All() {
-		if record, ok := item.(User); ok {
-			r[i] = record
+	for i, ID := range h.IDs {
+		record, ok := h.kv.Get(strconv.Itoa(ID))
+		if ok {
+			e, ok := record.(User)
+			if ok {
+				entries[i] = e
+			} else {
+				return nil, fmt.Errorf("entry User with id: %d could not be parsed", ID)
+			}
+		} else {
+			return nil, fmt.Errorf("entry User with id: %d was not found in kvstore", ID)
 		}
 	}
 
-	return r
+	return entries, nil
 }
 
 // Slice returns entries within the range.
-func (h *UserStore) Slice(low, high int) []User {
-	r := make([]User, h.Len())
+func (h *UserStore) Slice(low, high int) ([]User, error) {
+	entries := make([]User, high-low)
 
-	for i, item := range h.kv.Slice(low, high) {
-		if record, ok := item.(User); ok {
-			r[i] = record
+	for i, ID := range h.IDs[low:high] {
+		if record, ok := h.kv.Get(strconv.Itoa(ID)); ok {
+			if record, ok := record.(User); ok {
+				entries[i] = record
+			} else {
+				return nil, fmt.Errorf("entry User with id: %d could not be parsed", ID)
+			}
+		} else {
+			return nil, fmt.Errorf("entry User with id: %d was not found in kvstore", ID)
 		}
 	}
 
-	return r
+	return entries, nil
 }
 
-// Get a single value.
+// Get a single User.
 func (h *UserStore) Get(ID int) (User, bool) {
 	if record, ok := h.kv.Get(strconv.Itoa(ID)); ok {
 		if record, ok := record.(User); ok {
@@ -50,24 +69,36 @@ func (h *UserStore) Get(ID int) (User, bool) {
 
 // Put new User
 func (h *UserStore) Put(ID int, value User) bool {
+	h.IDs = append(h.IDs, ID)
 	return h.kv.Put(strconv.Itoa(ID), value)
 }
 
 // Delete a User
 func (h *UserStore) Delete(ID int) bool {
-	return h.kv.Delete(strconv.Itoa(ID))
+	ok := h.kv.Delete(strconv.Itoa(ID))
+
+	if ok {
+		for i, n := range h.IDs {
+			if n == ID {
+				h.IDs = append(h.IDs[:i], h.IDs[i+1:]...)
+			}
+		}
+	}
+
+	return ok
 }
 
 // Len gets number of entries
 func (h *UserStore) Len() int {
-	return h.kv.Len()
+	return len(h.IDs)
 }
 
 // FromIndex gets value by index
 func (h *UserStore) FromIndex(i int) (User, bool) {
-	if record, ok := h.kv.FromIndex(i); ok {
-		if record, ok := record.(User); ok {
-			return record, true
+	if i >= 0 && i < h.Len() {
+		entry, ok := h.Get(h.IDs[i])
+		if ok {
+			return entry, true
 		}
 	}
 	return User{}, false
@@ -75,12 +106,14 @@ func (h *UserStore) FromIndex(i int) (User, bool) {
 
 // Sort items in memory
 func (h *UserStore) Sort(less func(i, j int) bool) {
-	h.kv.Sort(less)
+	sort.SliceStable(h.IDs, less)
 }
 
 // NewUserStore returns a new in memory repository for User records.
-func NewUserStore() *UserStore {
+func NewUserStore(mux *sync.Mutex) *UserStore {
 	return &UserStore{
-		kv: NewKvStore(),
+		kv:  NewKvStore(mux),
+		IDs: make([]int, 0),
+		mux: mux,
 	}
 }

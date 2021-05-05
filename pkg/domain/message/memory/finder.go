@@ -1,8 +1,6 @@
 package memory
 
 import (
-	"fmt"
-
 	"github.com/dwethmar/atami/pkg/domain/message"
 	"github.com/dwethmar/atami/pkg/domain/message/memory/util"
 	"github.com/dwethmar/atami/pkg/memstore"
@@ -10,12 +8,17 @@ import (
 
 // readerRepository reads messages from memory
 type findRepository struct {
-	store *memstore.Store
+	store *memstore.Memstore
 }
 
 // FindByID get one message
 func (i *findRepository) FindByUID(UID string) (*message.Message, error) {
-	msg, err := filterList(i.store.GetMessages().All(), func(record message.Message) bool {
+	messages, err := i.store.GetMessages().All()
+	if err != nil {
+		return nil, err
+	}
+
+	msg, err := filterList(messages, func(record message.Message) bool {
 		return UID == record.UID
 	})
 
@@ -67,19 +70,23 @@ func (i *findRepository) Find(limit, offset int) ([]*message.Message, error) {
 		limit = len - offset
 	}
 
-	paged := messages.Slice(offset, limit)
+	paged, err := messages.Slice(offset, limit)
+	if err != nil {
+		return nil, err
+	}
+
 	items := make([]*message.Message, len(paged))
 
 	for i, r := range paged {
 
 		msg := util.FromMemory(r)
 
-		fmt.Println("------------------------------------------------------------------------")
-		fmt.Println(fmt.Sprintf("Created BY %d", msg.CreatedByUserID))
-		fmt.Println(util.FindUser(users, msg.CreatedByUserID))
-		test, _ := users.Get(msg.CreatedByUserID)
-		fmt.Println(test)
-		fmt.Println("------------------------------------------------------------------------")
+		// fmt.Println("------------------------------------------------------------------------")
+		// fmt.Println(fmt.Sprintf("Created BY %d", msg.CreatedByUserID))
+		// fmt.Println(util.FindUser(users, msg.CreatedByUserID))
+		// test, _ := users.Get(msg.CreatedByUserID)
+		// fmt.Println(test)
+		// fmt.Println("------------------------------------------------------------------------")
 
 		if user, err := util.FindUser(users, msg.CreatedByUserID); err == nil {
 			msg.User = user
@@ -93,6 +100,6 @@ func (i *findRepository) Find(limit, offset int) ([]*message.Message, error) {
 }
 
 // NewFinder return a new in memory listin reader
-func NewFinder(store *memstore.Store) *message.Finder {
+func NewFinder(store *memstore.Memstore) *message.Finder {
 	return message.NewFinder(&findRepository{store})
 }

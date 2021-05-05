@@ -8,7 +8,7 @@ import (
 
 // updateRepository reads messages from memory
 type updateRepository struct {
-	store *memstore.Store
+	store *memstore.Memstore
 }
 
 // FindAll get multiple messages
@@ -32,7 +32,7 @@ func (f updateRepository) Update(ID int, action user.UpdateUser) (*user.User, er
 
 // NewUpdater return a new in memory listin repository
 func NewUpdater(
-	store *memstore.Store,
+	store *memstore.Memstore,
 ) *user.Updater {
 	return user.NewUpdater(
 		&updateRepository{store},

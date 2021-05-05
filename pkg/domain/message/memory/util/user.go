@@ -22,7 +22,7 @@ func FindUser(store *memstore.UserStore, userID int) (*message.User, error) {
 }
 
 // AddTestUser adds test user to store with ID = 1
-func AddTestUser(store *memstore.Store, ID int) {
+func AddTestUser(store *memstore.Memstore, ID int) {
 	store.GetUsers().Put(ID, util.ToMemory(user.User{
 		ID:        ID,
 		UID:       "UID" + strconv.Itoa(ID),

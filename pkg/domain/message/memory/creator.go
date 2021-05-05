@@ -10,7 +10,7 @@ import (
 
 // creatorRepository stores new messages
 type creatorRepository struct {
-	store *memstore.Store
+	store *memstore.Memstore
 	newID int
 }
 
@@ -42,7 +42,7 @@ func (i *creatorRepository) Create(newMsg message.CreateMessage) (*message.Messa
 }
 
 // NewCreator creates new messages creator.
-func NewCreator(store *memstore.Store) *message.Creator {
+func NewCreator(store *memstore.Memstore) *message.Creator {
 	return message.NewCreator(&creatorRepository{
 		store,
 		0,

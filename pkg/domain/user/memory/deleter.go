@@ -7,7 +7,7 @@ import (
 
 // deleterRepository deletes user from memory
 type deleterRepository struct {
-	store *memstore.Store
+	store *memstore.Memstore
 }
 
 // Delete deletes one user
@@ -19,6 +19,6 @@ func (i deleterRepository) Delete(ID int) error {
 }
 
 // NewDeleter return a new in deleter repo
-func NewDeleter(store *memstore.Store) *user.Deleter {
+func NewDeleter(store *memstore.Memstore) *user.Deleter {
 	return user.NewDeleter(&deleterRepository{store})
 }

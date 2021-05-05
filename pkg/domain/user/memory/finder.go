@@ -8,15 +8,19 @@ import (
 
 // findRepository reads messages from memory
 type findRepository struct {
-	store *memstore.Store
+	store *memstore.Memstore
 }
 
 // Find get multiple messages
 func (f findRepository) Find() ([]*user.User, error) {
-	results := f.store.GetUsers().All()
-	items := make([]*user.User, len(results))
+	users, err := f.store.GetUsers().All()
+	if err != nil {
+		return nil, err
+	}
 
-	for i, r := range f.store.GetUsers().All() {
+	items := make([]*user.User, len(users))
+
+	for i, r := range users {
 		user := util.FromMemory(r)
 		items[i] = &user
 	}
@@ -38,7 +42,12 @@ func (f findRepository) FindByID(ID int) (*user.User, error) {
 
 // FindByID get one message
 func (f findRepository) FindByUID(UID string) (*user.User, error) {
-	u, err := filterList(f.store.GetUsers().All(), func(record user.User) bool {
+	users, err := f.store.GetUsers().All()
+	if err != nil {
+		return nil, err
+	}
+
+	u, err := filterList(users, func(record user.User) bool {
 		return UID == record.UID
 	})
 	if err == nil && u != nil {
@@ -50,7 +59,12 @@ func (f findRepository) FindByUID(UID string) (*user.User, error) {
 
 // FindByEmail func
 func (f *findRepository) FindByEmail(email string) (*user.User, error) {
-	u, err := filterList(f.store.GetUsers().All(), func(record user.User) bool {
+	users, err := f.store.GetUsers().All()
+	if err != nil {
+		return nil, err
+	}
+
+	u, err := filterList(users, func(record user.User) bool {
 		return email == record.Email
 	})
 	if err == nil && u != nil {
@@ -62,7 +76,12 @@ func (f *findRepository) FindByEmail(email string) (*user.User, error) {
 
 // FindByEmailWithPassword func
 func (f *findRepository) FindByEmailWithPassword(email string) (*user.User, error) {
-	u, err := filterList(f.store.GetUsers().All(), func(record user.User) bool {
+	users, err := f.store.GetUsers().All()
+	if err != nil {
+		return nil, err
+	}
+
+	u, err := filterList(users, func(record user.User) bool {
 		return email == record.Email
 	})
 	if err == nil && u != nil {
@@ -73,7 +92,12 @@ func (f *findRepository) FindByEmailWithPassword(email string) (*user.User, erro
 
 // FindByEmail func
 func (f *findRepository) FindByUsername(username string) (*user.User, error) {
-	u, err := filterList(f.store.GetUsers().All(), func(record user.User) bool {
+	users, err := f.store.GetUsers().All()
+	if err != nil {
+		return nil, err
+	}
+
+	u, err := filterList(users, func(record user.User) bool {
 		return username == record.Username
 	})
 	if err == nil && u != nil {
@@ -84,6 +108,6 @@ func (f *findRepository) FindByUsername(username string) (*user.User, error) {
 }
 
 // NewFinder return a new in memory listin repository
-func NewFinder(store *memstore.Store) *user.Finder {
+func NewFinder(store *memstore.Memstore) *user.Finder {
 	return user.NewFinder(&findRepository{store})
 }

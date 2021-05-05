@@ -22,7 +22,7 @@ func generateTestMessages(size int) []message.CreateMessage {
 	return messages
 }
 
-func setup() (*memstore.Store, []message.Message) {
+func setup() (*memstore.Memstore, []message.Message) {
 	store := memstore.NewStore()
 	util.AddTestUser(store, 1)
 
