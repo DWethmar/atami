@@ -3,6 +3,7 @@ package domain
 import (
 	"database/sql"
 	"errors"
+	"fmt"
 	"testing"
 
 	"github.com/dwethmar/atami/pkg/database"
@@ -73,6 +74,10 @@ func TestPostgresTransactionFail(t *testing.T) {
 
 			return errors.New("something went wrong")
 		})
+
+		if id1 == 0 || id2 == 0 {
+			assert.Fail(t, fmt.Sprintf("one of the ids is 0: id1: %d, %d", id1, id2))
+		}
 
 		_, err = ds.Message.FindByID(id1)
 		assert.Equal(t, err, message.ErrCouldNotFind)
