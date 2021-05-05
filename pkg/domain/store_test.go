@@ -15,20 +15,23 @@ func TestPostgresTransaction(t *testing.T) {
 		ds := NewStore(db)
 
 		msg, _ := ds.Message.Create(message.CreateMessage{
-			Text: "nice",
+			Text:            "nice",
+			CreatedByUserID: 1,
 		})
 
 		err := ds.Transaction(func(ds *DataStore) error {
-			_, err := ds.Message.Create(message.CreateMessage{
-				Text: "nice",
+			usr, err := ds.User.Create(user.CreateUser{
+				Username: "mrtest",
+				Password: "askjldashkljd&*&sdsK<LJLIHJ",
+				Email:    "testtest@test.nl",
 			})
 			if err != nil {
 				return err
 			}
-			_, err = ds.User.Create(user.CreateUser{
-				Username: "mrtest",
-				Password: "askjldashkljd&*&sdsK<LJLIHJ",
-				Email:    "testtest@test.nl",
+
+			_, err = ds.Message.Create(message.CreateMessage{
+				Text:            "nice",
+				CreatedByUserID: usr.ID,
 			})
 			if err != nil {
 				return err
@@ -56,12 +59,14 @@ func TestPostgresTransactionFail(t *testing.T) {
 
 		err := ds.Transaction(func(ds *DataStore) error {
 			msg1, _ := ds.Message.Create(message.CreateMessage{
-				Text: "nice",
+				Text:            "nice",
+				CreatedByUserID: 1,
 			})
 			id1 = msg1.ID
 
 			msg2, _ := ds.Message.Create(message.CreateMessage{
-				Text: "nice",
+				Text:            "nice",
+				CreatedByUserID: 1,
 			})
 			id2 = msg2.ID
 
