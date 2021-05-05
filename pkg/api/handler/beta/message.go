@@ -148,6 +148,21 @@ func CreateMessage(store *domain.Store) http.HandlerFunc {
 			return
 		}
 
+		// if err := store.Message.ValidateCreate(newMsg); err == nil {
+		// 	var msg *message.Message
+		// 	err = store.Transaction(func(datastore *domain.DataStore) error {
+		// 		msg, err = datastore.Message.Create(newMsg)
+		// 		return err
+		// 	})
+
+		// 	if err == nil {
+		// 		response.JSON(w, r, CreatMessageSuccess{
+		// 			UID: msg.UID,
+		// 		}, http.StatusCreated)
+		// 		return
+		// 	}
+		// }
+
 		fmt.Print(err)
 		response.ServerError(w, r)
 	})

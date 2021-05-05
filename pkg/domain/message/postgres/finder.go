@@ -3,12 +3,13 @@ package postgres
 import (
 	"database/sql"
 
+	"github.com/dwethmar/atami/pkg/database"
 	"github.com/dwethmar/atami/pkg/domain/message"
 )
 
 // findRepository reads messages from memory
 type findRepository struct {
-	db *sql.DB
+	db database.Transaction
 }
 
 // FindAll get multiple messages
@@ -41,6 +42,6 @@ func (i *findRepository) FindByID(ID int) (*message.Message, error) {
 }
 
 // NewFinder return a new in memory listin reader
-func NewFinder(db *sql.DB) *message.Finder {
+func NewFinder(db database.Transaction) *message.Finder {
 	return message.NewFinder(&findRepository{db})
 }

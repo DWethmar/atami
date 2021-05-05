@@ -5,6 +5,7 @@ package postgres
 
 import (
 	"database/sql"
+	"github.com/dwethmar/atami/pkg/database"
 
 	"time"
 
@@ -38,7 +39,7 @@ func mapSelectMessages(row Row) (*message.Message, error) {
 }
 
 func querySelectMessages(
-	db *sql.DB,
+	db database.Transaction,
 	limit int,
 	offset int,
 ) ([]*message.Message, error) {
@@ -84,7 +85,7 @@ func mapSelectMessageByID(row Row) (*message.Message, error) {
 }
 
 func queryRowSelectMessageByID(
-	db *sql.DB,
+	db database.Transaction,
 	ID int,
 ) (*message.Message, error) {
 	return mapSelectMessageByID(db.QueryRow(
@@ -112,7 +113,7 @@ func mapSelectMessageByUID(row Row) (*message.Message, error) {
 }
 
 func queryRowSelectMessageByUID(
-	db *sql.DB,
+	db database.Transaction,
 	UID string,
 ) (*message.Message, error) {
 	return mapSelectMessageByUID(db.QueryRow(
@@ -126,7 +127,7 @@ var deleteMessage = `DELETE FROM message
 WHERE message.id = $1`
 
 func execDeleteMessage(
-	db *sql.DB,
+	db database.Transaction,
 	ID int,
 ) (sql.Result, error) {
 	return db.Exec(
@@ -156,7 +157,7 @@ func mapInsertMessage(row Row) (*message.Message, error) {
 }
 
 func queryRowInsertMessage(
-	db *sql.DB,
+	db database.Transaction,
 	UID string,
 	text string,
 	CreatedByUserID int,

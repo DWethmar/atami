@@ -2,7 +2,9 @@ package domain
 
 import (
 	"database/sql"
+	"errors"
 
+	"github.com/dwethmar/atami/pkg/database"
 	"github.com/dwethmar/atami/pkg/domain/message"
 	messageMemory "github.com/dwethmar/atami/pkg/domain/message/memory"
 	messagePostgres "github.com/dwethmar/atami/pkg/domain/message/postgres"
@@ -31,14 +33,29 @@ type UserStore struct {
 	*user.Validator
 }
 
-// Store allows the mutation and reads of domain data.
-type Store struct {
+// DataStore gives access to the domain models.
+type DataStore struct {
 	Message *MessageStore
 	User    *UserStore
 }
 
-// NewStore create new Store
-func NewStore(db *sql.DB) *Store {
+type transactionFn = func(store *DataStore) error
+
+// Store allows the mutation and reads of domain data.
+type Store struct {
+	*DataStore
+	execTransaction func(fn transactionFn) error
+}
+
+// Transaction creates a new transaction
+func (s *Store) Transaction(fn transactionFn) error {
+	if s.execTransaction == nil {
+		return errors.New("store transaction unavailable")
+	}
+	return s.execTransaction(fn)
+}
+
+func newPostgresDataStore(db database.Transaction) *DataStore {
 	var messageCreator = messagePostgres.NewCreator(db)
 	var messageDeleter = messagePostgres.NewDeleter(db)
 	var messageFinder = messagePostgres.NewFinder(db)
@@ -49,7 +66,7 @@ func NewStore(db *sql.DB) *Store {
 	var userDeleter = userPostgres.NewDeleter(db)
 	var userValidator = user.NewValidator()
 
-	return &Store{
+	return &DataStore{
 		Message: &MessageStore{
 			Creator:   messageCreator,
 			Deleter:   messageDeleter,
@@ -62,6 +79,19 @@ func NewStore(db *sql.DB) *Store {
 			Finder:    userFinder,
 			Validator: userValidator,
 		},
+	}
+}
+
+// NewStore create new Store
+func NewStore(db *sql.DB) *Store {
+	execTxFn := func(fn transactionFn) error {
+		return database.WithTransaction(db, func(t database.Transaction) error {
+			return fn(newPostgresDataStore(t))
+		})
+	}
+	return &Store{
+		DataStore:       newPostgresDataStore(db),
+		execTransaction: execTxFn,
 	}
 }
 
@@ -78,17 +108,19 @@ func NewInMemoryStore(store *memstore.Store) *Store {
 	var userValidator = user.NewValidator()
 
 	return &Store{
-		Message: &MessageStore{
-			Creator:   messageCreator,
-			Deleter:   messageDeleter,
-			Finder:    messageFinder,
-			Validator: messageValidator,
-		},
-		User: &UserStore{
-			Creator:   userCreator,
-			Deleter:   userDeleter,
-			Finder:    userFinder,
-			Validator: userValidator,
+		DataStore: &DataStore{
+			Message: &MessageStore{
+				Creator:   messageCreator,
+				Deleter:   messageDeleter,
+				Finder:    messageFinder,
+				Validator: messageValidator,
+			},
+			User: &UserStore{
+				Creator:   userCreator,
+				Deleter:   userDeleter,
+				Finder:    userFinder,
+				Validator: userValidator,
+			},
 		},
 	}
 }

@@ -44,6 +44,5 @@ func WithTransaction(db *sql.DB, fn TxFn) (err error) {
 		}
 	}()
 
-	err = fn(tx)
-	return err
+	return fn(tx)
 }

@@ -5,6 +5,7 @@ package postgres
 
 import (
 	"database/sql"
+	"github.com/dwethmar/atami/pkg/database"
 
 	"time"
 
@@ -29,7 +30,7 @@ func mapSelectUsernameUniqueCheck(row Row) (bool, error) {
 }
 
 func queryRowSelectUsernameUniqueCheck(
-	db *sql.DB,
+	db database.Transaction,
 	username string,
 ) (bool, error) {
 	return mapSelectUsernameUniqueCheck(db.QueryRow(
@@ -50,7 +51,7 @@ func mapSelectEmailUniqueCheck(row Row) (bool, error) {
 }
 
 func queryRowSelectEmailUniqueCheck(
-	db *sql.DB,
+	db database.Transaction,
 	email string,
 ) (bool, error) {
 	return mapSelectEmailUniqueCheck(db.QueryRow(
@@ -84,7 +85,7 @@ func mapInsertUser(row Row) (*user.User, error) {
 }
 
 func queryRowInsertUser(
-	db *sql.DB,
+	db database.Transaction,
 	UID string,
 	username string,
 	email string,
@@ -108,7 +109,7 @@ var deleteUser = `DELETE FROM app_user
 WHERE app_user.id = $1`
 
 func execDeleteUser(
-	db *sql.DB,
+	db database.Transaction,
 	ID int,
 ) (sql.Result, error) {
 	return db.Exec(
@@ -136,7 +137,7 @@ func mapSelectUsers(row Row) (*user.User, error) {
 }
 
 func querySelectUsers(
-	db *sql.DB,
+	db database.Transaction,
 	limit int,
 	offset int,
 ) ([]*user.User, error) {
@@ -181,7 +182,7 @@ func mapSelectUserByID(row Row) (*user.User, error) {
 }
 
 func queryRowSelectUserByID(
-	db *sql.DB,
+	db database.Transaction,
 	ID int,
 ) (*user.User, error) {
 	return mapSelectUserByID(db.QueryRow(
@@ -208,7 +209,7 @@ func mapSelectUserByUID(row Row) (*user.User, error) {
 }
 
 func queryRowSelectUserByUID(
-	db *sql.DB,
+	db database.Transaction,
 	UID string,
 ) (*user.User, error) {
 	return mapSelectUserByUID(db.QueryRow(
@@ -235,7 +236,7 @@ func mapSelectUserByEmail(row Row) (*user.User, error) {
 }
 
 func queryRowSelectUserByEmail(
-	db *sql.DB,
+	db database.Transaction,
 	email string,
 ) (*user.User, error) {
 	return mapSelectUserByEmail(db.QueryRow(
@@ -263,7 +264,7 @@ func mapSelectUserByEmailWithPassword(row Row) (*user.User, error) {
 }
 
 func queryRowSelectUserByEmailWithPassword(
-	db *sql.DB,
+	db database.Transaction,
 	email string,
 ) (*user.User, error) {
 	return mapSelectUserByEmailWithPassword(db.QueryRow(
@@ -290,7 +291,7 @@ func mapSelectUserByUsername(row Row) (*user.User, error) {
 }
 
 func queryRowSelectUserByUsername(
-	db *sql.DB,
+	db database.Transaction,
 	username string,
 ) (*user.User, error) {
 	return mapSelectUserByUsername(db.QueryRow(
@@ -312,7 +313,7 @@ func mapUpdateUser(row Row) (*user.User, error) {
 }
 
 func queryRowUpdateUser(
-	db *sql.DB,
+	db database.Transaction,
 	ID int,
 	biography string,
 	updatedAt time.Time,

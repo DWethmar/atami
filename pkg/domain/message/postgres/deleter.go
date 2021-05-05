@@ -1,14 +1,13 @@
 package postgres
 
 import (
-	"database/sql"
-
+	"github.com/dwethmar/atami/pkg/database"
 	"github.com/dwethmar/atami/pkg/domain/message"
 )
 
 // deleterRepository deletes user from memory
 type deleterRepository struct {
-	db *sql.DB
+	db database.Transaction
 }
 
 // Delete deletes one user
@@ -28,6 +27,6 @@ func (i deleterRepository) Delete(ID int) error {
 }
 
 // NewDeleter return a new deleter
-func NewDeleter(db *sql.DB) *message.Deleter {
+func NewDeleter(db database.Transaction) *message.Deleter {
 	return message.NewDeleter(&deleterRepository{db})
 }

@@ -58,6 +58,7 @@ package {{ .PackageName }};
 
 import (
 	"database/sql"
+	"github.com/dwethmar/atami/pkg/database"
 	{{ range .Imports }}
 	"{{ . }}"
 	{{ end }}
@@ -74,7 +75,7 @@ type Row interface {
 var {{ .Name }} = ` + "`" + `{{ .SQL }}` + "`" + `
 {{ if eq .QueryType.String  "Exec" }}
 func exec{{.Name | Title}}(
-	db *sql.DB,
+	db database.Transaction,
 	{{ JoinFuncArgs .FuncArgs -}}
 ) (sql.Result, error) {
 	return db.Exec(
@@ -89,7 +90,7 @@ func map{{.Name | Title}}(row Row) ({{.ReturnType}}, error) {
 }
 
 func queryRow{{.Name | Title}}(
-	db *sql.DB,
+	db database.Transaction,
 	{{ JoinFuncArgs .FuncArgs -}}
 ) ({{.ReturnType}}, error)  {
 	return map{{.Name | Title}}(db.QueryRow(
@@ -104,7 +105,7 @@ func map{{.Name | Title}}(row Row) ({{.ReturnType}}, error) {
 }
 
 func query{{.Name | Title}}(
-	db *sql.DB,
+	db database.Transaction,
 	{{ JoinFuncArgs .FuncArgs -}}
 ) ([]{{.ReturnType}}, error) {
 	rows, err :=  db.Query(

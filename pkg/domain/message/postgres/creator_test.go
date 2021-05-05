@@ -16,6 +16,7 @@ func TestCreate(t *testing.T) {
 			Text:            "wow",
 			CreatedByUserID: 1,
 		}
+
 		test.Create(t, NewCreator(db), newMessage)
 		return nil
 	}))

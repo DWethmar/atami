@@ -1,14 +1,13 @@
 package postgres
 
 import (
-	"database/sql"
-
+	"github.com/dwethmar/atami/pkg/database"
 	"github.com/dwethmar/atami/pkg/domain/user"
 )
 
 // createRepository stores new messages
 type creatorRepository struct {
-	db *sql.DB
+	db database.Transaction
 }
 
 // Create new user
@@ -42,7 +41,7 @@ func (i *creatorRepository) Create(newUser user.CreateUser) (*user.User, error) 
 
 // NewCreator creates new creator.
 func NewCreator(
-	db *sql.DB,
+	db database.Transaction,
 	finder *user.Finder,
 ) *user.Creator {
 	return user.NewCreator(&creatorRepository{db}, finder)

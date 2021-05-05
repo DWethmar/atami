@@ -219,6 +219,7 @@ func Refresh(authService *auth.Service, store *domain.Store) http.HandlerFunc {
 			claims.SessionID,
 			time.Now().Add(accessTokenDuration).Unix(),
 		)
+
 		if err != nil || accessToken == "" {
 			fmt.Printf("Error creating token: %v\n", err)
 			response.ServerError(w, r)
