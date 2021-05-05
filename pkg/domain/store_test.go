@@ -2,6 +2,7 @@ package domain
 
 import (
 	"database/sql"
+	"errors"
 	"testing"
 
 	"github.com/dwethmar/atami/pkg/database"
@@ -70,7 +71,7 @@ func TestPostgresTransactionFail(t *testing.T) {
 			})
 			id2 = msg2.ID
 
-			panic(1)
+			return errors.New("something went wrong")
 		})
 
 		_, err = ds.Message.FindByID(id1)
