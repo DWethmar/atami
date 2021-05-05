@@ -22,7 +22,7 @@ func TestPostgresTransaction(t *testing.T) {
 		err := ds.Transaction(func(ds *DataStore) error {
 			usr, err := ds.User.Create(user.CreateUser{
 				Username: "mrtest",
-				Password: "askjldashkljd&*&sdsK<LJLIHJ",
+				Password: "askjldash3kljd&*&sdsK<LJLIHJ",
 				Email:    "testtest@test.nl",
 			})
 			if err != nil {
