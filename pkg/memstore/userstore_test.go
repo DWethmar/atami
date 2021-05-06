@@ -11,7 +11,6 @@ import (
 
 func TestUserList(t *testing.T) {
 	store, _ := NewUserStore(NewKvStore(&sync.Mutex{}), &sync.Mutex{}, &sync.Mutex{})
-
 	for i := 0; i < 100; i++ {
 		ok := store.Put(i+1, User{
 			Username: "Miauw" + strconv.Itoa(i),
