@@ -73,7 +73,7 @@ func failTransaction(t *testing.T, store *Store) error {
 	var id1 int
 	var id2 int
 
-	err := store.Transaction(func(ds *DataStore) error {
+	tErr := store.Transaction(func(ds *DataStore) error {
 		msg1, _ := ds.Message.Create(message.CreateMessage{
 			Text:            "nice",
 			CreatedByUserID: 1,
@@ -93,17 +93,17 @@ func failTransaction(t *testing.T, store *Store) error {
 		assert.Fail(t, fmt.Sprintf("one of the ids is 0: id1: %d, %d", id1, id2))
 	}
 
-	if _, err = store.Message.FindByID(id1); assert.Error(t, err) {
+	if _, err := store.Message.FindByID(id1); assert.Error(t, err) {
 		if !assert.Equal(t, err, message.ErrCouldNotFind) {
 			return err
 		}
 	}
 
-	if _, err = store.Message.FindByID(id2); assert.Error(t, err) {
+	if _, err := store.Message.FindByID(id2); assert.Error(t, err) {
 		if !assert.Equal(t, err, message.ErrCouldNotFind) {
 			return err
 		}
 	}
 
-	return nil
+	return tErr
 }

@@ -123,15 +123,15 @@ func createInMemoryDataStore(memstore *memstore.Memstore) *DataStore {
 }
 
 // NewInMemoryStore creates a store that uses inmemory storage.
-func NewInMemoryStore(store *memstore.Memstore) *Store {
+func NewInMemoryStore(m *memstore.Memstore) *Store {
 	execTxFn := func(fn transactionFn) error {
-		return store.Transaction(func(memstore *memstore.Memstore) error {
-			return fn(createInMemoryDataStore(memstore))
+		return m.Transaction(func(memstoreCopy *memstore.Memstore) error {
+			return fn(createInMemoryDataStore(memstoreCopy))
 		})
 	}
 
 	return &Store{
-		DataStore:       createInMemoryDataStore(store),
+		DataStore:       createInMemoryDataStore(m),
 		execTransaction: execTxFn,
 	}
 }
