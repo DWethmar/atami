@@ -6,23 +6,33 @@ package memstore
 import (
 	"fmt"
 	"sort"
-	"strconv"
 	"sync"
 )
 
+type MessageIDs = []int
+type setMessageStoreState = func(IDs MessageIDs, kv *KvStore) error
+
+func generateMessageKey(ID int) string {
+	return fmt.Sprintf("Message_%d", ID)
+}
+
 // MessageStore stores data in memory by key and value
 type MessageStore struct {
-	kv  *KvStore
-	IDs []int
-	mux *sync.Mutex
+	kv       *KvStore
+	ids      MessageIDs
+	readMux  *sync.Mutex
+	writeMux *sync.Mutex
 }
 
 // All returns all entries.
 func (h *MessageStore) All() ([]Message, error) {
-	entries := make([]Message, h.Len())
+	h.readMux.Lock()
+	defer h.readMux.Unlock()
 
-	for i, ID := range h.IDs {
-		record, ok := h.kv.Get(strconv.Itoa(ID))
+	entries := make([]Message, len(h.ids))
+
+	for i, ID := range h.ids {
+		record, ok := h.kv.Get(generateMessageKey(ID))
 		if ok {
 			e, ok := record.(Message)
 			if ok {
@@ -40,10 +50,13 @@ func (h *MessageStore) All() ([]Message, error) {
 
 // Slice returns entries within the range.
 func (h *MessageStore) Slice(low, high int) ([]Message, error) {
+	h.readMux.Lock()
+	defer h.readMux.Unlock()
+
 	entries := make([]Message, high-low)
 
-	for i, ID := range h.IDs[low:high] {
-		if record, ok := h.kv.Get(strconv.Itoa(ID)); ok {
+	for i, ID := range h.ids[low:high] {
+		if record, ok := h.kv.Get(generateMessageKey(ID)); ok {
 			if record, ok := record.(Message); ok {
 				entries[i] = record
 			} else {
@@ -59,7 +72,10 @@ func (h *MessageStore) Slice(low, high int) ([]Message, error) {
 
 // Get a single Message.
 func (h *MessageStore) Get(ID int) (Message, bool) {
-	if record, ok := h.kv.Get(strconv.Itoa(ID)); ok {
+	h.readMux.Lock()
+	defer h.readMux.Unlock()
+
+	if record, ok := h.kv.Get(generateMessageKey(ID)); ok {
 		if record, ok := record.(Message); ok {
 			return record, true
 		}
@@ -67,20 +83,34 @@ func (h *MessageStore) Get(ID int) (Message, bool) {
 	return Message{}, false
 }
 
+// Get all ids.
+func (h *MessageStore) GetIDs() MessageIDs {
+	h.readMux.Lock()
+	defer h.readMux.Unlock()
+
+	return h.ids
+}
+
 // Put new Message
 func (h *MessageStore) Put(ID int, value Message) bool {
-	h.IDs = append(h.IDs, ID)
-	return h.kv.Put(strconv.Itoa(ID), value)
+	h.writeMux.Lock()
+	defer h.writeMux.Unlock()
+
+	h.ids = append(h.ids, ID)
+	return h.kv.Put(generateMessageKey(ID), value)
 }
 
 // Delete a Message
 func (h *MessageStore) Delete(ID int) bool {
-	ok := h.kv.Delete(strconv.Itoa(ID))
+	h.writeMux.Lock()
+	defer h.writeMux.Unlock()
+
+	ok := h.kv.Delete(generateMessageKey(ID))
 
 	if ok {
-		for i, n := range h.IDs {
+		for i, n := range h.ids {
 			if n == ID {
-				h.IDs = append(h.IDs[:i], h.IDs[i+1:]...)
+				h.ids = append(h.ids[:i], h.ids[i+1:]...)
 			}
 		}
 	}
@@ -90,15 +120,23 @@ func (h *MessageStore) Delete(ID int) bool {
 
 // Len gets number of entries
 func (h *MessageStore) Len() int {
-	return len(h.IDs)
+	h.readMux.Lock()
+	defer h.readMux.Unlock()
+
+	return len(h.ids)
 }
 
 // FromIndex gets value by index
 func (h *MessageStore) FromIndex(i int) (Message, bool) {
-	if i >= 0 && i < h.Len() {
-		entry, ok := h.Get(h.IDs[i])
+	h.readMux.Lock()
+	defer h.readMux.Unlock()
+
+	if i >= 0 && len(h.ids) > i {
+		record, ok := h.kv.Get(generateMessageKey(h.ids[i]))
 		if ok {
-			return entry, true
+			if user, ok := record.(Message); ok {
+				return user, true
+			}
 		}
 	}
 	return Message{}, false
@@ -106,14 +144,23 @@ func (h *MessageStore) FromIndex(i int) (Message, bool) {
 
 // Sort items in memory
 func (h *MessageStore) Sort(less func(i, j int) bool) {
-	sort.SliceStable(h.IDs, less)
+	h.writeMux.Lock()
+	defer h.writeMux.Unlock()
+
+	sort.SliceStable(h.ids, less)
 }
 
 // NewMessageStore returns a new in memory repository for Message records.
-func NewMessageStore(mux *sync.Mutex) *MessageStore {
-	return &MessageStore{
-		kv:  NewKvStore(mux),
-		IDs: make([]int, 0),
-		mux: mux,
+func NewMessageStore(kvs *KvStore, readMux *sync.Mutex, writeMux *sync.Mutex) (*MessageStore, setMessageStoreState) {
+	store := &MessageStore{
+		kv:       kvs,
+		ids:      make(MessageIDs, 0),
+		readMux:  readMux,
+		writeMux: writeMux,
+	}
+	return store, func(IDs MessageIDs, kv *KvStore) error {
+		store.ids = IDs
+		store.kv = kv
+		return nil
 	}
 }

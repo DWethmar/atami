@@ -61,10 +61,14 @@ func Authenticated(userStore *domain.UserStore) func(next http.Handler) http.Han
 			}
 
 			if UID != "" {
-				if user, err := userStore.FindByUID(UID); err == nil {
-					ctx := WithUser(r.Context(), user)
+				if usr, err := userStore.FindByUID(UID); err == nil {
+					ctx := WithUser(r.Context(), usr)
 					next.ServeHTTP(w, r.WithContext(ctx))
 				} else {
+					if err == user.ErrCouldNotFind {
+						response.UnauthorizedError(w, r, errors.New("Invalid user"))
+						return
+					}
 					fmt.Print(err)
 					response.ServerError(w, r)
 					return

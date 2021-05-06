@@ -10,7 +10,7 @@ import (
 )
 
 func TestUserList(t *testing.T) {
-	store := NewUserStore(&sync.Mutex{})
+	store, _ := NewUserStore(NewKvStore(&sync.Mutex{}), &sync.Mutex{}, &sync.Mutex{})
 
 	for i := 0; i < 100; i++ {
 		ok := store.Put(i+1, User{
@@ -33,7 +33,7 @@ func TestUserList(t *testing.T) {
 }
 
 func TestUserSlice(t *testing.T) {
-	store := NewUserStore(&sync.Mutex{})
+	store, _ := NewUserStore(NewKvStore(&sync.Mutex{}), &sync.Mutex{}, &sync.Mutex{})
 
 	for i := 0; i < 100; i++ {
 		ok := store.Put(i+1, User{
@@ -54,7 +54,7 @@ func TestUserSlice(t *testing.T) {
 }
 
 func TestUserGet(t *testing.T) {
-	store := NewUserStore(&sync.Mutex{})
+	store, _ := NewUserStore(NewKvStore(&sync.Mutex{}), &sync.Mutex{}, &sync.Mutex{})
 
 	ok := store.Put(1, User{
 		Username: "Miauw1",
@@ -68,7 +68,7 @@ func TestUserGet(t *testing.T) {
 }
 
 func TestUserDelete(t *testing.T) {
-	store := NewUserStore(&sync.Mutex{})
+	store, _ := NewUserStore(NewKvStore(&sync.Mutex{}), &sync.Mutex{}, &sync.Mutex{})
 
 	store.Put(1, User{
 		Username: "Miauw1",
@@ -87,7 +87,7 @@ func TestUserDelete(t *testing.T) {
 }
 
 func TestUserLen(t *testing.T) {
-	store := NewUserStore(&sync.Mutex{})
+	store, _ := NewUserStore(NewKvStore(&sync.Mutex{}), &sync.Mutex{}, &sync.Mutex{})
 
 	for i := 0; i < 9000; i++ {
 		store.Put(i+1, User{
@@ -98,7 +98,7 @@ func TestUserLen(t *testing.T) {
 }
 
 func TestUserFromIndex(t *testing.T) {
-	store := NewUserStore(&sync.Mutex{})
+	store, _ := NewUserStore(NewKvStore(&sync.Mutex{}), &sync.Mutex{}, &sync.Mutex{})
 
 	for i := 0; i < 9000; i++ {
 		store.Put(i+1, User{
@@ -121,7 +121,7 @@ func TestUserFromIndex(t *testing.T) {
 
 // Sort items in memory
 func TestUserSort(t *testing.T) {
-	store := NewUserStore(&sync.Mutex{})
+	store, _ := NewUserStore(NewKvStore(&sync.Mutex{}), &sync.Mutex{}, &sync.Mutex{})
 
 	store.Put(3, User{
 		Username:  "Miauw3",

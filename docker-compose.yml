@@ -13,7 +13,7 @@ services:
       ACCESS_SECRET: ${ACCESS_SECRET:?err}
       MIGRATION_FILES: ${MIGRATION_FILES:?-/app/migrations/}
     ports:
-      - "8080:8081"
+      - "8080:8080"
     # restart: unless-stopped
     depends_on:
       - postgres

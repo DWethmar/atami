@@ -95,32 +95,43 @@ func NewStore(db *sql.DB) *Store {
 	}
 }
 
-// NewInMemoryStore creates a store that uses inmemory storage.
-func NewInMemoryStore(store *memstore.Memstore) *Store {
-	var messageCreator = messageMemory.NewCreator(store)
-	var messageDeleter = messageMemory.NewDeleter(store)
-	var messageFinder = messageMemory.NewFinder(store)
+func createInMemoryDataStore(memstore *memstore.Memstore) *DataStore {
+	var messageCreator = messageMemory.NewCreator(memstore)
+	var messageDeleter = messageMemory.NewDeleter(memstore)
+	var messageFinder = messageMemory.NewFinder(memstore)
 	var messageValidator = message.NewValidator()
 
-	var userFinder = userMemory.NewFinder(store)
-	var userCreator = userMemory.NewCreator(store, userFinder)
-	var userDeleter = userMemory.NewDeleter(store)
+	var userFinder = userMemory.NewFinder(memstore)
+	var userCreator = userMemory.NewCreator(memstore, userFinder)
+	var userDeleter = userMemory.NewDeleter(memstore)
 	var userValidator = user.NewValidator()
 
-	return &Store{
-		DataStore: &DataStore{
-			Message: &MessageStore{
-				Creator:   messageCreator,
-				Deleter:   messageDeleter,
-				Finder:    messageFinder,
-				Validator: messageValidator,
-			},
-			User: &UserStore{
-				Creator:   userCreator,
-				Deleter:   userDeleter,
-				Finder:    userFinder,
-				Validator: userValidator,
-			},
+	return &DataStore{
+		Message: &MessageStore{
+			Creator:   messageCreator,
+			Deleter:   messageDeleter,
+			Finder:    messageFinder,
+			Validator: messageValidator,
 		},
+		User: &UserStore{
+			Creator:   userCreator,
+			Deleter:   userDeleter,
+			Finder:    userFinder,
+			Validator: userValidator,
+		},
+	}
+}
+
+// NewInMemoryStore creates a store that uses inmemory storage.
+func NewInMemoryStore(store *memstore.Memstore) *Store {
+	execTxFn := func(fn transactionFn) error {
+		return store.Transaction(func(memstore *memstore.Memstore) error {
+			return fn(createInMemoryDataStore(memstore))
+		})
+	}
+
+	return &Store{
+		DataStore:       createInMemoryDataStore(store),
+		execTransaction: execTxFn,
 	}
 }

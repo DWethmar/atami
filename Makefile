@@ -22,7 +22,7 @@ generate:
 
 serve: 
 	@echo serve server
-	ACCESS_SECRET=abcdefghijlk $(GORUN) ./cmd/server/
+	ACCESS_SECRET=abcdefghijlk $(GORUN) ./cmd/server/ -in-memory=1
 
 test:
 	@echo running tests

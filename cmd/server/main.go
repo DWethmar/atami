@@ -1,6 +1,7 @@
 package main
 
 import (
+	"flag"
 	"fmt"
 	"log"
 
@@ -11,6 +12,7 @@ import (
 	"github.com/dwethmar/atami/pkg/config"
 	"github.com/dwethmar/atami/pkg/database"
 	"github.com/dwethmar/atami/pkg/domain"
+	"github.com/dwethmar/atami/pkg/memstore"
 
 	"github.com/go-chi/chi"
 
@@ -20,6 +22,10 @@ import (
 func main() {
 	fmt.Println("Staring server")
 
+	var inMemory bool
+	flag.BoolVar(&inMemory, "in-memory", false, "run atami with in memory storage")
+	flag.Parse()
+
 	c := config.Load()
 	if err := c.Valid(); err != nil {
 		fmt.Println("Not all env vars are set. Loading .env file.")
@@ -27,23 +33,31 @@ func main() {
 		die(c.Valid())
 	}
 
-	dataSource := database.GetPostgresConnectionString(c)
+	var store *domain.Store
 
-	db, err := database.Connect(c.DBDriverName, dataSource)
-	die(err)
-	defer db.Close()
+	if inMemory {
+		fmt.Println("running server in-memory mode")
+		store = domain.NewInMemoryStore(memstore.NewStore())
+	} else {
+		dataSource := database.GetPostgresConnectionString(c)
 
-	err = database.RunMigrations(db, c.DBName, c.MigrationFiles, c.DBMigrationVersion)
-	die(err)
+		db, err := database.Connect(c.DBDriverName, dataSource)
+		die(err)
+		defer db.Close()
 
-	store := domain.NewStore(db)
+		err = database.RunMigrations(db, c.DBName, c.MigrationFiles, c.DBMigrationVersion)
+		die(err)
+
+		store = domain.NewStore(db)
+	}
+
 	authService := auth.NewService(store.User.Finder)
 
 	router := chi.NewRouter()
 	router.Mount("/auth", handler.NewAuthRouter(authService, store))
 	router.Mount("/beta/messages", beta.NewMessageRouter(store))
 
-	srv, err := api.NewServer(":8081", router)
+	srv, err := api.NewServer(":8080", router)
 	die(err)
 	srv.Start()
 }
