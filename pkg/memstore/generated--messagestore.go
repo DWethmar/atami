@@ -83,7 +83,7 @@ func (h *MessageStore) Get(ID int) (Message, bool) {
 	return Message{}, false
 }
 
-// Get all ids.
+// Get all IDs
 func (h *MessageStore) GetIDs() MessageIDs {
 	h.readMux.Lock()
 	defer h.readMux.Unlock()
@@ -96,8 +96,13 @@ func (h *MessageStore) Put(ID int, value Message) bool {
 	h.writeMux.Lock()
 	defer h.writeMux.Unlock()
 
-	h.ids = append(h.ids, ID)
-	return h.kv.Put(generateMessageKey(ID), value)
+	if h.kv.Put(generateMessageKey(ID), value) {
+		h.ids = append(h.ids, ID)
+	} else {
+		return false
+	}
+
+	return true
 }
 
 // Delete a Message

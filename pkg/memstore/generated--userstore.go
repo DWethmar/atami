@@ -83,7 +83,7 @@ func (h *UserStore) Get(ID int) (User, bool) {
 	return User{}, false
 }
 
-// Get all ids.
+// Get all IDs
 func (h *UserStore) GetIDs() UserIDs {
 	h.readMux.Lock()
 	defer h.readMux.Unlock()
@@ -96,8 +96,13 @@ func (h *UserStore) Put(ID int, value User) bool {
 	h.writeMux.Lock()
 	defer h.writeMux.Unlock()
 
-	h.ids = append(h.ids, ID)
-	return h.kv.Put(generateUserKey(ID), value)
+	if h.kv.Put(generateUserKey(ID), value) {
+		h.ids = append(h.ids, ID)
+	} else {
+		return false
+	}
+
+	return true
 }
 
 // Delete a User

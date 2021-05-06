@@ -38,10 +38,22 @@ func TestInMemoryTransactionFail(t *testing.T) {
 }
 
 func successfulTransaction(t *testing.T, store *Store) error {
-	msg, _ := store.Message.Create(message.CreateMessage{
-		Text:            "nice",
-		CreatedByUserID: 1,
+	usr, err := store.User.Create(user.CreateUser{
+		Username: "qwerty",
+		Password: "akslj1jdhkasdh(*&^&(*&^JHGJH*(&^",
+		Email:    "test@test.nl",
 	})
+	if err != nil {
+		return err
+	}
+
+	msg, err := store.Message.Create(message.CreateMessage{
+		Text:            "nice",
+		CreatedByUserID: usr.ID,
+	})
+	if err != nil {
+		return err
+	}
 
 	return store.Transaction(func(ds *DataStore) error {
 		usr, err := ds.User.Create(user.CreateUser{
@@ -57,6 +69,7 @@ func successfulTransaction(t *testing.T, store *Store) error {
 			Text:            "nice",
 			CreatedByUserID: usr.ID,
 		})
+
 		if err != nil {
 			return err
 		}
@@ -73,17 +86,32 @@ func failTransaction(t *testing.T, store *Store) error {
 	var id1 int
 	var id2 int
 
+	usr, err := store.User.Create(user.CreateUser{
+		Username: "qwerty",
+		Password: "akslj1jdhkasdh(*&^&(*&^JHGJH*(&^",
+		Email:    "test@test.nl",
+	})
+	if err != nil {
+		return err
+	}
+
 	tErr := store.Transaction(func(ds *DataStore) error {
-		msg1, _ := ds.Message.Create(message.CreateMessage{
+		msg1, err := ds.Message.Create(message.CreateMessage{
 			Text:            "nice",
-			CreatedByUserID: 1,
+			CreatedByUserID: usr.ID,
 		})
+		if err != nil {
+			return err
+		}
 		id1 = msg1.ID
 
-		msg2, _ := ds.Message.Create(message.CreateMessage{
+		msg2, err := ds.Message.Create(message.CreateMessage{
 			Text:            "nice",
-			CreatedByUserID: 1,
+			CreatedByUserID: usr.ID,
 		})
+		if err != nil {
+			return err
+		}
 		id2 = msg2.ID
 
 		return errors.New("something went wrong")

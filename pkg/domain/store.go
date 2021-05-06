@@ -3,6 +3,7 @@ package domain
 import (
 	"database/sql"
 	"errors"
+	"fmt"
 
 	"github.com/dwethmar/atami/pkg/database"
 	"github.com/dwethmar/atami/pkg/domain/message"
@@ -126,6 +127,7 @@ func createInMemoryDataStore(memstore *memstore.Memstore) *DataStore {
 func NewInMemoryStore(m *memstore.Memstore) *Store {
 	execTxFn := func(fn transactionFn) error {
 		return m.Transaction(func(memstoreCopy *memstore.Memstore) error {
+			fmt.Printf("yes! :D %v \n", memstoreCopy)
 			return fn(createInMemoryDataStore(memstoreCopy))
 		})
 	}

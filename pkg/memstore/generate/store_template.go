@@ -98,8 +98,13 @@ func (h *{{ .Name }}Store) Put(ID int, value {{ .Name }}) bool {
 	h.writeMux.Lock()
 	defer h.writeMux.Unlock()
 
-	h.ids = append(h.ids, ID)
-	return h.kv.Put(generate{{ .Name }}Key(ID), value)
+	if h.kv.Put(generate{{ .Name }}Key(ID), value) {
+		h.ids = append(h.ids, ID)
+	} else {
+		return false
+	}
+
+	return true
 }
 
 // Delete a {{ .Name }}
