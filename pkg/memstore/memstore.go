@@ -2,6 +2,7 @@ package memstore
 
 import (
 	"errors"
+	"fmt"
 	"sync"
 )
 
@@ -69,6 +70,11 @@ func (s *Memstore) Transaction(txFn txFn) error {
 
 	s.readMux.Lock()
 	defer s.readMux.Unlock()
+
+	if txFn == nil {
+		fmt.Printf("txFn is nil!")
+		panic(1)
+	}
 
 	if err = txFn(copy); err != nil {
 		return err
