@@ -49,7 +49,7 @@ func (h *UserStore) All() ([]User, error) {
 }
 
 // Slice returns entries within the range.
-func (h *UserStore) Slice(low, high int) ([]User, error) {
+func (h *UserStore) Slice(low, high uint) ([]User, error) {
 	h.readMux.Lock()
 	defer h.readMux.Unlock()
 

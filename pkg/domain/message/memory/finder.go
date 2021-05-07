@@ -70,7 +70,7 @@ func (i *findRepository) Find(limit, offset int) ([]*message.Message, error) {
 		limit = len - offset
 	}
 
-	paged, err := messages.Slice(offset, limit)
+	paged, err := messages.Slice(uint(offset), uint(limit))
 	if err != nil {
 		return nil, err
 	}

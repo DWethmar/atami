@@ -14,6 +14,13 @@ type User struct {
 	UpdatedAt time.Time
 }
 
+// MessageUser user related data on message
+type MessageUser struct {
+	ID       int
+	UID      string
+	Username string
+}
+
 // The Message model
 type Message struct {
 	ID              int
@@ -21,4 +28,5 @@ type Message struct {
 	Text            string
 	CreatedByUserID int
 	CreatedAt       time.Time
+	CreatedAtUser   MessageUser
 }

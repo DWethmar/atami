@@ -51,7 +51,7 @@ func (h *{{ .Name }}Store) All() ([]{{ .Name }}, error) {
 }
 
 // Slice returns entries within the range.
-func (h *{{ .Name }}Store) Slice(low, high int) ([]{{ .Name }}, error) {
+func (h *{{ .Name }}Store) Slice(low, high uint) ([]{{ .Name }}, error) {
 	h.readMux.Lock()
 	defer h.readMux.Unlock()
 

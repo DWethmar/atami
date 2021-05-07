@@ -49,7 +49,7 @@ func (h *MessageStore) All() ([]Message, error) {
 }
 
 // Slice returns entries within the range.
-func (h *MessageStore) Slice(low, high int) ([]Message, error) {
+func (h *MessageStore) Slice(low, high uint) ([]Message, error) {
 	h.readMux.Lock()
 	defer h.readMux.Unlock()
 
