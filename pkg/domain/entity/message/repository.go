@@ -11,8 +11,8 @@ type Reader interface {
 
 // Writer allows write operations
 type Writer interface {
-	Create(m Create) (entity.ID, error)
-	Update(ID entity.ID, u Update) error
+	Create(message *Message) (entity.ID, error)
+	Update(message *Message) error
 	Delete(ID entity.ID) error
 }
 

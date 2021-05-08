@@ -46,17 +46,17 @@ func (r *postgresRepo) List(limit, offset uint) ([]*Message, error) {
 	return querySelectMessages(r.db, limit, offset)
 }
 
-func (r *postgresRepo) Update(ID entity.ID, update Update) error {
+func (r *postgresRepo) Update(message *Message) error {
 	return nil
 }
 
-func (r *postgresRepo) Create(create Create) (entity.ID, error) {
+func (r *postgresRepo) Create(message *Message) (entity.ID, error) {
 	msg, err := queryRowInsertMessage(
 		r.db,
-		create.UID,
-		create.Text,
-		create.CreatedByUserID,
-		create.CreatedAt,
+		message.UID,
+		message.Text,
+		message.CreatedByUserID,
+		message.CreatedAt,
 	)
 	if err != nil {
 		return 0, err

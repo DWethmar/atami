@@ -5,6 +5,7 @@ package memstore
 
 import (
 	"fmt"
+	"github.com/dwethmar/atami/pkg/domain/entity"
 	"sort"
 	"sync"
 )
@@ -71,7 +72,7 @@ func (h *MessageStore) Slice(low, high uint) ([]Message, error) {
 }
 
 // Get a single Message.
-func (h *MessageStore) Get(ID int) (Message, bool) {
+func (h *MessageStore) Get(ID entity.ID) (Message, bool) {
 	h.readMux.Lock()
 	defer h.readMux.Unlock()
 
@@ -92,7 +93,7 @@ func (h *MessageStore) GetIDs() MessageIDs {
 }
 
 // Put new Message
-func (h *MessageStore) Put(ID int, value Message) bool {
+func (h *MessageStore) Put(ID entity.ID, value Message) bool {
 	h.writeMux.Lock()
 	defer h.writeMux.Unlock()
 
@@ -106,7 +107,7 @@ func (h *MessageStore) Put(ID int, value Message) bool {
 }
 
 // Delete a Message
-func (h *MessageStore) Delete(ID int) bool {
+func (h *MessageStore) Delete(ID entity.ID) bool {
 	h.writeMux.Lock()
 	defer h.writeMux.Unlock()
 

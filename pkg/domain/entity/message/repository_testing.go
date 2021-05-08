@@ -1,128 +1,399 @@
 package message
 
 import (
+	"fmt"
+	"reflect"
 	"testing"
 	"time"
 
-	"github.com/dwethmar/atami/pkg/domain"
 	"github.com/dwethmar/atami/pkg/domain/entity"
+	"github.com/dwethmar/atami/pkg/domain/entity/message/mapping"
+	userFixture "github.com/dwethmar/atami/pkg/domain/entity/user/fixture"
 	"github.com/stretchr/testify/assert"
 )
 
-// FindByID tests the ReadOne function.
-func testFindByID(t *testing.T, reader Reader, ID entity.ID, message Message) {
-	m, err := reader.Get(ID)
-	assert.NoError(t, err)
+type repoTestDependencies struct {
+	users    []*User
+	messages []*Message
+}
 
-	assert.NotEmpty(t, message.ID)
-	assert.NotEmpty(t, message.UID)
-	assert.NotEmpty(t, message.Text)
-	assert.NotEmpty(t, message.CreatedByUserID)
-	assert.False(t, message.CreatedAt.IsZero())
+func newRepoTestDependencies() repoTestDependencies {
+	users := []*User{
+		userFromMemoryMap(mapping.UserToMemoryMap(*userFixture.NewUserFixture(entity.ID(1)))),
+		userFromMemoryMap(mapping.UserToMemoryMap(*userFixture.NewUserFixture(entity.ID(2)))),
+	}
+	messages := []*Message{
+		{
+			ID:              entity.ID(1),
+			UID:             entity.NewUID(),
+			Text:            "message text 1",
+			CreatedByUserID: users[0].ID,
+			CreatedBy:       *users[0],
+			CreatedAt:       time.Now().Add(time.Duration(1000)),
+			UpdatedAt:       time.Now().Add(time.Duration(1000)),
+		},
+		{
+			ID:              entity.ID(2),
+			UID:             entity.NewUID(),
+			Text:            "message text 2",
+			CreatedByUserID: users[1].ID,
+			CreatedBy:       *users[1],
+			CreatedAt:       time.Now().Add(time.Duration(2000)),
+			UpdatedAt:       time.Now().Add(time.Duration(3000)),
+		},
+		{
+			ID:              entity.ID(3),
+			UID:             entity.NewUID(),
+			Text:            "message text 3",
+			CreatedByUserID: users[1].ID,
+			CreatedBy:       *users[1],
+			CreatedAt:       time.Now().Add(time.Duration(4000)),
+			UpdatedAt:       time.Now().Add(time.Duration(5000)),
+		},
+	}
 
-	if assert.NotNil(t, m) {
-		assert.NotEmpty(t, m.ID)
-		assert.NotEmpty(t, m.UID)
-		assert.NotEmpty(t, m.Text)
-		assert.NotEmpty(t, m.CreatedByUserID)
-		assert.False(t, m.CreatedAt.IsZero())
-
-		assert.Equal(t, message.ID, m.ID)
-		assert.Equal(t, message.Text, m.Text)
-		assert.Equal(t, message.CreatedByUserID, m.CreatedByUserID)
-
-		if assert.NotNil(t, m.User) {
-			assert.Equal(t, message.CreatedByUserID, m.User.ID)
-			assert.Equal(t, m.CreatedByUserID, m.User.ID)
-		}
+	return repoTestDependencies{
+		users:    users,
+		messages: messages,
 	}
 }
 
-// NotFoundByID tests the ReadOne function for a not found error.
-func testNotFoundByID(t *testing.T, reader Reader) {
-	_, err := reader.Get(1)
-	assert.Equal(t, domain.ErrNotFound, err)
-}
+type setupRepository = func() Repository
 
-// FindByUID tests the findByUID function.
-func testFindByUID(t *testing.T, reader Reader, UID entity.UID, message Message) {
-	m, err := reader.GetByUID(UID)
-	assert.NoError(t, err)
+func testRepositoryGet(t *testing.T, dependencies repoTestDependencies, setup setupRepository) {
+	testMessage := dependencies.messages[0]
 
-	assert.NotEmpty(t, message.ID)
-	assert.NotEmpty(t, message.UID)
-	assert.NotEmpty(t, message.Text)
-	assert.NotEmpty(t, message.CreatedByUserID)
-	assert.False(t, message.CreatedAt.IsZero())
-
-	if assert.NotNil(t, m) {
-		assert.NotEmpty(t, m.ID)
-		assert.NotEmpty(t, m.UID)
-		assert.NotEmpty(t, m.Text)
-		assert.NotEmpty(t, m.CreatedByUserID)
-		assert.False(t, m.CreatedAt.IsZero())
-
-		assert.Equal(t, message.ID, m.ID)
-		assert.Equal(t, message.Text, m.Text)
-		assert.Equal(t, message.CreatedByUserID, m.CreatedByUserID)
-
-		if assert.NotNil(t, m.User) {
-			assert.Equal(t, message.CreatedByUserID, m.User.ID)
-			assert.Equal(t, m.CreatedByUserID, m.User.ID)
-		}
+	type fields struct {
+		repo Repository
 	}
-}
 
-// NotFoundByUID tests the ReadOne function for a not found error.
-func testNotFoundByUID(t *testing.T, reader Reader) {
-	_, err := reader.GetByUID("d")
-	assert.Equal(t, domain.ErrNotFound, err)
-}
-
-// Find tests the Find function.
-func testFind(t *testing.T, reader Reader, length uint, messages []Message) {
-	list, err := reader.List(0, length)
-
-	assert.NoError(t, err)
-	if assert.Equal(t, length, len(list)) {
-		for i, message := range list {
-			assert.NotEmpty(t, messages[i].ID)
-			assert.NotEmpty(t, messages[i].UID)
-			assert.NotEmpty(t, messages[i].Text)
-			assert.NotZero(t, messages[i].CreatedByUserID)
-			assert.False(t, messages[i].CreatedAt.IsZero())
-
-			assert.Equal(t, messages[i].ID, message.ID)
-			assert.Equal(t, messages[i].UID, message.UID)
-			assert.Equal(t, messages[i].Text, message.Text)
-
-			if assert.NotNil(t, message.User) {
-				assert.Equal(t, message.CreatedByUserID, message.User.ID)
+	type args struct {
+		ID entity.ID
+	}
+	tests := []struct {
+		name    string
+		fields  fields
+		args    args
+		want    *Message
+		wantErr bool
+	}{
+		{
+			name: "Successfully get message by ID",
+			fields: fields{
+				repo: setup(),
+			},
+			args: args{
+				ID: testMessage.ID,
+			},
+			want:    testMessage,
+			wantErr: false,
+		},
+		{
+			name: "Fail get message by unknown UID",
+			fields: fields{
+				repo: setup(),
+			},
+			args: args{
+				ID: 999,
+			},
+			want:    nil,
+			wantErr: true,
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			repo := tt.fields.repo
+			got, err := repo.Get(tt.args.ID)
+			if (err != nil) != tt.wantErr {
+				t.Errorf("Repository.Get() error = %v, wantErr %v", err, tt.wantErr)
+				return
 			}
-		}
+			if !assert.Equal(t, got, tt.want) {
+				t.Errorf("Repository.Get() = %v, want %v", got, tt.want)
+			}
+		})
 	}
 }
 
-// Store test the writer store
-func testStore(t *testing.T, writer Writer, reader Reader, create Create) {
-	ID, err := writer.Create(create)
-	message, err := reader.Get(ID)
+func testRepositoryGetByUID(t *testing.T, dependencies repoTestDependencies, setup setupRepository) {
+	testMessage := dependencies.messages[0]
 
-	assert.Nil(t, err)
-	assert.Equal(t, message.ID, 1)
-	assert.Equal(t, message.Text, create.Text)
-	assert.Equal(t, message.CreatedByUserID, create.CreatedByUserID)
-	assert.True(t, time.Now().Add(time.Microsecond).After(message.CreatedAt))
+	type fields struct {
+		repo Repository
+	}
+	type args struct {
+		UID entity.UID
+	}
+	tests := []struct {
+		name    string
+		fields  fields
+		args    args
+		want    *Message
+		wantErr bool
+	}{
+		{
+			name: "Successfully get message by UID",
+			fields: fields{
+				repo: setup(),
+			},
+			args: args{
+				UID: testMessage.UID,
+			},
+			want:    testMessage,
+			wantErr: false,
+		},
+		{
+			name: "Fail get message by unknown UID",
+			fields: fields{
+				repo: setup(),
+			},
+			args: args{
+				UID: "abc123",
+			},
+			want:    nil,
+			wantErr: true,
+		}}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			repo := tt.fields.repo
+			got, err := repo.GetByUID(tt.args.UID)
+			if (err != nil) != tt.wantErr {
+				t.Errorf("Repository.Get() error = %v, wantErr %v", err, tt.wantErr)
+				return
+			}
+			if !assert.Equal(t, got, tt.want) {
+				t.Errorf("Repository.GetByUID() = %v, want %v", got, tt.want)
+			}
+		})
+	}
 }
 
-// InvalidCreate tests an invalid create
-func testInvalidCreate(t *testing.T, writer Writer, create Create) {
-	_, err := writer.Create(create)
-	assert.Error(t, err)
+func testRepositoryList(t *testing.T, dependencies repoTestDependencies, setup setupRepository) {
+	testMessages := dependencies.messages
+
+	type fields struct {
+		repo Repository
+	}
+	type args struct {
+		limit  uint
+		offset uint
+	}
+	tests := []struct {
+		name    string
+		fields  fields
+		args    args
+		want    []*Message
+		wantErr bool
+	}{
+		{
+			name: "Successfully get messages",
+			fields: fields{
+				repo: setup(),
+			},
+			args: args{
+				limit:  10,
+				offset: 0,
+			},
+			want:    testMessages,
+			wantErr: false,
+		},
+		{
+			name: "Successfully get no messages",
+			fields: fields{
+				repo: setup(),
+			},
+			args: args{
+				limit:  10,
+				offset: 10,
+			},
+			want:    []*Message{},
+			wantErr: false,
+		},
+		{
+			name: "Successfully get paged messages",
+			fields: fields{
+				repo: setup(),
+			},
+			args: args{
+				limit:  2,
+				offset: 1,
+			},
+			want: []*Message{
+				testMessages[1],
+				testMessages[0],
+			},
+			wantErr: false,
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			repo := tt.fields.repo
+			got, err := repo.List(tt.args.limit, tt.args.offset)
+			if (err != nil) != tt.wantErr {
+				t.Errorf("Repository.List() error = %v, wantErr %v", err, tt.wantErr)
+				return
+			}
+
+			for i, msg := range got {
+				fmt.Println(msg)
+				fmt.Println("--------------------------------")
+				if !assert.Equal(t, tt.want[i], msg) {
+					t.Errorf("Repository.List() = \n%v, want \n%v", msg, tt.want[i])
+					return
+				}
+			}
+		})
+	}
 }
 
-// Delete tests the Delete function.
-func testDelete(t *testing.T, writer Writer, ID entity.ID) {
-	assert.Nil(t, writer.Delete(ID))
-	assert.Equal(t, domain.ErrCannotBeDeleted, writer.Delete(ID))
+func testRepositoryUpdate(t *testing.T, dependencies repoTestDependencies, setup setupRepository) {
+	testMessage := dependencies.messages[0]
+
+	type fields struct {
+		repo Repository
+	}
+	type args struct {
+		update Update
+	}
+	tests := []struct {
+		name    string
+		fields  fields
+		args    args
+		wantErr bool
+	}{
+		{
+			name: "Successfully update message",
+			fields: fields{
+				repo: setup(),
+			},
+			args: args{
+				update: Update{
+					Text: "updated text",
+				},
+			},
+			wantErr: false,
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			repo := tt.fields.repo
+
+			expectedMsg, _ := repo.Get(testMessage.ID)
+			expectedMsg.Apply(tt.args.update)
+
+			if err := repo.Update(expectedMsg); (err != nil) != tt.wantErr {
+				t.Errorf("Repository.Update() error = %v, wantErr %v", err, tt.wantErr)
+			} else {
+				updatedMsg, _ := repo.Get(expectedMsg.ID)
+				if !assert.Equal(t, expectedMsg, updatedMsg) {
+					t.Errorf("Repository.Update() = \n%v, want \n%v", updatedMsg, expectedMsg)
+				}
+			}
+		})
+	}
+}
+
+func testRepositoryCreate(t *testing.T, dependencies repoTestDependencies, setup setupRepository) {
+	createdAt := time.Now().UTC()
+	testUser := dependencies.users[0]
+
+	type fields struct {
+		repo  Repository
+		newID entity.ID
+	}
+	type args struct {
+		message *Message
+	}
+	tests := []struct {
+		name    string
+		fields  fields
+		args    args
+		want    entity.ID
+		wantErr bool
+	}{
+		{
+			name: "Successfully create message",
+			fields: fields{
+				repo: setup(),
+			},
+			args: args{
+				message: &Message{
+					UID:             "abc123",
+					Text:            "updated text",
+					CreatedByUserID: testUser.ID,
+					CreatedBy: User{
+						ID:       testUser.ID,
+						UID:      testUser.UID,
+						Username: testUser.Username,
+					},
+					CreatedAt: createdAt,
+				},
+			},
+			want:    entity.ID(1),
+			wantErr: false,
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			repo := tt.fields.repo
+
+			got, err := repo.Create(tt.args.message)
+			if (err != nil) != tt.wantErr {
+				t.Errorf("Repository.Create() error = %v, wantErr %v", err, tt.wantErr)
+				return
+			}
+			if !reflect.DeepEqual(got, tt.want) {
+				t.Errorf("Repository.Create() = %v, want %v", got, tt.want)
+			}
+		})
+	}
+}
+
+func testRepositoryDelete(t *testing.T, dependencies repoTestDependencies, setup setupRepository) {
+	testMessage := dependencies.messages[0]
+
+	type fields struct {
+		repo Repository
+	}
+	type args struct {
+		create    Create
+		messageID entity.ID
+	}
+	tests := []struct {
+		name    string
+		fields  fields
+		args    args
+		wantErr bool
+	}{
+		{
+			name: "Successfully delete message",
+			fields: fields{
+				repo: setup(),
+			},
+			args: args{
+				messageID: testMessage.ID,
+			},
+			wantErr: false,
+		},
+		{
+			name: "Error on message not found",
+			fields: fields{
+				repo: setup(),
+			},
+			args: args{
+				messageID: entity.ID(999),
+			},
+			wantErr: true,
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			repo := tt.fields.repo
+			err := repo.Delete(tt.args.messageID)
+			if (err != nil) != tt.wantErr {
+				t.Errorf("Repository.Create() error = %v, wantErr %v", err, tt.wantErr)
+				return
+			}
+		})
+	}
 }

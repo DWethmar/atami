@@ -28,7 +28,7 @@ func insertMap(row Row) (entity.ID, error) {
 
 func mapMessageWithUser(row Row) (*Message, error) {
 	e := &Message{
-		User: User{},
+		CreatedBy: User{},
 	}
 	if err := row.Scan(
 		&e.ID,
@@ -36,9 +36,9 @@ func mapMessageWithUser(row Row) (*Message, error) {
 		&e.Text,
 		&e.CreatedByUserID,
 		&e.CreatedAt,
-		&e.User.ID,
-		&e.User.UID,
-		&e.User.Username,
+		&e.CreatedBy.ID,
+		&e.CreatedBy.UID,
+		&e.CreatedBy.Username,
 	); err != nil {
 		return nil, err
 	}

@@ -28,5 +28,5 @@ type Message struct {
 	Text            string
 	CreatedByUserID int
 	CreatedAt       time.Time
-	CreatedAtUser   MessageUser
+	UpdatedAt       time.Time
 }

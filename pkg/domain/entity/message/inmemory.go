@@ -14,8 +14,8 @@ type inMemoryRepo struct {
 	newID    entity.ID
 }
 
-//NewinMemoryRepoRepository create new repository
-func NewinMemoryRepoRepository(memStore *memstore.Memstore) Repository {
+//NewInMemoryRepo create new repository
+func NewInMemoryRepo(memStore *memstore.Memstore) Repository {
 	return &inMemoryRepo{
 		memStore: memStore,
 		newID:    0,
@@ -30,12 +30,12 @@ func (r *inMemoryRepo) Get(ID entity.ID) (*Message, error) {
 		msg := messageFromMemoryMap(r)
 
 		if user, err := findUserInMemstore(users, msg.CreatedByUserID); err == nil {
-			msg.User = user
+			msg.CreatedBy = *user
 		} else {
 			return nil, err
 		}
 
-		return &msg, nil
+		return msg, nil
 	}
 
 	return nil, domain.ErrNotFound
@@ -47,7 +47,7 @@ func (r *inMemoryRepo) GetByUID(UID entity.UID) (*Message, error) {
 		return nil, err
 	}
 
-	msg, err := filterMessagesFromMemory(messages, func(message Message) bool {
+	msg, err := filterMessagesFromMemory(messages, func(message *Message) bool {
 		return UID == message.UID
 	})
 
@@ -59,7 +59,7 @@ func (r *inMemoryRepo) GetByUID(UID entity.UID) (*Message, error) {
 
 	if err == nil {
 		if user, err := findUserInMemstore(users, msg.CreatedByUserID); err == nil {
-			msg.User = user
+			msg.CreatedBy = *user
 		} else {
 			return nil, err
 		}
@@ -93,54 +93,41 @@ func (r *inMemoryRepo) List(limit, offset uint) ([]*Message, error) {
 		msg := messageFromMemoryMap(r)
 
 		if user, err := findUserInMemstore(users, msg.CreatedByUserID); err == nil {
-			msg.User = user
+			msg.CreatedBy = *user
 		} else {
 			return nil, err
 		}
 
-		items[i] = &msg
+		items[i] = msg
 	}
 
 	return items, nil
 }
 
-func (r *inMemoryRepo) Update(ID entity.ID, change Update) error {
+func (r *inMemoryRepo) Update(message *Message) error {
 	messages := r.memStore.GetMessages()
-	message, err := r.Get(ID)
-	if err != nil {
-		return err
-	}
-	message.Apply(change)
 	mapped := messageToMemoryMap(*message)
-	if messages.Delete(message.ID) && !messages.Put(message.ID, mapped) {
+	if messages.Delete(message.ID) && !messages.Put(message.ID, *mapped) {
 		return errors.New("Could not update message")
 	}
 	return nil
 }
 
-func (r *inMemoryRepo) Create(create Create) (entity.ID, error) {
+func (r *inMemoryRepo) Create(message *Message) (entity.ID, error) {
 	messages := r.memStore.GetMessages()
 	users := r.memStore.GetUsers()
-	_, ok := users.Get(create.CreatedByUserID)
 
-	r.newID++
-
-	if !ok {
+	if _, ok := users.Get(message.CreatedByUserID); !ok {
 		return 0, errors.New("user not found")
 	}
 
-	msg := Message{
-		ID:              r.newID,
-		UID:             create.UID,
-		Text:            create.Text,
-		CreatedByUserID: create.CreatedByUserID,
-		CreatedAt:       create.CreatedAt,
-	}
+	r.newID++
+	message.ID = r.newID
 
-	mapped := messageToMemoryMap(msg)
-	messages.Put(msg.ID, mapped)
+	mapped := messageToMemoryMap(*message)
+	messages.Put(message.ID, *mapped)
 
-	if r, ok := messages.Get(msg.ID); ok {
+	if r, ok := messages.Get(message.ID); ok {
 		msg := messageFromMemoryMap(r)
 		return msg.ID, nil
 	}
@@ -157,19 +144,19 @@ func (r *inMemoryRepo) Delete(ID entity.ID) error {
 }
 
 // findUserInMemstore finds user and parses it to User
-func findUserInMemstore(store *memstore.UserStore, userID entity.ID) (User, error) {
+func findUserInMemstore(store *memstore.UserStore, userID entity.ID) (*User, error) {
 	if r, ok := store.Get(userID); ok {
 		user := userFromMemoryMap(r)
 		return user, nil
 	}
-	return User{}, fmt.Errorf("Could not find user with ID %d in memory store", userID)
+	return nil, fmt.Errorf("Could not find user with ID %d in memory store", userID)
 }
 
-func filterMessagesFromMemory(list []memstore.Message, filterFn func(Message) bool) (*Message, error) {
+func filterMessagesFromMemory(list []memstore.Message, filterFn func(*Message) bool) (*Message, error) {
 	for _, item := range list {
 		message := messageFromMemoryMap(item)
 		if filterFn(message) {
-			return &message, nil
+			return message, nil
 		}
 	}
 	return nil, domain.ErrNotFound

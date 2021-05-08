@@ -10,9 +10,9 @@ type Message struct {
 	UID             string
 	Text            string
 	CreatedByUserID int
+	CreatedBy       User
 	CreatedAt       time.Time
-
-	User User
+	UpdatedAt       time.Time
 }
 
 // Apply a update to the message
@@ -32,7 +32,6 @@ type Create struct {
 	UID             string
 	Text            string
 	CreatedByUserID int
-	CreatedAt       time.Time
 }
 
 // Update model is used to update a message

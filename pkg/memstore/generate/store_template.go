@@ -9,6 +9,7 @@ import (
 	"sync"
 	"sort"
 	"fmt"
+	"github.com/dwethmar/atami/pkg/domain/entity"
 )
 
 type {{ .Name }}IDs = []int 
@@ -73,7 +74,7 @@ func (h *{{ .Name }}Store) Slice(low, high uint) ([]{{ .Name }}, error) {
 }
 
 // Get a single {{ .Name }}.
-func (h *{{ .Name }}Store) Get(ID int) ({{ .Name }}, bool) {
+func (h *{{ .Name }}Store) Get(ID entity.ID) ({{ .Name }}, bool) {
 	h.readMux.Lock()
 	defer h.readMux.Unlock()
 
@@ -94,7 +95,7 @@ func (h *{{ .Name }}Store) GetIDs() {{ .Name }}IDs  {
 }
 
 // Put new {{ .Name }}
-func (h *{{ .Name }}Store) Put(ID int, value {{ .Name }}) bool {
+func (h *{{ .Name }}Store) Put(ID entity.ID, value {{ .Name }}) bool {
 	h.writeMux.Lock()
 	defer h.writeMux.Unlock()
 
@@ -108,7 +109,7 @@ func (h *{{ .Name }}Store) Put(ID int, value {{ .Name }}) bool {
 }
 
 // Delete a {{ .Name }}
-func (h *{{ .Name }}Store) Delete(ID int) bool {
+func (h *{{ .Name }}Store) Delete(ID entity.ID) bool {
 	h.writeMux.Lock()
 	defer h.writeMux.Unlock()
 

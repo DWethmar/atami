@@ -5,6 +5,7 @@ package memstore
 
 import (
 	"fmt"
+	"github.com/dwethmar/atami/pkg/domain/entity"
 	"sort"
 	"sync"
 )
@@ -71,7 +72,7 @@ func (h *UserStore) Slice(low, high uint) ([]User, error) {
 }
 
 // Get a single User.
-func (h *UserStore) Get(ID int) (User, bool) {
+func (h *UserStore) Get(ID entity.ID) (User, bool) {
 	h.readMux.Lock()
 	defer h.readMux.Unlock()
 
@@ -92,7 +93,7 @@ func (h *UserStore) GetIDs() UserIDs {
 }
 
 // Put new User
-func (h *UserStore) Put(ID int, value User) bool {
+func (h *UserStore) Put(ID entity.ID, value User) bool {
 	h.writeMux.Lock()
 	defer h.writeMux.Unlock()
 
@@ -106,7 +107,7 @@ func (h *UserStore) Put(ID int, value User) bool {
 }
 
 // Delete a User
-func (h *UserStore) Delete(ID int) bool {
+func (h *UserStore) Delete(ID entity.ID) bool {
 	h.writeMux.Lock()
 	defer h.writeMux.Unlock()
 
