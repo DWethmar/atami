@@ -2,30 +2,114 @@ package message
 
 import (
 	"testing"
+
+	"github.com/dwethmar/atami/pkg/memstore"
 )
 
 func Test_PostgresRepo_Get(t *testing.T) {
-	// var a, _ = userFixture.CreateUserFixture(nil, "")
-	// fmt.Print(a)
+	deps := newRepoTestDependencies()
+	testRepositoryGet(
+		t,
+		deps,
+		func() Repository {
+			store := memstore.NewStore()
+			for _, user := range deps.users {
+				store.GetUsers().Put(user.ID, *userToMemoryMap(*user))
+			}
+			for _, message := range deps.messages {
+				store.GetMessages().Put(message.ID, *messageToMemoryMap(*message))
+			}
+			return NewInMemoryRepo(store)
+		},
+	)
+}
 
-	// var inMemoryRepoTestDeps = repoTestDependencies{
-	// 	users: []*User{
-	// 		userFromMemoryMap(*memstore.NewUserFixture(1)),
-	// 		userFromMemoryMap(*memstore.NewUserFixture(2)),
-	// 	},
-	// }
-	// testRepositoryGet(
-	// 	t,
-	// 	inMemoryRepoTestDeps,
-	// 	func() Repository {
-	// 		store := memstore.NewStore()
+func Test_PostgresRepo_GetByUID(t *testing.T) {
+	deps := newRepoTestDependencies()
+	testRepositoryGetByUID(
+		t,
+		deps,
+		func() Repository {
+			store := memstore.NewStore()
+			for _, user := range deps.users {
+				store.GetUsers().Put(user.ID, *userToMemoryMap(*user))
+			}
+			for _, message := range deps.messages {
+				store.GetMessages().Put(message.ID, *messageToMemoryMap(*message))
+			}
+			return NewInMemoryRepo(store)
+		},
+	)
+}
 
-	// 		for _, user := range inMemoryRepoTestDeps.users {
-	// 			testUser := memstore.NewUserFixture(user.ID)
-	// 			store.GetUsers().Put(testUser.ID, *testUser)
-	// 		}
+func Test_PostgresRepo_List(t *testing.T) {
+	deps := newRepoTestDependencies()
+	testRepositoryList(
+		t,
+		deps,
+		func() Repository {
+			store := memstore.NewStore()
+			for _, user := range deps.users {
+				store.GetUsers().Put(user.ID, *userToMemoryMap(*user))
+			}
+			for _, message := range deps.messages {
+				store.GetMessages().Put(message.ID, *messageToMemoryMap(*message))
+			}
+			return NewInMemoryRepo(store)
+		},
+	)
+}
 
-	// 		return NewInMemoryRepo(store)
-	// 	},
-	// )
+func Test_PostgresRepo_Update(t *testing.T) {
+	deps := newRepoTestDependencies()
+	testRepositoryUpdate(
+		t,
+		deps,
+		func() Repository {
+			store := memstore.NewStore()
+			for _, user := range deps.users {
+				store.GetUsers().Put(user.ID, *userToMemoryMap(*user))
+			}
+			for _, message := range deps.messages {
+				store.GetMessages().Put(message.ID, *messageToMemoryMap(*message))
+			}
+			return NewInMemoryRepo(store)
+		},
+	)
+}
+
+func Test_PostgresRepo_Create(t *testing.T) {
+	deps := newRepoTestDependencies()
+	testRepositoryCreate(
+		t,
+		deps,
+		func() Repository {
+			store := memstore.NewStore()
+			for _, user := range deps.users {
+				store.GetUsers().Put(user.ID, *userToMemoryMap(*user))
+			}
+			for _, message := range deps.messages {
+				store.GetMessages().Put(message.ID, *messageToMemoryMap(*message))
+			}
+			return NewInMemoryRepo(store)
+		},
+	)
+}
+
+func Test_PostgresRepo_Delete(t *testing.T) {
+	deps := newRepoTestDependencies()
+	testRepositoryDelete(
+		t,
+		deps,
+		func() Repository {
+			store := memstore.NewStore()
+			for _, user := range deps.users {
+				store.GetUsers().Put(user.ID, *userToMemoryMap(*user))
+			}
+			for _, message := range deps.messages {
+				store.GetMessages().Put(message.ID, *messageToMemoryMap(*message))
+			}
+			return NewInMemoryRepo(store)
+		},
+	)
 }
