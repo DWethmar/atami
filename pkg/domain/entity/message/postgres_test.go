@@ -16,7 +16,8 @@ func seedDatabase(db *sql.DB, deps repoTestDependencies) error {
 			db,
 			user.UID,
 			user.Username,
-			user.Username+"@test.nl", "abc",
+			user.Username+"@test.nl",
+			"abc",
 			time.Now(),
 			time.Now(),
 		); err != nil {
@@ -46,10 +47,13 @@ func Test_PostgresRepo_Get(t *testing.T) {
 			t,
 			deps,
 			func() Repository {
+				fmt.Println("Seeding")
 				if err := seedDatabase(db, deps); err != nil {
 					fmt.Print(err)
 					t.Fail()
 				}
+				fmt.Println("stopped Seeding")
+
 				return NewPostgresRepository(db)
 			},
 		)
