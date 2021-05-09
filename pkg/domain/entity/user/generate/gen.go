@@ -28,7 +28,7 @@ func main() {
 		"user",
 		[]string{
 			"time",
-			"github.com/dwethmar/atami/pkg/domain/user",
+			"github.com/dwethmar/atami/pkg/domain/entity",
 		},
 		[]*qg.GenerateQuery{
 			{
@@ -122,7 +122,7 @@ func main() {
 					},
 				},
 				MapFunc:    "defaultMap",
-				ReturnType: "*user.User",
+				ReturnType: "*User",
 			},
 
 			{
@@ -137,11 +137,11 @@ func main() {
 				FuncArgs: []qg.FuncArg{
 					{
 						Name: "ID",
-						Type: "int",
+						Type: "entity.ID",
 					},
 				},
 				MapFunc:    "defaultMap",
-				ReturnType: "*user.User",
+				ReturnType: "*User",
 			},
 
 			{
@@ -167,7 +167,7 @@ func main() {
 					},
 				},
 				MapFunc:    "defaultMap",
-				ReturnType: "*user.User",
+				ReturnType: "*User",
 			},
 
 			{
@@ -186,11 +186,11 @@ func main() {
 				FuncArgs: []qg.FuncArg{
 					{
 						Name: "ID",
-						Type: "int",
+						Type: "entity.ID",
 					},
 				},
 				MapFunc:    "defaultMap",
-				ReturnType: "*user.User",
+				ReturnType: "*User",
 			},
 
 			{
@@ -209,11 +209,11 @@ func main() {
 				FuncArgs: []qg.FuncArg{
 					{
 						Name: "UID",
-						Type: "string",
+						Type: "entity.UID",
 					},
 				},
 				MapFunc:    "defaultMap",
-				ReturnType: "*user.User",
+				ReturnType: "*User",
 			},
 
 			{
@@ -236,7 +236,7 @@ func main() {
 					},
 				},
 				MapFunc:    "defaultMap",
-				ReturnType: "*user.User",
+				ReturnType: "*User",
 			},
 
 			{
@@ -259,7 +259,7 @@ func main() {
 					},
 				},
 				MapFunc:    "mapWithPassword",
-				ReturnType: "*user.User",
+				ReturnType: "*User",
 			},
 
 			{
@@ -282,7 +282,7 @@ func main() {
 					},
 				},
 				MapFunc:    "defaultMap",
-				ReturnType: "*user.User",
+				ReturnType: "*User",
 			},
 
 			{
@@ -304,7 +304,7 @@ func main() {
 				FuncArgs: []qg.FuncArg{
 					{
 						Name: "ID",
-						Type: "int",
+						Type: "entity.ID",
 					},
 					{
 						Name: "biography",
@@ -316,7 +316,7 @@ func main() {
 					},
 				},
 				MapFunc:    "defaultMap",
-				ReturnType: "*user.User",
+				ReturnType: "*User",
 			},
 		})
 }

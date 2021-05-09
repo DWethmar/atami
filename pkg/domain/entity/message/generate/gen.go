@@ -42,7 +42,7 @@ func main() {
 		"message",
 		[]string{
 			"time",
-			"github.com/dwethmar/atami/pkg/domain/entity",
+			"github.com/dwethmar/atami/pkg/domain/entity/",
 		},
 		[]*qg.GenerateQuery{
 			{
@@ -95,7 +95,7 @@ func main() {
 				FuncArgs: []qg.FuncArg{
 					{
 						Name: "ID",
-						Type: "int",
+						Type: "entity.ID",
 					},
 				},
 				MapFunc:    "messageWithUserRowMap",
@@ -141,7 +141,7 @@ func main() {
 				FuncArgs: []qg.FuncArg{
 					{
 						Name: "ID",
-						Type: "int",
+						Type: "entity.ID",
 					},
 				},
 				MapFunc:    "defaultRowMap",

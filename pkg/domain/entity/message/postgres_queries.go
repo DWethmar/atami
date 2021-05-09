@@ -9,7 +9,7 @@ import (
 
 	"time"
 
-	"github.com/dwethmar/atami/pkg/domain/entity"
+	"github.com/dwethmar/atami/pkg/domain/entity/"
 )
 
 // Row needs to be implemented in the the map function.
@@ -80,7 +80,7 @@ WHERE message.id = $1`
 
 func queryRowSelectMessageByID(
 	db database.Transaction,
-	ID int,
+	ID entity.ID,
 ) (*Message, error) {
 	return messageWithUserRowMap(db.QueryRow(
 		selectMessageByIDSQL,
@@ -119,7 +119,7 @@ WHERE message.id = $1`
 
 func execDeleteMessage(
 	db database.Transaction,
-	ID int,
+	ID entity.ID,
 ) (sql.Result, error) {
 	return db.Exec(
 		deleteMessageSQL,

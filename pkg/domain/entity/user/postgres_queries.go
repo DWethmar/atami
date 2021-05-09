@@ -9,7 +9,7 @@ import (
 
 	"time"
 
-	"github.com/dwethmar/atami/pkg/domain/user"
+	"github.com/dwethmar/atami/pkg/domain/entity"
 )
 
 // Row needs to be implemented in the the map function.
@@ -80,7 +80,7 @@ func queryRowInsertUser(
 	password string,
 	createdAt time.Time,
 	updateddAt time.Time,
-) (*user.User, error) {
+) (*User, error) {
 	return defaultMap(db.QueryRow(
 		insertUserSQL,
 		UID,
@@ -98,7 +98,7 @@ WHERE app_user.id = $1`
 
 func execDeleteUser(
 	db database.Transaction,
-	ID int,
+	ID entity.ID,
 ) (sql.Result, error) {
 	return db.Exec(
 		deleteUserSQL,
@@ -124,7 +124,7 @@ func querySelectUsers(
 	db database.Transaction,
 	limit int,
 	offset int,
-) ([]*user.User, error) {
+) ([]*User, error) {
 	rows, err := db.Query(
 		selectUsersSQL,
 		limit,
@@ -134,7 +134,7 @@ func querySelectUsers(
 	if err != nil {
 		return nil, err
 	}
-	entries := make([]*user.User, 0)
+	entries := make([]*User, 0)
 	for rows.Next() {
 		if entry, err := defaultMap(rows); err == nil {
 			entries = append(entries, entry)
@@ -163,8 +163,8 @@ LIMIT 1`
 
 func queryRowSelectUserByID(
 	db database.Transaction,
-	ID int,
-) (*user.User, error) {
+	ID entity.ID,
+) (*User, error) {
 	return defaultMap(db.QueryRow(
 		selectUserByIDSQL,
 		ID,
@@ -186,8 +186,8 @@ LIMIT 1`
 
 func queryRowSelectUserByUID(
 	db database.Transaction,
-	UID string,
-) (*user.User, error) {
+	UID entity.UID,
+) (*User, error) {
 	return defaultMap(db.QueryRow(
 		selectUserByUIDSQL,
 		UID,
@@ -210,7 +210,7 @@ LIMIT 1`
 func queryRowSelectUserByEmail(
 	db database.Transaction,
 	email string,
-) (*user.User, error) {
+) (*User, error) {
 	return defaultMap(db.QueryRow(
 		selectUserByEmailSQL,
 		email,
@@ -234,7 +234,7 @@ LIMIT 1`
 func queryRowSelectUserByEmailWithPassword(
 	db database.Transaction,
 	email string,
-) (*user.User, error) {
+) (*User, error) {
 	return mapWithPassword(db.QueryRow(
 		selectUserByEmailWithPasswordSQL,
 		email,
@@ -257,7 +257,7 @@ LIMIT 1`
 func queryRowSelectUserByUsername(
 	db database.Transaction,
 	username string,
-) (*user.User, error) {
+) (*User, error) {
 	return defaultMap(db.QueryRow(
 		selectUserByUsernameSQL,
 		username,
@@ -274,10 +274,10 @@ RETURNING app_user.id, app_user.uid, app_user.username, app_user.email, app_user
 
 func queryRowUpdateUser(
 	db database.Transaction,
-	ID int,
+	ID entity.ID,
 	biography string,
 	updatedAt time.Time,
-) (*user.User, error) {
+) (*User, error) {
 	return defaultMap(db.QueryRow(
 		updateUserSQL,
 		ID,
