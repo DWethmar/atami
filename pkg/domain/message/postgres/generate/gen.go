@@ -159,7 +159,7 @@ func main() {
 							schema.ColUpdatedAt,
 						},
 						Values: []interface{}{
-							"$1", "$2", "$3", "$4", "$4",
+							"$1", "$2", "$3", "$4", "$5",
 						},
 						Returning: schema.SelectCols,
 					},
