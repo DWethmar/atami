@@ -16,8 +16,9 @@ func seedDatabase(db *sql.DB, deps repoTestDependencies) error {
 			db,
 			user.UID,
 			user.Username,
+			"password",
 			user.Username+"@test.nl",
-			"abc",
+			"biography",
 			time.Now(),
 			time.Now(),
 		); err != nil {

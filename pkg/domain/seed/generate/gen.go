@@ -36,23 +36,28 @@ func main() {
 						InsertCols: []string{
 							userSchema.ColUID,
 							userSchema.ColUsername,
+							userSchema.ColPassword,
 							userSchema.ColEmail,
 							userSchema.ColBiography,
 							userSchema.ColCreatedAt,
 							userSchema.ColUpdatedAt,
 						},
 						Values: []interface{}{
-							"$1", "$2", "$3", "$4", "$5", "$6",
+							"$1", "$2", "$3", "$4", "$5", "$6", "$7",
 						},
 					},
 				),
 				FuncArgs: []sg.FuncArg{
 					{
 						Name: "UID",
-						Type: "string",
+						Type: "entity.UID",
 					},
 					{
 						Name: "username",
+						Type: "string",
+					},
+					{
+						Name: "password",
 						Type: "string",
 					},
 					{
@@ -60,7 +65,7 @@ func main() {
 						Type: "string",
 					},
 					{
-						Name: "password",
+						Name: "biography",
 						Type: "string",
 					},
 					{

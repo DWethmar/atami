@@ -17,6 +17,7 @@ var UserSQL = `INSERT INTO app_user
 (
 	uid,
 	username,
+	password,
 	email,
 	biography,
 	created_at,
@@ -28,15 +29,17 @@ VALUES (
 	$3,
 	$4,
 	$5,
-	$6
+	$6,
+	$7
 )`
 
 func SeedUser(
 	db database.Transaction,
-	UID string,
+	UID entity.UID,
 	username string,
-	email string,
 	password string,
+	email string,
+	biography string,
 	createdAt time.Time,
 	updateddAt time.Time,
 ) (sql.Result, error) {
@@ -44,8 +47,9 @@ func SeedUser(
 		UserSQL,
 		UID,
 		username,
-		email,
 		password,
+		email,
+		biography,
 		createdAt,
 		updateddAt,
 	)
