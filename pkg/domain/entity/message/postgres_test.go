@@ -2,6 +2,7 @@ package message
 
 import (
 	"database/sql"
+	"fmt"
 	"testing"
 	"time"
 
@@ -10,13 +11,33 @@ import (
 	"github.com/dwethmar/atami/pkg/memstore"
 )
 
-func seedPostgressRepo(db *sql.DB, deps repoTestDependencies) {
+func seedDatabase(db *sql.DB, deps repoTestDependencies) error {
 	for _, user := range deps.users {
-		seed.SeedUser(db, user.UID, user.Username, user.Username+"@test.nl", "abc", time.Now(), time.Now())
+		if _, err := seed.SeedUser(
+			db,
+			user.UID,
+			user.Username,
+			user.Username+"@test.nl", "abc",
+			time.Now(),
+			time.Now(),
+		); err != nil {
+			return err
+		}
 	}
 	for _, message := range deps.messages {
-		seed.SeedMessage(db, message.UID, message.Text, message.CreatedByUserID, message.CreatedAt, message.UpdatedAt)
+		if _, err := seed.SeedMessage(
+			db,
+			message.UID,
+			message.Text,
+			message.CreatedByUserID,
+			message.CreatedAt,
+			message.UpdatedAt,
+		); err != nil {
+			return err
+		}
 	}
+
+	return nil
 }
 
 func Test_PostgresRepo_Get(t *testing.T) {
@@ -26,7 +47,10 @@ func Test_PostgresRepo_Get(t *testing.T) {
 			t,
 			deps,
 			func() Repository {
-				seedPostgressRepo(db, deps)
+				if err := seedDatabase(db, deps); err != nil {
+					fmt.Print(err)
+					t.Fail()
+				}
 				return NewPostgresRepository(db)
 			},
 		)

@@ -78,16 +78,7 @@ func (i *findRepository) Find(limit, offset int) ([]*message.Message, error) {
 	items := make([]*message.Message, len(paged))
 
 	for i, r := range paged {
-
 		msg := util.FromMemory(r)
-
-		// fmt.Println("------------------------------------------------------------------------")
-		// fmt.Println(fmt.Sprintf("Created BY %d", msg.CreatedByUserID))
-		// fmt.Println(util.FindUser(users, msg.CreatedByUserID))
-		// test, _ := users.Get(msg.CreatedByUserID)
-		// fmt.Println(test)
-		// fmt.Println("------------------------------------------------------------------------")
-
 		if user, err := util.FindUser(users, msg.CreatedByUserID); err == nil {
 			msg.User = user
 		} else {

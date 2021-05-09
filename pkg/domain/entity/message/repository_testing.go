@@ -1,7 +1,6 @@
 package message
 
 import (
-	"fmt"
 	"reflect"
 	"testing"
 	"time"
@@ -235,8 +234,6 @@ func testRepositoryList(t *testing.T, dependencies repoTestDependencies, setup s
 			}
 
 			for i, msg := range got {
-				fmt.Println(msg)
-				fmt.Println("--------------------------------")
 				if !assert.Equal(t, tt.want[i], msg) {
 					t.Errorf("Repository.List() = \n%v, want \n%v", msg, tt.want[i])
 					return
