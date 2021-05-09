@@ -4,14 +4,7 @@ import (
 	"database/sql"
 	"fmt"
 	"strings"
-
-	"github.com/dwethmar/atami/pkg/config"
 )
-
-// DB model
-type DB struct {
-	*sql.DB
-}
 
 // Connect creates new DB
 func Connect(driverName string, dataSourceName string) (*sql.DB, error) {
@@ -26,24 +19,32 @@ func Connect(driverName string, dataSourceName string) (*sql.DB, error) {
 	return db, nil
 }
 
-// GetPostgresConnectionString return the connection info
-func GetPostgresConnectionString(env config.Config) string {
+type postgresDataSourceConfig struct {
+	DBHost     string
+	DBPort     string
+	DBUser     string
+	DBPassword string
+	DBName     string
+}
+
+// GetPostgresDataSource return the connection info
+func GetPostgresDataSource(config postgresDataSourceConfig) string {
 	cParts := []string{
-		fmt.Sprintf("host=%s", env.DBHost),
-		fmt.Sprintf("port=%s", env.DBPort),
+		fmt.Sprintf("host=%s", config.DBHost),
+		fmt.Sprintf("port=%s", config.DBPort),
 		"sslmode=disable",
 	}
 
-	if env.DBUser != "" {
-		cParts = append(cParts, fmt.Sprintf("user=%s", env.DBUser))
+	if config.DBUser != "" {
+		cParts = append(cParts, fmt.Sprintf("user=%s", config.DBUser))
 	}
 
-	if env.DBPassword != "" {
-		cParts = append(cParts, fmt.Sprintf("password=%s", env.DBPassword))
+	if config.DBPassword != "" {
+		cParts = append(cParts, fmt.Sprintf("password=%s", config.DBPassword))
 	}
 
-	if env.DBName != "" {
-		cParts = append(cParts, fmt.Sprintf("dbname=%s", env.DBName))
+	if config.DBName != "" {
+		cParts = append(cParts, fmt.Sprintf("dbname=%s", config.DBName))
 	}
 
 	return strings.Join(cParts, " ")

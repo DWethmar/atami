@@ -12,7 +12,8 @@ type UID = string
 
 // NewUID creates a new ID
 func NewUID() UID {
-	return UID(ksuid.New().String())
+	k := ksuid.New()
+	return UID(k.String())
 }
 
 // StringToUID string to UID
