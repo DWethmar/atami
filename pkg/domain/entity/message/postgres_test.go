@@ -12,6 +12,7 @@ import (
 
 func seedDatabase(db *sql.DB, deps repoTestDependencies) error {
 	for _, user := range deps.users {
+		fmt.Println(user)
 		if _, err := seed.SeedUser(
 			db,
 			user.UID,
@@ -26,6 +27,7 @@ func seedDatabase(db *sql.DB, deps repoTestDependencies) error {
 		}
 	}
 	for _, message := range deps.messages {
+		fmt.Println(message)
 		if _, err := seed.SeedMessage(
 			db,
 			message.UID,
