@@ -25,6 +25,7 @@ var selectMessagesSQL = `SELECT
 	message.text,
 	message.created_by_user_id,
 	message.created_at,
+	message.updated_at,
 	app_user.id,
 	app_user.uid,
 	app_user.username
@@ -69,6 +70,7 @@ var selectMessageByIDSQL = `SELECT
 	message.text,
 	message.created_by_user_id,
 	message.created_at,
+	message.updated_at,
 	app_user.id,
 	app_user.uid,
 	app_user.username
@@ -93,6 +95,7 @@ var selectMessageByUIDSQL = `SELECT
 	message.text,
 	message.created_by_user_id,
 	message.created_at,
+	message.updated_at,
 	app_user.id,
 	app_user.uid,
 	app_user.username
@@ -130,15 +133,17 @@ var insertMessageSQL = `INSERT INTO message
 	uid,
 	text,
 	created_by_user_id,
-	created_at
+	created_at,
+	updated_at
 )
 VALUES (
 	$1,
 	$2,
 	$3,
+	$4,
 	$4
 )
-RETURNING message.id, message.uid, message.text, message.created_by_user_id, message.created_at`
+RETURNING message.id, message.uid, message.text, message.created_by_user_id, message.created_at, message.updated_at`
 
 func queryRowInsertMessage(
 	db database.Transaction,
@@ -146,6 +151,7 @@ func queryRowInsertMessage(
 	text string,
 	CreatedByUserID int,
 	createdAt time.Time,
+	updatedAt time.Time,
 ) (*message.Message, error) {
 	return defaultMap(db.QueryRow(
 		insertMessageSQL,
@@ -153,5 +159,6 @@ func queryRowInsertMessage(
 		text,
 		CreatedByUserID,
 		createdAt,
+		updatedAt,
 	))
 }

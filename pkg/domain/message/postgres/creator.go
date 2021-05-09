@@ -1,6 +1,8 @@
 package postgres
 
 import (
+	"time"
+
 	"github.com/dwethmar/atami/pkg/database"
 	"github.com/dwethmar/atami/pkg/domain/message"
 )
@@ -18,6 +20,7 @@ func (i creatorRepository) Create(newMsg message.CreateMessage) (*message.Messag
 		newMsg.Text,
 		newMsg.CreatedByUserID,
 		newMsg.CreatedAt,
+		time.Now(),
 	)
 	if err != nil {
 		return nil, err

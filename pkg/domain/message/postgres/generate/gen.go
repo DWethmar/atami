@@ -48,15 +48,15 @@ func main() {
 				Name: "selectMessages",
 				SQL: qb.Select(
 					qb.SelectQuery{
-						SelectCols:  defaultCols,
-						From:    defaultFrom,
-						Joins:   defaultJoin,
-						Where:   nil,
-						GroupBy: []string{},
-						Having:  nil,
-						OrderBy: defaultOrderBy,
-						Limit:   "$1",
-						Offset:  "$2",
+						SelectCols: defaultCols,
+						From:       defaultFrom,
+						Joins:      defaultJoin,
+						Where:      nil,
+						GroupBy:    []string{},
+						Having:     nil,
+						OrderBy:    defaultOrderBy,
+						Limit:      "$1",
+						Offset:     "$2",
 					},
 				),
 				QueryType: qg.Query,
@@ -78,8 +78,8 @@ func main() {
 				SQL: qb.Select(
 					qb.SelectQuery{
 						SelectCols: defaultCols,
-						From:    defaultFrom,
-						Joins:  defaultJoin,
+						From:       defaultFrom,
+						Joins:      defaultJoin,
 						Where: qb.NewWhere().And(
 							fmt.Sprintf("%s = $1", IDCol),
 						),
@@ -105,8 +105,8 @@ func main() {
 				SQL: qb.Select(
 					qb.SelectQuery{
 						SelectCols: defaultCols,
-						From:    defaultFrom,
-						Joins:  defaultJoin,
+						From:       defaultFrom,
+						Joins:      defaultJoin,
 						Where: qb.NewWhere().And(
 							fmt.Sprintf("%s = $1", UIDCol),
 						),
@@ -156,9 +156,10 @@ func main() {
 							schema.ColText,
 							schema.ColCreatedByUserID,
 							schema.ColCreatedAt,
+							schema.ColUpdatedAt,
 						},
 						Values: []interface{}{
-							"$1", "$2", "$3", "$4",
+							"$1", "$2", "$3", "$4", "$4",
 						},
 						Returning: schema.SelectCols,
 					},
@@ -179,6 +180,10 @@ func main() {
 					},
 					{
 						Name: "createdAt",
+						Type: "time.Time",
+					},
+					{
+						Name: "updatedAt",
 						Type: "time.Time",
 					},
 				},
