@@ -32,7 +32,7 @@ func main() {
 				Name: "User",
 				SQL: qb.Insert(
 					qb.InsertQuery{
-						Into: messageSchema.Table,
+						Into: userSchema.Table,
 						InsertCols: []string{
 							userSchema.ColUID,
 							userSchema.ColUsername,
