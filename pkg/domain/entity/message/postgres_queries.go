@@ -9,7 +9,7 @@ import (
 
 	"time"
 
-	"github.com/dwethmar/atami/pkg/domain/entity/"
+	"github.com/dwethmar/atami/pkg/domain/entity"
 )
 
 // Row needs to be implemented in the the map function.

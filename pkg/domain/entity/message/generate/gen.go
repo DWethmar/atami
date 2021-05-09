@@ -42,7 +42,7 @@ func main() {
 		"message",
 		[]string{
 			"time",
-			"github.com/dwethmar/atami/pkg/domain/entity/",
+			"github.com/dwethmar/atami/pkg/domain/entity",
 		},
 		[]*qg.GenerateQuery{
 			{
