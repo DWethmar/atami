@@ -11,6 +11,7 @@ type Message struct {
 	Text            string
 	CreatedByUserID int
 	CreatedAt       time.Time
+	UpdatedAt       time.Time
 
 	User *User
 }

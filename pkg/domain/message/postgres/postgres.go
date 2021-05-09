@@ -12,6 +12,7 @@ func defaultMap(row Row) (*message.Message, error) {
 		&e.Text,
 		&e.CreatedByUserID,
 		&e.CreatedAt,
+		&e.UpdatedAt,
 	); err != nil {
 		return nil, err
 	}
@@ -28,6 +29,7 @@ func mapMessageWithUser(row Row) (*message.Message, error) {
 		&e.Text,
 		&e.CreatedByUserID,
 		&e.CreatedAt,
+		&e.UpdatedAt,
 		&e.User.ID,
 		&e.User.UID,
 		&e.User.Username,
