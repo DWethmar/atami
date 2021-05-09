@@ -50,7 +50,7 @@ func Test_PostgresRepo_Get(t *testing.T) {
 				fmt.Println("Seeding")
 				if err := seedDatabase(db, deps); err != nil {
 					fmt.Print(err)
-					t.Fail()
+					t.FailNow()
 				}
 				fmt.Println("stopped Seeding")
 
