@@ -9,7 +9,7 @@ CREATE TABLE public.app_user
     email VARCHAR (254) NOT NULL UNIQUE,
     password TEXT NOT NULL,
     created_at timestamp NOT NULL,
-    updated_at timestamp NOT NULL
+    updated_at timestamp NOT NULL,
 );
 
 CREATE TABLE public.message
