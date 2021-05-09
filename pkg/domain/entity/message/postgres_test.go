@@ -3,10 +3,21 @@ package message
 import (
 	"database/sql"
 	"testing"
+	"time"
 
 	"github.com/dwethmar/atami/pkg/database"
+	"github.com/dwethmar/atami/pkg/domain/seed"
 	"github.com/dwethmar/atami/pkg/memstore"
 )
+
+func seedPostgressRepo(db *sql.DB, deps repoTestDependencies) {
+	for _, user := range deps.users {
+		seed.SeedUser(db, user.UID, user.Username, user.Username+"@test.nl", "abc", time.Now(), time.Now())
+	}
+	for _, message := range deps.messages {
+		seed.SeedMessage(db, message.UID, message.Text, message.CreatedByUserID, message.CreatedAt, message.UpdatedAt)
+	}
+}
 
 func Test_PostgresRepo_Get(t *testing.T) {
 	database.WithTestDB(t, func(db *sql.DB) error {
@@ -15,12 +26,7 @@ func Test_PostgresRepo_Get(t *testing.T) {
 			t,
 			deps,
 			func() Repository {
-				// for _, user := range deps.users {
-				// 	store.GetUsers().Put(user.ID, *userToMemoryMap(*user))
-				// }
-				// for _, message := range deps.messages {
-				// 	queryRowInsertMessage(db, message.UID, message.Text, message.CreatedByUserID, message.CreatedAt, message.UpdatedAt)
-				// }
+				seedPostgressRepo(db, deps)
 				return NewPostgresRepository(db)
 			},
 		)

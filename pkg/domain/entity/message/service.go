@@ -18,7 +18,7 @@ func NewService(r Repository) *Service {
 	}
 }
 
-//Create a book
+//Create a message
 func (s *Service) Create(e Create) (entity.ID, error) {
 	e.UID = entity.NewUID()
 	return s.repo.Create(&Message{
@@ -29,17 +29,17 @@ func (s *Service) Create(e Create) (entity.ID, error) {
 	})
 }
 
-//Get a book
+//Get a message
 func (s *Service) Get(id entity.ID) (*Message, error) {
 	return s.repo.Get(id)
 }
 
-//List books
+//List messages
 func (s *Service) List(limit, offset uint) ([]*Message, error) {
 	return s.repo.List(limit, offset)
 }
 
-//Delete a book
+//Delete a message
 func (s *Service) Delete(id entity.ID) error {
 	_, err := s.Get(id)
 	if err != nil {
@@ -48,7 +48,7 @@ func (s *Service) Delete(id entity.ID) error {
 	return s.repo.Delete(id)
 }
 
-//Update a book
+//Update a message
 func (s *Service) Update(ID entity.ID, e Update) error {
 	message, err := s.Get(ID)
 	if err != nil {

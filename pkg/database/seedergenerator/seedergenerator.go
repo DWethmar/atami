@@ -40,7 +40,7 @@ import (
 // {{ .Name }}SQL seed query
 var {{ .Name }}SQL = ` + "`" + `{{ .SQL }}` + "`" + `
 
-func seed{{.Name | Title}}(
+func Seed{{.Name | Title}}(
 	db database.Transaction,
 	{{ JoinFuncArgs .FuncArgs -}}
 ) (sql.Result, error) {

@@ -31,7 +31,7 @@ VALUES (
 	$6
 )`
 
-func seedUser(
+func SeedUser(
 	db database.Transaction,
 	UID string,
 	username string,
@@ -68,12 +68,13 @@ VALUES (
 	$5
 )`
 
-func seedMessage(
+func SeedMessage(
 	db database.Transaction,
 	UID string,
 	text string,
 	createdByUserID entity.ID,
 	createdAt time.Time,
+	updatedAt time.Time,
 ) (sql.Result, error) {
 	return db.Exec(
 		MessageSQL,
@@ -81,5 +82,6 @@ func seedMessage(
 		text,
 		createdByUserID,
 		createdAt,
+		updatedAt,
 	)
 }

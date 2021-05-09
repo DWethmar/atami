@@ -107,6 +107,10 @@ func main() {
 						Name: "createdAt",
 						Type: "time.Time",
 					},
+					{
+						Name: "updatedAt",
+						Type: "time.Time",
+					},
 				},
 			},
 		})
