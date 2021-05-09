@@ -71,7 +71,7 @@ func main() {
 						Type: "uint",
 					},
 				},
-				MapFunc:    "mapMessageWithUser",
+				MapFunc:    "messageWithUserRowMap",
 				ReturnType: "*Message",
 			},
 			{
@@ -98,7 +98,7 @@ func main() {
 						Type: "int",
 					},
 				},
-				MapFunc:    "mapMessageWithUser",
+				MapFunc:    "messageWithUserRowMap",
 				ReturnType: "*Message",
 			},
 			{
@@ -125,7 +125,7 @@ func main() {
 						Type: "string",
 					},
 				},
-				MapFunc:    "mapMessageWithUser",
+				MapFunc:    "messageWithUserRowMap",
 				ReturnType: "*Message",
 			},
 			{
@@ -144,7 +144,7 @@ func main() {
 						Type: "int",
 					},
 				},
-				MapFunc:    "defaultMap",
+				MapFunc:    "defaultRowMap",
 				ReturnType: "*Message",
 			},
 			{
@@ -157,9 +157,10 @@ func main() {
 							schema.ColText,
 							schema.ColCreatedByUserID,
 							schema.ColCreatedAt,
+							schema.ColUpdatedAt,
 						},
 						Values: []interface{}{
-							"$1", "$2", "$3", "$4",
+							"$1", "$2", "$3", "$4", "$5",
 						},
 						Returning: []string{
 							schema.ColID,
@@ -184,8 +185,12 @@ func main() {
 						Name: "createdAt",
 						Type: "time.Time",
 					},
+					{
+						Name: "updatedAt",
+						Type: "time.Time",
+					},
 				},
-				MapFunc:    "insertMap",
+				MapFunc:    "insertRowMap",
 				ReturnType: "entity.ID",
 			},
 		})

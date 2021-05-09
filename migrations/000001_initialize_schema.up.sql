@@ -19,6 +19,7 @@ CREATE TABLE public.message
     text TEXT NOT NULL,
     created_by_user_id integer REFERENCES public.app_user (id) ON DELETE CASCADE,
     created_at timestamp NOT NULL
+    updated_at timestamp NOT NULL
 );
 
 COMMIT;

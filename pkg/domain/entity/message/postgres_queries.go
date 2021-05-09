@@ -19,12 +19,13 @@ type Row interface {
 }
 
 // selectMessages sql query
-var selectMessages = `SELECT
+var selectMessagesSQL = `SELECT
 	message.id,
 	message.uid,
 	message.text,
 	message.created_by_user_id,
 	message.created_at,
+	message.updated_at,
 	app_user.id,
 	app_user.uid,
 	app_user.username
@@ -34,17 +35,13 @@ ORDER BY message.created_at DESC
 LIMIT $1
 OFFSET $2`
 
-func mapSelectMessages(row Row) (*Message, error) {
-	return mapMessageWithUser(row)
-}
-
 func querySelectMessages(
 	db database.Transaction,
 	limit uint,
 	offset uint,
 ) ([]*Message, error) {
 	rows, err := db.Query(
-		selectMessages,
+		selectMessagesSQL,
 		limit,
 		offset,
 	)
@@ -54,7 +51,7 @@ func querySelectMessages(
 	}
 	entries := make([]*Message, 0)
 	for rows.Next() {
-		if entry, err := mapSelectMessages(rows); err == nil {
+		if entry, err := messageWithUserRowMap(rows); err == nil {
 			entries = append(entries, entry)
 		} else {
 			return nil, err
@@ -67,12 +64,13 @@ func querySelectMessages(
 }
 
 // selectMessageByID sql query
-var selectMessageByID = `SELECT
+var selectMessageByIDSQL = `SELECT
 	message.id,
 	message.uid,
 	message.text,
 	message.created_by_user_id,
 	message.created_at,
+	message.updated_at,
 	app_user.id,
 	app_user.uid,
 	app_user.username
@@ -80,27 +78,24 @@ FROM message
 LEFT JOIN app_user ON message.created_by_user_id = app_user.id
 WHERE message.id = $1`
 
-func mapSelectMessageByID(row Row) (*Message, error) {
-	return mapMessageWithUser(row)
-}
-
 func queryRowSelectMessageByID(
 	db database.Transaction,
 	ID int,
 ) (*Message, error) {
-	return mapSelectMessageByID(db.QueryRow(
-		selectMessageByID,
+	return messageWithUserRowMap(db.QueryRow(
+		selectMessageByIDSQL,
 		ID,
 	))
 }
 
 // selectMessageByUID sql query
-var selectMessageByUID = `SELECT
+var selectMessageByUIDSQL = `SELECT
 	message.id,
 	message.uid,
 	message.text,
 	message.created_by_user_id,
 	message.created_at,
+	message.updated_at,
 	app_user.id,
 	app_user.uid,
 	app_user.username
@@ -108,22 +103,18 @@ FROM message
 LEFT JOIN app_user ON message.created_by_user_id = app_user.id
 WHERE message.uid = $1`
 
-func mapSelectMessageByUID(row Row) (*Message, error) {
-	return mapMessageWithUser(row)
-}
-
 func queryRowSelectMessageByUID(
 	db database.Transaction,
 	UID string,
 ) (*Message, error) {
-	return mapSelectMessageByUID(db.QueryRow(
-		selectMessageByUID,
+	return messageWithUserRowMap(db.QueryRow(
+		selectMessageByUIDSQL,
 		UID,
 	))
 }
 
 // deleteMessage sql query
-var deleteMessage = `DELETE FROM message
+var deleteMessageSQL = `DELETE FROM message
 WHERE message.id = $1`
 
 func execDeleteMessage(
@@ -131,30 +122,28 @@ func execDeleteMessage(
 	ID int,
 ) (sql.Result, error) {
 	return db.Exec(
-		deleteMessage,
+		deleteMessageSQL,
 		ID,
 	)
 }
 
 // insertMessage sql query
-var insertMessage = `INSERT INTO message
+var insertMessageSQL = `INSERT INTO message
 (
 	uid,
 	text,
 	created_by_user_id,
-	created_at
+	created_at,
+	updated_at
 )
 VALUES (
 	$1,
 	$2,
 	$3,
-	$4
+	$4,
+	$5
 )
 RETURNING id`
-
-func mapInsertMessage(row Row) (entity.ID, error) {
-	return insertMap(row)
-}
 
 func queryRowInsertMessage(
 	db database.Transaction,
@@ -162,12 +151,14 @@ func queryRowInsertMessage(
 	text string,
 	CreatedByUserID int,
 	createdAt time.Time,
+	updatedAt time.Time,
 ) (entity.ID, error) {
-	return mapInsertMessage(db.QueryRow(
-		insertMessage,
+	return insertRowMap(db.QueryRow(
+		insertMessageSQL,
 		UID,
 		text,
 		CreatedByUserID,
 		createdAt,
+		updatedAt,
 	))
 }

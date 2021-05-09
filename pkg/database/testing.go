@@ -44,18 +44,19 @@ func DropDatabase(db *sql.DB, database string) error {
 
 // ExecSQLFile runs a sql file
 func ExecSQLFile(db *sql.DB, sqlFile string) error {
-
 	fmt.Printf("Reading SQL file: %v \n", sqlFile)
 
 	b, err := ioutil.ReadFile(sqlFile)
 	if err != nil {
 		log.Fatal(err)
 	}
+	return ExecSQL(db, b)
+}
 
-	sql := string(b)
-	fmt.Printf("Excecuting SQL file: %v \n", sqlFile)
-
-	if _, err = db.Exec(sql); err != nil {
+// ExecSQL runs a sql query
+func ExecSQL(db *sql.DB, sql []byte) error {
+	fmt.Printf("Excecuting SQL file: %v \n", string(sql))
+	if _, err := db.Exec(string(sql)); err != nil {
 		return err
 	}
 	return nil
@@ -105,17 +106,16 @@ func NewTestDB(c config.Config) (*sql.DB, error) {
 		return nil, err
 	}
 
-	if err := ExecSQLFile(db, c.TestSeedSQLFile); err != nil {
-		fmt.Printf("Error while running migrations")
-		return nil, err
-	}
+	// if err := ExecSQLFile(db, c.TestSeedSQLFile); err != nil {
+	// 	fmt.Printf("Error while running migrations")
+	// 	return nil, err
+	// }
 
 	return db, nil
 }
 
 // WithTestDB runs test with test DB and remove DB after test.
 func WithTestDB(t *testing.T, test func(db *sql.DB) error) error {
-
 	if c := config.Load(); c.Valid() == nil && c.TestWithDB {
 		rand.Seed(time.Now().UTC().UnixNano())
 		c.DBName = fmt.Sprintf("%v_%v_%d", c.DBName, strings.ToLower(t.Name()), rand.Int())

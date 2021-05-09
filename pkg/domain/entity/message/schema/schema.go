@@ -18,6 +18,8 @@ var (
 	ColCreatedByUserID = "created_by_user_id"
 	// ColCreatedAt table Column
 	ColCreatedAt = "created_at"
+	// ColUpdatedAt table Column
+	ColUpdatedAt = "updated_at"
 )
 
 // SelectCols are the default selected columns
@@ -27,6 +29,7 @@ var SelectCols = []string{
 	WithTbl(ColText),
 	WithTbl(ColCreatedByUserID),
 	WithTbl(ColCreatedAt),
+	WithTbl(ColUpdatedAt),
 }
 
 // WithTbl adds table to col

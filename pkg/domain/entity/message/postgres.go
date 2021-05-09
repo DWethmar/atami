@@ -57,6 +57,7 @@ func (r *postgresRepo) Create(message *Message) (entity.ID, error) {
 		message.Text,
 		message.CreatedByUserID,
 		message.CreatedAt,
+		message.UpdatedAt,
 	)
 	if err != nil {
 		return 0, err

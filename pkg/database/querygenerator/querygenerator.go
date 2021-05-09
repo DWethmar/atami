@@ -72,44 +72,38 @@ type Row interface {
 
 {{ range .Queries }}
 // {{ .Name }} sql query
-var {{ .Name }} = ` + "`" + `{{ .SQL }}` + "`" + `
+var {{ .Name }}SQL = ` + "`" + `{{ .SQL }}` + "`" + `
 {{ if eq .QueryType.String  "Exec" }}
 func exec{{.Name | Title}}(
 	db database.Transaction,
 	{{ JoinFuncArgs .FuncArgs -}}
 ) (sql.Result, error) {
 	return db.Exec(
-		{{ .Name }},
+		{{ .Name }}SQL,
 		{{ JoinQueryArgs .FuncArgs }}
 	)
 }
 {{ end }}
 {{ if eq .QueryType.String  "QueryRow" }}
-func map{{.Name | Title}}(row Row) ({{.ReturnType}}, error) {
-	return {{.MapFunc}}(row)
-}
 
 func queryRow{{.Name | Title}}(
 	db database.Transaction,
 	{{ JoinFuncArgs .FuncArgs -}}
 ) ({{.ReturnType}}, error)  {
-	return map{{.Name | Title}}(db.QueryRow(
-		{{ .Name }},
+	return {{.MapFunc}}(db.QueryRow(
+		{{ .Name }}SQL,
 		{{ JoinQueryArgs .FuncArgs }}
 	))
 }
 {{ end }}
 {{ if eq .QueryType.String  "Query" }}
-func map{{.Name | Title}}(row Row) ({{.ReturnType}}, error) {
-	return {{.MapFunc}}(row)
-}
 
 func query{{.Name | Title}}(
 	db database.Transaction,
 	{{ JoinFuncArgs .FuncArgs -}}
 ) ([]{{.ReturnType}}, error) {
 	rows, err :=  db.Query(
-		{{ .Name }},
+		{{ .Name }}SQL,
 		{{ JoinQueryArgs .FuncArgs }}
 	)
 	defer rows.Close()
@@ -118,7 +112,7 @@ func query{{.Name | Title}}(
 	}
 	entries := make([]{{ .ReturnType }}, 0)
 	for rows.Next() {
-		if entry, err := map{{.Name | Title}}(rows); err == nil {
+		if entry, err := {{.MapFunc}}(rows); err == nil {
 			entries = append(entries, entry)
 		} else {
 			return nil, err
