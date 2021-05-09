@@ -9,7 +9,7 @@ CREATE TABLE public.app_user
     email VARCHAR (254) NOT NULL UNIQUE,
     password TEXT NOT NULL,
     created_at timestamp NOT NULL,
-    updated_at timestamp NOT NULL,
+    updated_at timestamp NOT NULL
 );
 
 CREATE TABLE public.message
@@ -18,7 +18,7 @@ CREATE TABLE public.message
     uid VARCHAR (36) NOT NULL UNIQUE,
     text TEXT NOT NULL,
     created_by_user_id integer REFERENCES public.app_user (id) ON DELETE CASCADE,
-    created_at timestamp NOT NULL
+    created_at timestamp NOT NULL,
     updated_at timestamp NOT NULL
 );
 
