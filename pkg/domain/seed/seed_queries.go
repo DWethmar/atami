@@ -13,7 +13,7 @@ import (
 )
 
 // UserSQL seed query
-var UserSQL = `INSERT INTO message
+var UserSQL = `INSERT INTO app_user
 (
 	uid,
 	username,
