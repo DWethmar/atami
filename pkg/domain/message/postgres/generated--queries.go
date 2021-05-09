@@ -141,7 +141,7 @@ VALUES (
 	$2,
 	$3,
 	$4,
-	$4
+	$5
 )
 RETURNING message.id, message.uid, message.text, message.created_by_user_id, message.created_at, message.updated_at`
 
