@@ -72,7 +72,7 @@ func (c Config) Valid() error {
 }
 
 // Load collects the necessary env vars and returns them in a struct.
-func Load() Config {
+func Load() *Config {
 	dbHost := os.Getenv(dbHostEnvKey)
 	dbPort := os.Getenv(dbPortEnvKey)
 	dbUser := os.Getenv(dbUserEnvKey)
@@ -99,7 +99,7 @@ func Load() Config {
 	dbMigrationVersion := uint(1)
 	accessSecret := os.Getenv(accessSecretEnvKey)
 
-	return Config{
+	return &Config{
 		DBHost:             dbHost,
 		DBPort:             dbPort,
 		DBUser:             dbUser,

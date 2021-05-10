@@ -78,7 +78,7 @@ type TestDBConfig struct {
 func NewTestDB(testDBConfig *TestDBConfig) (*sql.DB, error) {
 	var db *sql.DB
 
-	dc := postgresConnectionConfig{
+	dc := &PostgresConnectionConfig{
 		DBHost:     testDBConfig.DBHost,
 		DBPort:     testDBConfig.DBPort,
 		DBUser:     testDBConfig.DBUser,

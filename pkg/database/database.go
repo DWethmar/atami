@@ -4,6 +4,8 @@ import (
 	"database/sql"
 	"fmt"
 	"strings"
+
+	"github.com/dwethmar/atami/pkg/config"
 )
 
 // Connect creates new DB
@@ -19,7 +21,7 @@ func Connect(driverName string, dataSourceName string) (*sql.DB, error) {
 	return db, nil
 }
 
-type postgresConnectionConfig struct {
+type PostgresConnectionConfig struct {
 	DBHost     string
 	DBPort     string
 	DBUser     string
@@ -27,8 +29,16 @@ type postgresConnectionConfig struct {
 	DBName     string
 }
 
+func (c *PostgresConnectionConfig) Load(config *config.Config) {
+		c.DBHost = config.DBHost
+		c.DBPort = config.DBPort
+		c.DBUser = config.DBUser
+		c.DBPassword = config.DBPassword
+		c.DBName = config.DBName
+}
+
 // GetPostgresDataSource return the connection info
-func GetPostgresDataSource(config postgresConnectionConfig) string {
+func GetPostgresDataSource(config *PostgresConnectionConfig) string {
 	cParts := []string{
 		fmt.Sprintf("host=%s", config.DBHost),
 		fmt.Sprintf("port=%s", config.DBPort),
