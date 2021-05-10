@@ -128,6 +128,7 @@ func WithTestDB(t *testing.T, test func(db *sql.DB) error) error {
 			DBUser:     c.DBUser,
 			DBPassword: c.DBPassword,
 			DBName:     fmt.Sprintf("%v_%v_%d", c.DBName, strings.ToLower(t.Name()), rand.Int()),
+			DBDriverName: c.DBDriverName,
 			MigrationFiles: c.MigrationFiles,
 			DBMigrationVersion: c.DBMigrationVersion,
 		}); err == nil {

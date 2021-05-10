@@ -42,7 +42,6 @@ func main() {
 		dsConfig := &database.PostgresConnectionConfig{}
 		dsConfig.Load(c)
 		dataSource := database.GetPostgresDataSource(dsConfig)
-
 		db, err := database.Connect(c.DBDriverName, dataSource)
 		die(err)
 		defer db.Close()
