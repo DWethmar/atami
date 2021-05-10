@@ -81,6 +81,7 @@ func messageWithUserRowMap(row Row) (*Message, error) {
 		&e.Text,
 		&e.CreatedByUserID,
 		&e.CreatedAt,
+		&e.UpdatedAt,
 		&e.CreatedBy.ID,
 		&e.CreatedBy.UID,
 		&e.CreatedBy.Username,
