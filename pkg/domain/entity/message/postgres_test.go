@@ -6,6 +6,7 @@ import (
 	"sync"
 	"testing"
 
+	"github.com/dwethmar/atami/pkg/config"
 	"github.com/dwethmar/atami/pkg/database"
 	"github.com/dwethmar/atami/pkg/domain/entity"
 	"github.com/dwethmar/atami/pkg/domain/seed"
@@ -47,6 +48,9 @@ func seedDatabase(db *sql.DB, deps repoTestDependencies) error {
 }
 
 func Test_PostgresRepo_Get(t *testing.T) {
+	if c:= config.Load(); !c.TestWithDB {
+		t.Skip("Skip test")
+	}
 	mux := &sync.Mutex{}
 	dbs := []*sql.DB{}
 	defer func() {
@@ -77,6 +81,9 @@ func Test_PostgresRepo_Get(t *testing.T) {
 }
 
 func Test_PostgresRepo_GetByUID(t *testing.T) {
+	if c:= config.Load(); !c.TestWithDB {
+		t.Skip("Skip test")
+	}
 	mux := &sync.Mutex{}
 	dbs := []*sql.DB{}
 	defer func() {
@@ -106,23 +113,38 @@ func Test_PostgresRepo_GetByUID(t *testing.T) {
 	)
 }
 
-// func Test_PostgresRepo_List(t *testing.T) {
-// 	deps := newRepoTestDependencies()
-// 	testRepositoryList(
-// 		t,
-// 		deps,
-// 		func() Repository {
-// 			store := memstore.NewStore()
-// 			for _, user := range deps.users {
-// 				store.GetUsers().Put(user.ID, *userToMemoryMap(*user))
-// 			}
-// 			for _, message := range deps.messages {
-// 				store.GetMessages().Put(message.ID, *messageToMemoryMap(*message))
-// 			}
-// 			return NewInMemoryRepo(store)
-// 		},
-// 	)
-// }
+func Test_PostgresRepo_List(t *testing.T) {
+	if c:= config.Load(); !c.TestWithDB {
+		t.Skip("Skip test")
+	}
+	mux := &sync.Mutex{}
+	dbs := []*sql.DB{}
+	defer func() {
+		for _, db := range dbs {
+			db.Close()
+		}
+	}()
+	deps := newRepoTestDependencies()
+	testRepositoryList(
+		t,
+		deps,
+		func() Repository {
+			db, err := database.NewTestDB(t)
+			if err != nil {
+				assert.FailNow(t, err.Error())
+			}
+			mux.Lock()
+			dbs = append(dbs, db)
+			mux.Unlock()
+
+			if err := seedDatabase(db, deps); err != nil {
+				fmt.Print(err)
+				t.FailNow()
+			}
+			return NewPostgresRepository(db)
+		},
+	)
+}
 
 // func Test_PostgresRepo_Update(t *testing.T) {
 // 	deps := newRepoTestDependencies()
