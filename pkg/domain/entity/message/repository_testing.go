@@ -28,8 +28,8 @@ func newRepoTestDependencies() repoTestDependencies {
 			Text:            "message text 1",
 			CreatedByUserID: users[0].ID,
 			CreatedBy:       *users[0],
-			CreatedAt:       time.Now().Add(time.Duration(1000)),
-			UpdatedAt:       time.Now().Add(time.Duration(1000)),
+			CreatedAt:       entity.Now().Add(time.Duration(1000)),
+			UpdatedAt:       entity.Now().Add(time.Duration(1000)),
 		},
 		{
 			ID:              entity.ID(2),
@@ -37,8 +37,8 @@ func newRepoTestDependencies() repoTestDependencies {
 			Text:            "message text 2",
 			CreatedByUserID: users[1].ID,
 			CreatedBy:       *users[1],
-			CreatedAt:       time.Now().Add(time.Duration(2000)),
-			UpdatedAt:       time.Now().Add(time.Duration(3000)),
+			CreatedAt:       entity.Now().Add(time.Duration(2000)),
+			UpdatedAt:       entity.Now().Add(time.Duration(3000)),
 		},
 		{
 			ID:              entity.ID(3),
@@ -46,8 +46,8 @@ func newRepoTestDependencies() repoTestDependencies {
 			Text:            "message text 3",
 			CreatedByUserID: users[1].ID,
 			CreatedBy:       *users[1],
-			CreatedAt:       time.Now().Add(time.Duration(4000)),
-			UpdatedAt:       time.Now().Add(time.Duration(5000)),
+			CreatedAt:       entity.Now().Add(time.Duration(4000)),
+			UpdatedAt:       entity.Now().Add(time.Duration(5000)),
 		},
 	}
 
@@ -107,7 +107,7 @@ func testRepositoryGet(t *testing.T, dependencies repoTestDependencies, setup se
 				t.Errorf("Repository.Get() error = %v, wantErr %v", err, tt.wantErr)
 				return
 			}
-			if !assert.Equal(t, got, tt.want) {
+			if !assert.Equal(t, tt.want, got) {
 				t.Errorf("Repository.Get() = %v, want %v", got, tt.want)
 			}
 		})
@@ -160,7 +160,7 @@ func testRepositoryGetByUID(t *testing.T, dependencies repoTestDependencies, set
 				t.Errorf("Repository.Get() error = %v, wantErr %v", err, tt.wantErr)
 				return
 			}
-			if !assert.Equal(t, got, tt.want) {
+			if !assert.Equal(t, tt.want, got) {
 				t.Errorf("Repository.GetByUID() = %v, want %v", got, tt.want)
 			}
 		})
@@ -296,7 +296,6 @@ func testRepositoryCreate(t *testing.T, dependencies repoTestDependencies, setup
 
 	type fields struct {
 		repo  Repository
-		newID entity.ID
 	}
 	type args struct {
 		message *Message
@@ -353,7 +352,6 @@ func testRepositoryDelete(t *testing.T, dependencies repoTestDependencies, setup
 		repo Repository
 	}
 	type args struct {
-		create    Create
 		messageID entity.ID
 	}
 	tests := []struct {

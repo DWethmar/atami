@@ -5,9 +5,9 @@ import (
 	"fmt"
 	"sync"
 	"testing"
-	"time"
 
 	"github.com/dwethmar/atami/pkg/database"
+	"github.com/dwethmar/atami/pkg/domain/entity"
 	"github.com/dwethmar/atami/pkg/domain/seed"
 	"github.com/stretchr/testify/assert"
 )
@@ -23,8 +23,8 @@ func seedDatabase(db *sql.DB, deps repoTestDependencies) error {
 			"password",
 			user.Username+"@test.nl",
 			"biography",
-			time.Now(),
-			time.Now(),
+			entity.Now(),
+			entity.Now(),
 		); err != nil {
 			return err
 		}

@@ -108,7 +108,7 @@ func (r *inMemoryRepo) Update(message *Message) error {
 	messages := r.memStore.GetMessages()
 	mapped := messageToMemoryMap(*message)
 	if messages.Delete(message.ID) && !messages.Put(message.ID, *mapped) {
-		return errors.New("Could not update message")
+		return errors.New("could not update message")
 	}
 	return nil
 }
@@ -149,7 +149,7 @@ func findUserInMemstore(store *memstore.UserStore, userID entity.ID) (*User, err
 		user := userFromMemoryMap(r)
 		return user, nil
 	}
-	return nil, fmt.Errorf("Could not find user with ID %d in memory store", userID)
+	return nil, fmt.Errorf("could not find user with ID %d in memory store", userID)
 }
 
 func filterMessagesFromMemory(list []memstore.Message, filterFn func(*Message) bool) (*Message, error) {
