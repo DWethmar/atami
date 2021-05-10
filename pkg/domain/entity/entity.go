@@ -28,7 +28,7 @@ var defaultTimePrecision = time.Microsecond
 
 // Now gets the current time with default time precision
 func Now() time.Time {
-	return time.Now().Truncate(defaultTimePrecision)
+	return time.Now().UTC().Truncate(defaultTimePrecision)
 }
 
 // DefaultTimePrecision truncates the time to use microseconds.

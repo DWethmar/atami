@@ -8,6 +8,6 @@ package fixture
 // 		Text:            "",
 // 		CreatedByUserID: createdBy.ID,
 // 		CreatedBy:       *createdBy,
-// 		CreatedAt:       time.Now(),
+// 		CreatedAt:       entity.Now(),
 // 	}
 // }
