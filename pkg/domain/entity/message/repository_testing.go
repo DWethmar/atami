@@ -296,6 +296,7 @@ func testRepositoryUpdate(t *testing.T, dependencies repoTestDependencies, setup
 		repo Repository
 	}
 	type args struct {
+		ID entity.ID
 		update Update
 	}
 	tests := []struct {
@@ -310,26 +311,52 @@ func testRepositoryUpdate(t *testing.T, dependencies repoTestDependencies, setup
 				repo: setup(),
 			},
 			args: args{
+				ID: testMessage.ID,
 				update: Update{
 					Text: "updated text",
+					UpdatedAt: entity.Now(),
 				},
 			},
 			wantErr: false,
+		},
+				{
+			name: "fail on nonexisting message",
+			fields: fields{
+				repo: setup(),
+			},
+			args: args{
+				ID: entity.ID(9999999),
+				update: Update{
+					Text: "updated text",
+					UpdatedAt: entity.Now(),
+				},
+			},
+			wantErr: true,
 		},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			repo := tt.fields.repo
 
-			expectedMsg, _ := repo.Get(testMessage.ID)
+			expectedMsg := *testMessage
+			expectedMsg.ID = tt.args.ID
 			expectedMsg.Apply(tt.args.update)
 
-			if err := repo.Update(expectedMsg); (err != nil) != tt.wantErr {
-				t.Errorf("Repository.Update() error = %v, wantErr %v", err, tt.wantErr)
-			} else {
-				updatedMsg, _ := repo.Get(expectedMsg.ID)
-				if !assert.Equal(t, expectedMsg, updatedMsg) {
-					t.Errorf("Repository.Update() = \n%v, want \n%v", updatedMsg, expectedMsg)
+			err := repo.Update(&expectedMsg);
+
+			if (err != nil) != tt.wantErr {
+				t.Errorf("Repository.Create() error = %v, wantErr %v", err, tt.wantErr)
+				return
+			}
+
+			// Check if the update really was successful
+			if !tt.wantErr {
+				updatedMsg, err := repo.Get(expectedMsg.ID); 
+				if assert.NoError(t, err) {
+					return
+				}
+				if !reflect.DeepEqual(updatedMsg, expectedMsg) {
+					t.Errorf("Repository.Create() = %v, want %v", updatedMsg, expectedMsg)
 				}
 			}
 		})

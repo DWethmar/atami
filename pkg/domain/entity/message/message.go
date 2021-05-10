@@ -37,4 +37,5 @@ type Create struct {
 // Update model is used to update a message
 type Update struct {
 	Text string
+	UpdatedAt time.Time
 }

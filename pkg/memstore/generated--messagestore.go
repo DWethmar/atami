@@ -76,6 +76,10 @@ func (h *MessageStore) Get(ID entity.ID) (Message, bool) {
 	defer h.readMux.Unlock()
 
 	if record, ok := h.kv.Get(generateMessageKey(ID)); ok {
+
+		fmt.Println(generateMessageKey(ID))
+		fmt.Println(ok)
+
 		if record, ok := record.(Message); ok {
 			return record, true
 		}

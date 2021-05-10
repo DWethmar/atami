@@ -92,10 +92,10 @@ func (r *inMemoryRepo) List(limit, offset uint) ([]*Message, error) {
 		high = uint(l)
 	}
 
-	fmt.Printf("Slice: low: %d high: %d Len: %d limit: %d offset: %d \n", low, high, l, limit, offset)
+	// fmt.Printf("Slice: low: %d high: %d Len: %d limit: %d offset: %d \n", low, high, l, limit, offset)
 
 	all, _ := messages.All();
-	fmt.Printf("ALL: %d CAP: %d \n" , len(all), cap(all))
+	// fmt.Printf("ALL: %d CAP: %d \n" , len(all), cap(all))
 	sort.Slice(all, func(i, j int) bool {
 		var a = all[i]
 		var b = all[j]
@@ -128,9 +128,13 @@ func (r *inMemoryRepo) List(limit, offset uint) ([]*Message, error) {
 
 func (r *inMemoryRepo) Update(message *Message) error {
 	messages := r.memStore.GetMessages()
+	if _, ok := messages.Get(message.ID); !ok {
+		return domain.ErrNotFound 
+	}
+
 	mapped := messageToMemoryMap(*message)
 	if messages.Delete(message.ID) && !messages.Put(message.ID, *mapped) {
-		return errors.New("could not update message")
+		return domain.ErrCannotBeUpdated
 	}
 	return nil
 }
