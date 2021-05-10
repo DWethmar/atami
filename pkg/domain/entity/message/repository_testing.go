@@ -400,27 +400,27 @@ func testRepositoryCreate(t *testing.T, dependencies repoTestDependencies, setup
 			want:    dependencies.messages[len(dependencies.messages) - 1].ID + 1,
 			wantErr: false,
 		},
-		// {
-		// 	name: "Fail on unknown created by",
-		// 	fields: fields{
-		// 		repo: setup(),
-		// 	},
-		// 	args: args{
-		// 		message: &Message{
-		// 			UID:             "abc123",
-		// 			Text:            "updated text",
-		// 			CreatedByUserID: testUser.ID,
-		// 			CreatedBy: User{
-		// 				ID:       entity.ID(9999),
-		// 				UID:      testUser.UID,
-		// 				Username: testUser.Username,
-		// 			},
-		// 			CreatedAt: createdAt,
-		// 		},
-		// 	},
-		// 	want:    0,
-		// 	wantErr: true,
-		// },
+		{
+			name: "Fail on unknown created by",
+			fields: fields{
+				repo: setup(),
+			},
+			args: args{
+				message: &Message{
+					UID:             "abc123",
+					Text:            "updated text",
+					CreatedByUserID: entity.ID(9999),
+					CreatedBy: User{
+						ID:       entity.ID(9999),
+						UID:      testUser.UID,
+						Username: testUser.Username,
+					},
+					CreatedAt: createdAt,
+				},
+			},
+			want:    0,
+			wantErr: true,
+		},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
