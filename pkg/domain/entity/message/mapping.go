@@ -74,7 +74,7 @@ func messageWithUserRowMap(row Row) (*Message, error) {
 	); err != nil {
 		return nil, err
 	}
-	e.CreatedAt.UTC()
-	e.UpdatedAt.UTC()
+	entity.DefaultTimePrecision(&e.CreatedAt)
+	entity.DefaultTimePrecision(&e.UpdatedAt)
 	return e, nil
 }
