@@ -162,3 +162,25 @@ func queryRowInsertMessage(
 		updatedAt,
 	))
 }
+
+// updateUser sql query
+var updateUserSQL = `UPDATE message
+SET
+	text = $2,
+	updated_at = $3
+WHERE message.id = $1
+RETURNING message.id, message.uid, message.text, message.created_by_user_id, message.created_at, message.updated_at`
+
+func execUpdateUser(
+	db database.Transaction,
+	ID entity.ID,
+	text string,
+	updatedAt time.Time,
+) (sql.Result, error) {
+	return db.Exec(
+		updateUserSQL,
+		ID,
+		text,
+		updatedAt,
+	)
+}

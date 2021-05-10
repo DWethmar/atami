@@ -55,8 +55,6 @@ func (h *MessageStore) Slice(low, high uint) ([]Message, error) {
 
 	entries := make([]Message, high-low)
 
-	fmt.Printf("low: %d hight: %d --- high-low : %v", low, high , high-low)
-
 	for i, ID := range h.ids[low:high] {
 		if record, ok := h.kv.Get(generateMessageKey(ID)); ok {
 			if record, ok := record.(Message); ok {

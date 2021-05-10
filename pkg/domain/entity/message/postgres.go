@@ -47,7 +47,8 @@ func (r *postgresRepo) List(limit, offset uint) ([]*Message, error) {
 }
 
 func (r *postgresRepo) Update(message *Message) error {
-	return nil
+	_, err := execUpdateUser(r.db, message.ID, message.Text, message.UpdatedAt)
+	return err
 }
 
 func (r *postgresRepo) Create(message *Message) (entity.ID, error) {

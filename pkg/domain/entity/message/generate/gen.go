@@ -193,5 +193,38 @@ func main() {
 				MapFunc:    "insertRowMap",
 				ReturnType: "entity.ID",
 			},
+
+			{
+				Name: "updateUser",
+				SQL: qb.Update(
+					qb.UpdateQuery{
+						Table: schema.Table,
+						Set: []qb.UpdateCol{
+							{Name: schema.ColText, Value: "$2"},
+							{Name: schema.ColUpdatedAt, Value: "$3"},
+						},
+						Where: qb.NewWhere().And(
+							fmt.Sprintf("%s = $1", IDCol),
+						),
+						Returning: schema.SelectCols,
+					},
+				),
+				QueryType: qg.Exec,
+				FuncArgs: []qg.FuncArg{
+					{
+						Name: "ID",
+						Type: "entity.ID",
+					},
+					{
+						Name: "text",
+						Type: "string",
+					},
+					{
+						Name: "updatedAt",
+						Type: "time.Time",
+					},
+				},
+				ReturnType: "*User",
+			},
 		})
 }
