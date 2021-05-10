@@ -32,6 +32,6 @@ func Now() time.Time {
 }
 
 // SetDefaultTimePrecision truncates the time to use microseconds.
-func SetDefaultTimePrecision(t *time.Time) {
-	t.UTC().Truncate(defaultTimePrecision)
+func SetDefaultTimePrecision(t time.Time) time.Time {
+	return t.UTC().Truncate(defaultTimePrecision)
 }

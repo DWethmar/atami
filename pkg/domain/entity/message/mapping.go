@@ -74,7 +74,7 @@ func messageWithUserRowMap(row Row) (*Message, error) {
 	); err != nil {
 		return nil, err
 	}
-	entity.SetDefaultTimePrecision(&e.CreatedAt)
-	entity.SetDefaultTimePrecision(&e.UpdatedAt)
+	e.CreatedAt = entity.SetDefaultTimePrecision(e.CreatedAt)
+	e.UpdatedAt = entity.SetDefaultTimePrecision(e.UpdatedAt)
 	return e, nil
 }
