@@ -6,7 +6,6 @@ import (
 	"github.com/dwethmar/atami/pkg/database"
 	"github.com/dwethmar/atami/pkg/domain"
 	"github.com/dwethmar/atami/pkg/domain/entity"
-	"github.com/dwethmar/atami/pkg/domain/message"
 )
 
 type postgresRepo struct {
@@ -46,8 +45,18 @@ func (r *postgresRepo) List(limit, offset uint) ([]*Message, error) {
 	return querySelectMessages(r.db, limit, offset)
 }
 
-func (r *postgresRepo) Update(message *Message) error {
-	_, err := execUpdateUser(r.db, message.ID, message.Text, message.UpdatedAt)
+func (r *postgresRepo) Update(m *Message) error {
+	result, err := execUpdateUser(r.db, m.ID, m.Text, m.UpdatedAt)
+	if err != nil {
+		return err
+	}
+
+	if a, err := result.RowsAffected(); err != nil {
+		return err
+	} else if a == 0 {
+		return domain.ErrCannotBeUpdated
+	}
+
 	return err
 }
 
@@ -75,7 +84,7 @@ func (r *postgresRepo) Delete(ID entity.ID) error {
 	if a, err := result.RowsAffected(); err != nil {
 		return err
 	} else if a == 0 {
-		return message.ErrCouldNotDelete
+		return domain.ErrCannotBeDeleted
 	}
 
 	return nil
