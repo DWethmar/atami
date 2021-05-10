@@ -464,7 +464,7 @@ func testRepositoryDelete(t *testing.T, dependencies repoTestDependencies, setup
 			wantErr: false,
 		},
 		{
-			name: "Error on message not found",
+			name: "Fail on message not found",
 			fields: fields{
 				repo: setup(),
 			},
