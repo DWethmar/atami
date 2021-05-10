@@ -30,11 +30,11 @@ type PostgresConnectionConfig struct {
 }
 
 func (c *PostgresConnectionConfig) Load(config *config.Config) {
-		c.DBHost = config.DBHost
-		c.DBPort = config.DBPort
-		c.DBUser = config.DBUser
-		c.DBPassword = config.DBPassword
-		c.DBName = config.DBName
+	c.DBHost = config.DBHost
+	c.DBPort = config.DBPort
+	c.DBUser = config.DBUser
+	c.DBPassword = config.DBPassword
+	c.DBName = config.DBName
 }
 
 // GetPostgresDataSource return the connection info

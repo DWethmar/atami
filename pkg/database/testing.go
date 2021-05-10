@@ -75,9 +75,14 @@ func NewTestDB(t *testing.T) (*sql.DB, error) {
 	}
 	dbConfig := &PostgresConnectionConfig{}
 	dbConfig.Load(c)
-	dbConfig.DBName = NewTestDBName(t)
-	
-	db, err := CreateTestDB(dbConfig, c.DBDriverName, c.MigrationFiles, c.DBMigrationVersion)
+
+	db, err := CreateTestDB(
+		dbConfig, 
+		c.DBDriverName, 
+		NewTestDBName(t), 
+		c.MigrationFiles, 
+		c.DBMigrationVersion,
+	)
 	if err != nil {
 		return nil, err
 	}
@@ -88,6 +93,7 @@ func NewTestDB(t *testing.T) (*sql.DB, error) {
 func CreateTestDB(
 	config *PostgresConnectionConfig, 
 	driverName, 
+	databaseName,
 	migrationFiles string, 
 	DBMigrationVersion uint,
 ) (*sql.DB, error) {
@@ -97,7 +103,7 @@ func CreateTestDB(
 
 	db, err := Connect(driverName, dataSource)
 	if err != nil {
-		fmt.Printf("Could not connect to database with %s %s", driverName, dataSource)
+		fmt.Printf("Could not connect to database with driver: %s datasource: %s", driverName, dataSource)
 		panic(err)
 	}
 
@@ -105,15 +111,18 @@ func CreateTestDB(
 		return nil, err
 	}
 
-	if err := CreateDatabase(db, config.DBName, config.DBUser); err != nil {
+	if err := CreateDatabase(db, databaseName, config.DBUser); err != nil {
 		return nil, err
 	}
 	db.Close()
 
-	dataSource = GetPostgresDataSource(config)
+	newDBConfig := *config
+	newDBConfig.DBName = databaseName
+	dataSource = GetPostgresDataSource(&newDBConfig)
+
 	db, err = Connect(driverName, dataSource)
 	if err != nil {
-		fmt.Printf("Could not connect to database with %v %v", driverName, dataSource)
+		fmt.Printf("Could not connect to database with driver: %s datasource: %s", driverName, dataSource)
 		return nil, err
 	}
 
@@ -130,11 +139,11 @@ func WithTestDB(t *testing.T, test func(db *sql.DB) error) error {
 	if c := config.Load(); c.Valid() == nil && c.TestWithDB {
 		dbConfig := &PostgresConnectionConfig{}
 		dbConfig.Load(c)
-		dbConfig.DBName = NewTestDBName(t)
 
 		if db, err := CreateTestDB(
 			dbConfig, 
 			c.DBDriverName, 
+			NewTestDBName(t),
 			c.MigrationFiles, 
 			c.DBMigrationVersion,
 		); err == nil {
