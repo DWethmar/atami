@@ -3,6 +3,7 @@ package message
 import (
 	"errors"
 	"fmt"
+	"sort"
 
 	"github.com/dwethmar/atami/pkg/domain"
 	"github.com/dwethmar/atami/pkg/domain/entity"
@@ -82,24 +83,25 @@ func (r *inMemoryRepo) List(limit, offset uint) ([]*Message, error) {
 		limit = uint(len)
 	}
 
-	paged, err := messages.Slice(offset, limit)
+	paged, err := messages.Slice(offset, offset + limit)
 	if err != nil {
 		return nil, err
 	}
 
 	items := make([]*Message, len(paged))
-
 	for i, r := range paged {
 		msg := messageFromMemoryMap(r)
-
 		if user, err := findUserInMemstore(users, msg.CreatedByUserID); err == nil {
 			msg.CreatedBy = *user
 		} else {
 			return nil, err
 		}
-
 		items[i] = msg
 	}
+
+	sort.Slice(items, func(i, j int) bool {
+		return items[i].ID > items[j].ID
+	})
 
 	return items, nil
 }

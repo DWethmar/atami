@@ -4,7 +4,6 @@ import (
 	"strconv"
 	"sync"
 	"testing"
-	"time"
 
 	"github.com/stretchr/testify/assert"
 )
@@ -115,61 +114,5 @@ func TestUserFromIndex(t *testing.T) {
 
 	if value, ok := store.FromIndex(8999); assert.True(t, ok) && assert.NotNil(t, value) {
 		assert.Equal(t, "Miauw8999", value.Username)
-	}
-}
-
-// Sort items in memory
-func TestUserSort(t *testing.T) {
-	store, _ := NewUserStore(NewKvStore(&sync.Mutex{}), &sync.Mutex{}, &sync.Mutex{})
-
-	store.Put(3, User{
-		Username:  "Miauw3",
-		CreatedAt: time.Now().UTC().Add(time.Duration(3000)),
-	})
-
-	store.Put(2, User{
-		Username:  "Miauw2",
-		CreatedAt: time.Now().UTC().Add(time.Duration(2000)),
-	})
-
-	store.Put(1, User{
-		Username:  "Miauw1",
-		CreatedAt: time.Now().UTC().Add(time.Duration(1000)),
-	})
-
-	store.Sort(func(i, j int) bool {
-		a, ok := store.FromIndex(i)
-		if !ok {
-			return false
-		}
-
-		b, ok := store.FromIndex(j)
-		if !ok {
-			return false
-		}
-
-		return a.Username < b.Username
-	})
-
-	if value, ok := store.FromIndex(0); ok {
-		assert.True(t, ok)
-		assert.NotNil(t, value)
-		assert.Equal(t, "Miauw1", value.Username)
-	}
-
-	if value, ok := store.FromIndex(1); ok {
-		assert.True(t, ok)
-		assert.NotNil(t, value)
-		assert.Equal(t, "Miauw2", value.Username)
-	}
-
-	if value, ok := store.FromIndex(2); ok {
-		assert.True(t, ok)
-		assert.NotNil(t, value)
-		assert.Equal(t, "Miauw3", value.Username)
-	}
-
-	if _, ok := store.FromIndex(3); ok {
-		assert.Fail(t, "there should be no fourth value!!")
 	}
 }

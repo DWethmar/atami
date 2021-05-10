@@ -6,7 +6,6 @@ package memstore
 import (
 	"fmt"
 	"github.com/dwethmar/atami/pkg/domain/entity"
-	"sort"
 	"sync"
 )
 
@@ -55,6 +54,8 @@ func (h *MessageStore) Slice(low, high uint) ([]Message, error) {
 	defer h.readMux.Unlock()
 
 	entries := make([]Message, high-low)
+
+	fmt.Printf("low: %d hight: %d --- high-low : %v", low, high , high-low)
 
 	for i, ID := range h.ids[low:high] {
 		if record, ok := h.kv.Get(generateMessageKey(ID)); ok {
@@ -146,14 +147,6 @@ func (h *MessageStore) FromIndex(i int) (Message, bool) {
 		}
 	}
 	return Message{}, false
-}
-
-// Sort items in memory
-func (h *MessageStore) Sort(less func(i, j int) bool) {
-	h.writeMux.Lock()
-	defer h.writeMux.Unlock()
-
-	sort.SliceStable(h.ids, less)
 }
 
 // NewMessageStore returns a new in memory repository for Message records.

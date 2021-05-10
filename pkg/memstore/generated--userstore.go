@@ -6,7 +6,6 @@ package memstore
 import (
 	"fmt"
 	"github.com/dwethmar/atami/pkg/domain/entity"
-	"sort"
 	"sync"
 )
 
@@ -146,14 +145,6 @@ func (h *UserStore) FromIndex(i int) (User, bool) {
 		}
 	}
 	return User{}, false
-}
-
-// Sort items in memory
-func (h *UserStore) Sort(less func(i, j int) bool) {
-	h.writeMux.Lock()
-	defer h.writeMux.Unlock()
-
-	sort.SliceStable(h.ids, less)
 }
 
 // NewUserStore returns a new in memory repository for User records.
