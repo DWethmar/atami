@@ -19,7 +19,7 @@ func Connect(driverName string, dataSourceName string) (*sql.DB, error) {
 	return db, nil
 }
 
-type postgresDataSourceConfig struct {
+type postgresConnectionConfig struct {
 	DBHost     string
 	DBPort     string
 	DBUser     string
@@ -28,7 +28,7 @@ type postgresDataSourceConfig struct {
 }
 
 // GetPostgresDataSource return the connection info
-func GetPostgresDataSource(config postgresDataSourceConfig) string {
+func GetPostgresDataSource(config postgresConnectionConfig) string {
 	cParts := []string{
 		fmt.Sprintf("host=%s", config.DBHost),
 		fmt.Sprintf("port=%s", config.DBPort),

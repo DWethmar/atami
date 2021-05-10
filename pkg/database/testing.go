@@ -62,35 +62,35 @@ func ExecSQL(db *sql.DB, sql []byte) error {
 	return nil
 }
 
-// NewTestDBConfig confiog to create new testing db
-type NewTestDBConfig struct {
+// TestDBConfig config to create new testing db
+type TestDBConfig struct {
 	DBHost       string
 	DBPort       string
 	DBUser       string
 	DBPassword   string
 	DBName       string
 	DBDriverName string
+	MigrationFiles string
+	DBMigrationVersion uint
 }
 
 // NewTestDB create new testy db. Returns a cleanup function and error.
-func NewTestDB(c config.Config) (*sql.DB, error) {
+func NewTestDB(testDBConfig *TestDBConfig) (*sql.DB, error) {
 	var db *sql.DB
 
-	if err := c.Valid(); err != nil {
-		return nil, err
+	dc := postgresConnectionConfig{
+		DBHost:     testDBConfig.DBHost,
+		DBPort:     testDBConfig.DBPort,
+		DBUser:     testDBConfig.DBUser,
+		DBPassword: testDBConfig.DBPassword,
+		DBName:     "postgres",
 	}
 
-	dataSource := GetPostgresDataSource(postgresDataSourceConfig{
-		DBHost:     c.DBHost,
-		DBPort:     c.DBPort,
-		DBUser:     c.DBUser,
-		DBPassword: c.DBPassword,
-		DBName:     "postgres",
-	})
+	dataSource := GetPostgresDataSource(dc)
 
-	db, err := Connect(c.DBDriverName, dataSource)
+	db, err := Connect(testDBConfig.DBDriverName, dataSource)
 	if err != nil {
-		fmt.Printf("Could not connect to database with %v %v", c.DBDriverName, dataSource)
+		fmt.Printf("Could not connect to database with %s %s", testDBConfig.DBDriverName, dataSource)
 		panic(err)
 	}
 
@@ -98,19 +98,19 @@ func NewTestDB(c config.Config) (*sql.DB, error) {
 		return nil, err
 	}
 
-	if err := CreateDatabase(db, c.DBName, c.DBUser); err != nil {
+	if err := CreateDatabase(db, testDBConfig.DBName, testDBConfig.DBUser); err != nil {
 		return nil, err
 	}
 	db.Close()
 
-	dataSource = GetPostgresDataSource(c)
-	db, err = Connect(c.DBDriverName, dataSource)
+	dataSource = GetPostgresDataSource(dc)
+	db, err = Connect(testDBConfig.DBDriverName, dataSource)
 	if err != nil {
-		fmt.Printf("Could not connect to database with %v %v", c.DBDriverName, dataSource)
+		fmt.Printf("Could not connect to database with %v %v", testDBConfig.DBDriverName, dataSource)
 		return nil, err
 	}
 
-	if err := RunMigrations(db, c.DBName, c.MigrationFiles, c.DBMigrationVersion); err != nil {
+	if err := RunMigrations(db, testDBConfig.DBName, testDBConfig.MigrationFiles, testDBConfig.DBMigrationVersion); err != nil {
 		fmt.Printf("Error while running migrations")
 		return nil, err
 	}
@@ -122,9 +122,15 @@ func NewTestDB(c config.Config) (*sql.DB, error) {
 func WithTestDB(t *testing.T, test func(db *sql.DB) error) error {
 	if c := config.Load(); c.Valid() == nil && c.TestWithDB {
 		rand.Seed(time.Now().UTC().UnixNano())
-		c.DBName = fmt.Sprintf("%v_%v_%d", c.DBName, strings.ToLower(t.Name()), rand.Int())
-
-		if db, err := NewTestDB(c); err == nil {
+		if db, err := NewTestDB(&TestDBConfig{
+			DBHost:     c.DBHost,
+			DBPort:     c.DBPort,
+			DBUser:     c.DBUser,
+			DBPassword: c.DBPassword,
+			DBName:     fmt.Sprintf("%v_%v_%d", c.DBName, strings.ToLower(t.Name()), rand.Int()),
+			MigrationFiles: c.MigrationFiles,
+			DBMigrationVersion: c.DBMigrationVersion,
+		}); err == nil {
 			defer db.Close()
 			if assert.NoError(t, err) {
 				return test(db)
