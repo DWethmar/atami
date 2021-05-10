@@ -76,23 +76,35 @@ func Test_PostgresRepo_Get(t *testing.T) {
 	)
 }
 
-// func Test_PostgresRepo_GetByUID(t *testing.T) {
-// 	deps := newRepoTestDependencies()
-// 	testRepositoryGetByUID(
-// 		t,
-// 		deps,
-// 		func() Repository {
-// 			store := memstore.NewStore()
-// 			for _, user := range deps.users {
-// 				store.GetUsers().Put(user.ID, *userToMemoryMap(*user))
-// 			}
-// 			for _, message := range deps.messages {
-// 				store.GetMessages().Put(message.ID, *messageToMemoryMap(*message))
-// 			}
-// 			return NewInMemoryRepo(store)
-// 		},
-// 	)
-// }
+func Test_PostgresRepo_GetByUID(t *testing.T) {
+	mux := &sync.Mutex{}
+	dbs := []*sql.DB{}
+	defer func() {
+		for _, db := range dbs {
+			db.Close()
+		}
+	}()
+	deps := newRepoTestDependencies()
+	testRepositoryGetByUID(
+		t,
+		deps,
+		func() Repository {
+			db, err := database.NewTestDB(t)
+			if err != nil {
+				assert.FailNow(t, err.Error())
+			}
+			mux.Lock()
+			dbs = append(dbs, db)
+			mux.Unlock()
+
+			if err := seedDatabase(db, deps); err != nil {
+				fmt.Print(err)
+				t.FailNow()
+			}
+			return NewPostgresRepository(db)
+		},
+	)
+}
 
 // func Test_PostgresRepo_List(t *testing.T) {
 // 	deps := newRepoTestDependencies()
