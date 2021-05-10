@@ -3,14 +3,17 @@ package message
 import (
 	"database/sql"
 	"fmt"
+	"sync"
 	"testing"
 	"time"
 
 	"github.com/dwethmar/atami/pkg/database"
 	"github.com/dwethmar/atami/pkg/domain/seed"
+	"github.com/stretchr/testify/assert"
 )
 
 func seedDatabase(db *sql.DB, deps repoTestDependencies) error {
+	fmt.Println("Seeding")
 	for _, user := range deps.users {
 		fmt.Println(user)
 		if _, err := seed.SeedUser(
@@ -39,29 +42,38 @@ func seedDatabase(db *sql.DB, deps repoTestDependencies) error {
 			return err
 		}
 	}
-
+	fmt.Println("stopped Seeding")
 	return nil
 }
 
 func Test_PostgresRepo_Get(t *testing.T) {
-	database.WithTestDB(t, func(db *sql.DB) error {
-		deps := newRepoTestDependencies()
-		testRepositoryGet(
-			t,
-			deps,
-			func() Repository {
-				fmt.Println("Seeding")
-				if err := seedDatabase(db, deps); err != nil {
-					fmt.Print(err)
-					t.FailNow()
-				}
-				fmt.Println("stopped Seeding")
+	mux := &sync.Mutex{}
+	dbs := []*sql.DB{}
+	defer func() {
+		for _, db := range dbs {
+			db.Close()
+		}
+	}()
+	deps := newRepoTestDependencies()
+	testRepositoryGet(
+		t,
+		deps,
+		func() Repository {
+			db, err := database.NewTestDB(t)
+			if err != nil {
+				assert.FailNow(t, err.Error())
+			}
+			mux.Lock()
+			dbs = append(dbs, db)
+			mux.Unlock()
 
-				return NewPostgresRepository(db)
-			},
-		)
-		return nil
-	})
+			if err := seedDatabase(db, deps); err != nil {
+				fmt.Print(err)
+				t.FailNow()
+			}
+			return NewPostgresRepository(db)
+		},
+	)
 }
 
 // func Test_PostgresRepo_GetByUID(t *testing.T) {
