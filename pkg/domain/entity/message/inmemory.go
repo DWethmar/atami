@@ -12,14 +12,12 @@ import (
 
 type inMemoryRepo struct {
 	memStore *memstore.Memstore
-	newID    entity.ID
 }
 
 //NewInMemoryRepo create new repository
 func NewInMemoryRepo(memStore *memstore.Memstore) Repository {
 	return &inMemoryRepo{
 		memStore: memStore,
-		newID:    0,
 	}
 }
 
@@ -92,20 +90,12 @@ func (r *inMemoryRepo) List(limit, offset uint) ([]*Message, error) {
 		high = uint(l)
 	}
 
-	// fmt.Printf("Slice: low: %d high: %d Len: %d limit: %d offset: %d \n", low, high, l, limit, offset)
-
 	all, _ := messages.All();
-	// fmt.Printf("ALL: %d CAP: %d \n" , len(all), cap(all))
 	sort.Slice(all, func(i, j int) bool {
 		var a = all[i]
 		var b = all[j]
 		return a.ID > b.ID
 	})
-
-	// DEBUG
-	// for i, x := range all {
-	// 	fmt.Printf("SORTED result %d: %v \n", i, x)
-	// }
 
 	items := make([]*Message, 0)
 	for _, r := range all[low:high]{
@@ -118,11 +108,6 @@ func (r *inMemoryRepo) List(limit, offset uint) ([]*Message, error) {
 		items = append(items, msg)
 	}
 
-	// // DEBUG
-	// for i, x := range items {
-	// 	fmt.Printf("SORTED items %d: %v \n", i, x)
-	// }
-	
 	return items, nil
 }
 
@@ -142,14 +127,11 @@ func (r *inMemoryRepo) Update(message *Message) error {
 func (r *inMemoryRepo) Create(message *Message) (entity.ID, error) {
 	messages := r.memStore.GetMessages()
 	users := r.memStore.GetUsers()
-
 	if _, ok := users.Get(message.CreatedByUserID); !ok {
 		return 0, errors.New("user not found")
 	}
 
-	r.newID++
-	message.ID = r.newID
-
+	message.ID = r.memStore.GetMessages().Len() + 1
 	mapped := messageToMemoryMap(*message)
 	messages.Put(message.ID, *mapped)
 

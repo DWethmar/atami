@@ -343,7 +343,6 @@ func testRepositoryUpdate(t *testing.T, dependencies repoTestDependencies, setup
 			expectedMsg.Apply(tt.args.update)
 
 			err := repo.Update(&expectedMsg);
-
 			if (err != nil) != tt.wantErr {
 				t.Errorf("Repository.Create() error = %v, wantErr %v", err, tt.wantErr)
 				return
@@ -398,21 +397,45 @@ func testRepositoryCreate(t *testing.T, dependencies repoTestDependencies, setup
 					CreatedAt: createdAt,
 				},
 			},
-			want:    entity.ID(1),
+			want:    dependencies.messages[len(dependencies.messages) - 1].ID + 1,
 			wantErr: false,
 		},
+		// {
+		// 	name: "Fail on unknown created by",
+		// 	fields: fields{
+		// 		repo: setup(),
+		// 	},
+		// 	args: args{
+		// 		message: &Message{
+		// 			UID:             "abc123",
+		// 			Text:            "updated text",
+		// 			CreatedByUserID: testUser.ID,
+		// 			CreatedBy: User{
+		// 				ID:       entity.ID(9999),
+		// 				UID:      testUser.UID,
+		// 				Username: testUser.Username,
+		// 			},
+		// 			CreatedAt: createdAt,
+		// 		},
+		// 	},
+		// 	want:    0,
+		// 	wantErr: true,
+		// },
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			repo := tt.fields.repo
 
-			got, err := repo.Create(tt.args.message)
+			ID, err := repo.Create(tt.args.message)
+			fmt.Println(err)
+			fmt.Println(ID)
+
 			if (err != nil) != tt.wantErr {
 				t.Errorf("Repository.Create() error = %v, wantErr %v", err, tt.wantErr)
 				return
 			}
-			if !reflect.DeepEqual(got, tt.want) {
-				t.Errorf("Repository.Create() = %v, want %v", got, tt.want)
+			if !reflect.DeepEqual(ID, tt.want) {
+				t.Errorf("Repository.Create() = %v, want %v", ID, tt.want)
 			}
 		})
 	}
@@ -459,7 +482,7 @@ func testRepositoryDelete(t *testing.T, dependencies repoTestDependencies, setup
 			repo := tt.fields.repo
 			err := repo.Delete(tt.args.messageID)
 			if (err != nil) != tt.wantErr {
-				t.Errorf("Repository.Create() error = %v, wantErr %v", err, tt.wantErr)
+				t.Errorf("Repository.Delete() error = %v, wantErr %v", err, tt.wantErr)
 				return
 			}
 		})

@@ -61,7 +61,7 @@ func (r *postgresRepo) Update(m *Message) error {
 }
 
 func (r *postgresRepo) Create(message *Message) (entity.ID, error) {
-	msg, err := queryRowInsertMessage(
+	ID, err := queryRowInsertMessage(
 		r.db,
 		message.UID,
 		message.Text,
@@ -72,7 +72,7 @@ func (r *postgresRepo) Create(message *Message) (entity.ID, error) {
 	if err != nil {
 		return 0, err
 	}
-	return msg, nil
+	return ID, nil
 }
 
 func (r *postgresRepo) Delete(ID entity.ID) error {
