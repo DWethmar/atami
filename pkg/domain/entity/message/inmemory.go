@@ -75,34 +75,54 @@ func (r *inMemoryRepo) List(limit, offset uint) ([]*Message, error) {
 	messages := r.memStore.GetMessages()
 	users := r.memStore.GetUsers()
 
-	if len := messages.Len(); len == 0 {
+	var low = offset
+	var high = offset + limit
+
+	l := messages.Len();
+
+	if  l == 0 {
 		return []*Message{}, nil
-	} else if offset > uint(len) {
-		return []*Message{}, nil
-	} else if offset+limit > uint(len) {
-		limit = uint(len)
 	}
 
-	paged, err := messages.Slice(offset, offset + limit)
-	if err != nil {
-		return nil, err
+	if low > uint(l) {
+		return []*Message{}, nil
 	}
 
-	items := make([]*Message, len(paged))
-	for i, r := range paged {
+	if high > uint(l) {
+		high = uint(l)
+	}
+
+	fmt.Printf("Slice: low: %d high: %d Len: %d limit: %d offset: %d \n", low, high, l, limit, offset)
+
+	all, _ := messages.All();
+	fmt.Printf("ALL: %d CAP: %d \n" , len(all), cap(all))
+	sort.Slice(all, func(i, j int) bool {
+		var a = all[i]
+		var b = all[j]
+		return a.ID > b.ID
+	})
+
+	// DEBUG
+	// for i, x := range all {
+	// 	fmt.Printf("SORTED result %d: %v \n", i, x)
+	// }
+
+	items := make([]*Message, 0)
+	for _, r := range all[low:high]{
 		msg := messageFromMemoryMap(r)
 		if user, err := findUserInMemstore(users, msg.CreatedByUserID); err == nil {
 			msg.CreatedBy = *user
 		} else {
 			return nil, err
 		}
-		items[i] = msg
+		items = append(items, msg)
 	}
 
-	sort.Slice(items, func(i, j int) bool {
-		return items[i].ID > items[j].ID
-	})
-
+	// // DEBUG
+	// for i, x := range items {
+	// 	fmt.Printf("SORTED items %d: %v \n", i, x)
+	// }
+	
 	return items, nil
 }
 

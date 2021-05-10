@@ -1,8 +1,8 @@
 package message
 
 import (
+	"fmt"
 	"reflect"
-	"sort"
 	"testing"
 	"time"
 
@@ -39,7 +39,7 @@ func newRepoTestDependencies() repoTestDependencies {
 			CreatedByUserID: users[1].ID,
 			CreatedBy:       *users[1],
 			CreatedAt:       entity.Now().Add(time.Duration(2000)),
-			UpdatedAt:       entity.Now().Add(time.Duration(3000)),
+			UpdatedAt:       entity.Now().Add(time.Duration(2000)),
 		},
 		{
 			ID:              entity.ID(3),
@@ -47,7 +47,25 @@ func newRepoTestDependencies() repoTestDependencies {
 			Text:            "message text 3",
 			CreatedByUserID: users[1].ID,
 			CreatedBy:       *users[1],
+			CreatedAt:       entity.Now().Add(time.Duration(3000)),
+			UpdatedAt:       entity.Now().Add(time.Duration(3000)),
+		},
+		{
+			ID:              entity.ID(4),
+			UID:             entity.NewUID(),
+			Text:            "message text 4",
+			CreatedByUserID: users[1].ID,
+			CreatedBy:       *users[1],
 			CreatedAt:       entity.Now().Add(time.Duration(4000)),
+			UpdatedAt:       entity.Now().Add(time.Duration(4000)),
+		},
+		{
+			ID:              entity.ID(5),
+			UID:             entity.NewUID(),
+			Text:            "message text 5",
+			CreatedByUserID: users[1].ID,
+			CreatedBy:       *users[1],
+			CreatedAt:       entity.Now().Add(time.Duration(5000)),
 			UpdatedAt:       entity.Now().Add(time.Duration(5000)),
 		},
 	}
@@ -170,9 +188,7 @@ func testRepositoryGetByUID(t *testing.T, dependencies repoTestDependencies, set
 
 func testRepositoryList(t *testing.T, dependencies repoTestDependencies, setup setupRepository) {
 	testMessages := dependencies.messages
-	sort.Slice(testMessages, func(i, j int) bool {
-		return testMessages[i].CreatedAt.Before(testMessages[j].CreatedAt)
-	})
+	fmt.Print()
 
 	type fields struct {
 		repo Repository
@@ -188,42 +204,67 @@ func testRepositoryList(t *testing.T, dependencies repoTestDependencies, setup s
 		want    []*Message
 		wantErr bool
 	}{
-		// {
-		// 	name: "Successfully get messages",
-		// 	fields: fields{
-		// 		repo: setup(),
-		// 	},
-		// 	args: args{
-		// 		limit:  10,
-		// 		offset: 0,
-		// 	},
-		// 	want:    testMessages,
-		// 	wantErr: false,
-		// },
-		// {
-		// 	name: "Successfully get no messages",
-		// 	fields: fields{
-		// 		repo: setup(),
-		// 	},
-		// 	args: args{
-		// 		limit:  10,
-		// 		offset: 10,
-		// 	},
-		// 	want:    []*Message{},
-		// 	wantErr: false,
-		// },
+		{
+			name: "Successfully get messages",
+			fields: fields{
+				repo: setup(),
+			},
+			args: args{
+				limit:  10,
+				offset: 0,
+			},
+			want: []*Message{
+				testMessages[len(testMessages) - 1],
+				testMessages[len(testMessages) - 2],
+				testMessages[len(testMessages) - 3],
+				testMessages[len(testMessages) - 4],
+				testMessages[len(testMessages) - 5],
+
+			},			
+			wantErr: false,
+		},
+		{
+			name: "Successfully get no messages",
+			fields: fields{
+				repo: setup(),
+			},
+			args: args{
+				limit:  10,
+				offset: 10,
+			},
+			want:    []*Message{},
+			wantErr: false,
+		},
 		{
 			name: "Successfully get paged messages",
 			fields: fields{
 				repo: setup(),
 			},
 			args: args{
-				limit:  2,
-				offset: 1,
+				limit:  4,
+				offset: 0,
 			},
 			want: []*Message{
 				testMessages[len(testMessages) - 1],
 				testMessages[len(testMessages) - 2],
+				testMessages[len(testMessages) - 3],
+				testMessages[len(testMessages) - 4],
+			},
+			wantErr: false,
+		},
+				{
+			name: "Successfully get paged messages with offset",
+			fields: fields{
+				repo: setup(),
+			},
+			args: args{
+				limit:  3,
+				offset: 1,
+			},
+			want: []*Message{
+				testMessages[len(testMessages) - 2],
+				testMessages[len(testMessages) - 3],
+				testMessages[len(testMessages) - 4],
 			},
 			wantErr: false,
 		},
