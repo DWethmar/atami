@@ -9,7 +9,7 @@ import (
 var defaultEnvPath = ".env"
 
 // LoadEnvFile by file path
-func LoadEnvFile(path ...string) Config {
+func LoadEnvFile(path ...string) *Config {
 	if path == nil {
 		path = []string{defaultEnvPath}
 	}

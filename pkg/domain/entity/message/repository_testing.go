@@ -1,6 +1,7 @@
 package message
 
 import (
+	"fmt"
 	"reflect"
 	"testing"
 	"time"
@@ -28,8 +29,8 @@ func newRepoTestDependencies() repoTestDependencies {
 			Text:            "message text 1",
 			CreatedByUserID: users[0].ID,
 			CreatedBy:       *users[0],
-			CreatedAt:       time.Now().Add(time.Duration(1000)),
-			UpdatedAt:       time.Now().Add(time.Duration(1000)),
+			CreatedAt:       entity.Now().Add(time.Duration(1000)),
+			UpdatedAt:       entity.Now().Add(time.Duration(1000)),
 		},
 		{
 			ID:              entity.ID(2),
@@ -37,8 +38,8 @@ func newRepoTestDependencies() repoTestDependencies {
 			Text:            "message text 2",
 			CreatedByUserID: users[1].ID,
 			CreatedBy:       *users[1],
-			CreatedAt:       time.Now().Add(time.Duration(2000)),
-			UpdatedAt:       time.Now().Add(time.Duration(3000)),
+			CreatedAt:       entity.Now().Add(time.Duration(2000)),
+			UpdatedAt:       entity.Now().Add(time.Duration(2000)),
 		},
 		{
 			ID:              entity.ID(3),
@@ -46,8 +47,26 @@ func newRepoTestDependencies() repoTestDependencies {
 			Text:            "message text 3",
 			CreatedByUserID: users[1].ID,
 			CreatedBy:       *users[1],
-			CreatedAt:       time.Now().Add(time.Duration(4000)),
-			UpdatedAt:       time.Now().Add(time.Duration(5000)),
+			CreatedAt:       entity.Now().Add(time.Duration(3000)),
+			UpdatedAt:       entity.Now().Add(time.Duration(3000)),
+		},
+		{
+			ID:              entity.ID(4),
+			UID:             entity.NewUID(),
+			Text:            "message text 4",
+			CreatedByUserID: users[1].ID,
+			CreatedBy:       *users[1],
+			CreatedAt:       entity.Now().Add(time.Duration(4000)),
+			UpdatedAt:       entity.Now().Add(time.Duration(4000)),
+		},
+		{
+			ID:              entity.ID(5),
+			UID:             entity.NewUID(),
+			Text:            "message text 5",
+			CreatedByUserID: users[1].ID,
+			CreatedBy:       *users[1],
+			CreatedAt:       entity.Now().Add(time.Duration(5000)),
+			UpdatedAt:       entity.Now().Add(time.Duration(5000)),
 		},
 	}
 
@@ -107,7 +126,7 @@ func testRepositoryGet(t *testing.T, dependencies repoTestDependencies, setup se
 				t.Errorf("Repository.Get() error = %v, wantErr %v", err, tt.wantErr)
 				return
 			}
-			if !assert.Equal(t, got, tt.want) {
+			if !assert.Equal(t, tt.want, got) {
 				t.Errorf("Repository.Get() = %v, want %v", got, tt.want)
 			}
 		})
@@ -160,7 +179,7 @@ func testRepositoryGetByUID(t *testing.T, dependencies repoTestDependencies, set
 				t.Errorf("Repository.Get() error = %v, wantErr %v", err, tt.wantErr)
 				return
 			}
-			if !assert.Equal(t, got, tt.want) {
+			if !assert.Equal(t, tt.want, got) {
 				t.Errorf("Repository.GetByUID() = %v, want %v", got, tt.want)
 			}
 		})
@@ -169,6 +188,7 @@ func testRepositoryGetByUID(t *testing.T, dependencies repoTestDependencies, set
 
 func testRepositoryList(t *testing.T, dependencies repoTestDependencies, setup setupRepository) {
 	testMessages := dependencies.messages
+	fmt.Print()
 
 	type fields struct {
 		repo Repository
@@ -193,7 +213,14 @@ func testRepositoryList(t *testing.T, dependencies repoTestDependencies, setup s
 				limit:  10,
 				offset: 0,
 			},
-			want:    testMessages,
+			want: []*Message{
+				testMessages[len(testMessages) - 1],
+				testMessages[len(testMessages) - 2],
+				testMessages[len(testMessages) - 3],
+				testMessages[len(testMessages) - 4],
+				testMessages[len(testMessages) - 5],
+
+			},			
 			wantErr: false,
 		},
 		{
@@ -214,12 +241,30 @@ func testRepositoryList(t *testing.T, dependencies repoTestDependencies, setup s
 				repo: setup(),
 			},
 			args: args{
-				limit:  2,
+				limit:  4,
+				offset: 0,
+			},
+			want: []*Message{
+				testMessages[len(testMessages) - 1],
+				testMessages[len(testMessages) - 2],
+				testMessages[len(testMessages) - 3],
+				testMessages[len(testMessages) - 4],
+			},
+			wantErr: false,
+		},
+				{
+			name: "Successfully get paged messages with offset",
+			fields: fields{
+				repo: setup(),
+			},
+			args: args{
+				limit:  3,
 				offset: 1,
 			},
 			want: []*Message{
-				testMessages[1],
-				testMessages[0],
+				testMessages[len(testMessages) - 2],
+				testMessages[len(testMessages) - 3],
+				testMessages[len(testMessages) - 4],
 			},
 			wantErr: false,
 		},
@@ -228,6 +273,7 @@ func testRepositoryList(t *testing.T, dependencies repoTestDependencies, setup s
 		t.Run(tt.name, func(t *testing.T) {
 			repo := tt.fields.repo
 			got, err := repo.List(tt.args.limit, tt.args.offset)
+
 			if (err != nil) != tt.wantErr {
 				t.Errorf("Repository.List() error = %v, wantErr %v", err, tt.wantErr)
 				return
@@ -250,6 +296,7 @@ func testRepositoryUpdate(t *testing.T, dependencies repoTestDependencies, setup
 		repo Repository
 	}
 	type args struct {
+		ID entity.ID
 		update Update
 	}
 	tests := []struct {
@@ -264,26 +311,51 @@ func testRepositoryUpdate(t *testing.T, dependencies repoTestDependencies, setup
 				repo: setup(),
 			},
 			args: args{
+				ID: testMessage.ID,
 				update: Update{
 					Text: "updated text",
+					UpdatedAt: entity.Now(),
 				},
 			},
 			wantErr: false,
+		},
+				{
+			name: "fail on nonexisting message",
+			fields: fields{
+				repo: setup(),
+			},
+			args: args{
+				ID: entity.ID(9999999),
+				update: Update{
+					Text: "updated text",
+					UpdatedAt: entity.Now(),
+				},
+			},
+			wantErr: true,
 		},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			repo := tt.fields.repo
 
-			expectedMsg, _ := repo.Get(testMessage.ID)
+			expectedMsg := *testMessage
+			expectedMsg.ID = tt.args.ID
 			expectedMsg.Apply(tt.args.update)
 
-			if err := repo.Update(expectedMsg); (err != nil) != tt.wantErr {
-				t.Errorf("Repository.Update() error = %v, wantErr %v", err, tt.wantErr)
-			} else {
-				updatedMsg, _ := repo.Get(expectedMsg.ID)
-				if !assert.Equal(t, expectedMsg, updatedMsg) {
-					t.Errorf("Repository.Update() = \n%v, want \n%v", updatedMsg, expectedMsg)
+			err := repo.Update(&expectedMsg);
+			if (err != nil) != tt.wantErr {
+				t.Errorf("Repository.Create() error = %v, wantErr %v", err, tt.wantErr)
+				return
+			}
+
+			// Check if the update really was successful
+			if !tt.wantErr {
+				updatedMsg, err := repo.Get(expectedMsg.ID); 
+				if assert.NoError(t, err) {
+					return
+				}
+				if !reflect.DeepEqual(updatedMsg, expectedMsg) {
+					t.Errorf("Repository.Create() = %v, want %v", updatedMsg, expectedMsg)
 				}
 			}
 		})
@@ -296,7 +368,6 @@ func testRepositoryCreate(t *testing.T, dependencies repoTestDependencies, setup
 
 	type fields struct {
 		repo  Repository
-		newID entity.ID
 	}
 	type args struct {
 		message *Message
@@ -326,21 +397,42 @@ func testRepositoryCreate(t *testing.T, dependencies repoTestDependencies, setup
 					CreatedAt: createdAt,
 				},
 			},
-			want:    entity.ID(1),
+			want:    dependencies.messages[len(dependencies.messages) - 1].ID + 1,
 			wantErr: false,
+		},
+		{
+			name: "Fail on unknown created by user",
+			fields: fields{
+				repo: setup(),
+			},
+			args: args{
+				message: &Message{
+					UID:             "abc123",
+					Text:            "updated text",
+					CreatedByUserID: entity.ID(9999),
+					CreatedBy: User{
+						ID:       entity.ID(9999),
+						UID:      testUser.UID,
+						Username: testUser.Username,
+					},
+					CreatedAt: createdAt,
+				},
+			},
+			want:    0,
+			wantErr: true,
 		},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			repo := tt.fields.repo
+			ID, err := repo.Create(tt.args.message)
 
-			got, err := repo.Create(tt.args.message)
 			if (err != nil) != tt.wantErr {
 				t.Errorf("Repository.Create() error = %v, wantErr %v", err, tt.wantErr)
 				return
 			}
-			if !reflect.DeepEqual(got, tt.want) {
-				t.Errorf("Repository.Create() = %v, want %v", got, tt.want)
+			if !reflect.DeepEqual(ID, tt.want) {
+				t.Errorf("Repository.Create() = %v, want %v", ID, tt.want)
 			}
 		})
 	}
@@ -353,7 +445,6 @@ func testRepositoryDelete(t *testing.T, dependencies repoTestDependencies, setup
 		repo Repository
 	}
 	type args struct {
-		create    Create
 		messageID entity.ID
 	}
 	tests := []struct {
@@ -373,7 +464,7 @@ func testRepositoryDelete(t *testing.T, dependencies repoTestDependencies, setup
 			wantErr: false,
 		},
 		{
-			name: "Error on message not found",
+			name: "Fail on message not found",
 			fields: fields{
 				repo: setup(),
 			},
@@ -388,7 +479,7 @@ func testRepositoryDelete(t *testing.T, dependencies repoTestDependencies, setup
 			repo := tt.fields.repo
 			err := repo.Delete(tt.args.messageID)
 			if (err != nil) != tt.wantErr {
-				t.Errorf("Repository.Create() error = %v, wantErr %v", err, tt.wantErr)
+				t.Errorf("Repository.Delete() error = %v, wantErr %v", err, tt.wantErr)
 				return
 			}
 		})

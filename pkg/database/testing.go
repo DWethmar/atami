@@ -14,21 +14,26 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
+func NewTestDBName(t *testing.T) string {
+	rand.Seed(time.Now().UTC().UnixNano())
+	return fmt.Sprintf("%v_%d", strings.ToLower(t.Name()), rand.Int())
+}
+
 // CreateDatabase and give privileges to user.
-func CreateDatabase(db *sql.DB, database string, user string) error {
-	fmt.Printf("Creating database: %v \n", database)
+func CreateDatabase(db *sql.DB, name string, user string) error {
+	fmt.Printf("Creating database: %v \n", name)
 
-	if _, err := db.Exec("CREATE DATABASE " + database + ";"); err != nil {
+	if _, err := db.Exec("CREATE DATABASE " + name + ";"); err != nil {
 		return err
 	}
 
-	fmt.Printf("Granting privileges to %v for %v \n", user, database)
+	fmt.Printf("Granting privileges to %v for %v \n", user, name)
 
-	if _, err := db.Exec(fmt.Sprintf("grant all privileges on database %s to %s", database, user)); err != nil {
+	if _, err := db.Exec(fmt.Sprintf("grant all privileges on database %s to %s", name, user)); err != nil {
 		return err
 	}
 
-	fmt.Printf("Created database: %v \n", database)
+	fmt.Printf("Created database: %v \n", name)
 
 	return nil
 }
@@ -62,37 +67,43 @@ func ExecSQL(db *sql.DB, sql []byte) error {
 	return nil
 }
 
-// NewTestDBConfig confiog to create new testing db
-type NewTestDBConfig struct {
-	DBHost       string
-	DBPort       string
-	DBUser       string
-	DBPassword   string
-	DBName       string
-	DBDriverName string
-}
-
-// NewTestDB create new testy db. Returns a cleanup function and error.
-func NewTestDB(c config.Config) (*sql.DB, error) {
-	var db *sql.DB
-
+// Create new testing Db
+func NewTestDB(t *testing.T) (*sql.DB, error) {
+	c := config.Load()
 	if err := c.Valid(); err != nil {
 		return nil, err
 	}
+	dbConfig := &PostgresConnectionConfig{}
+	dbConfig.Load(c)
 
-	dbConfig := &PostgresConnectionConfig{
-		DBHost:     c.DBHost,
-		DBPort:     c.DBPort,
-		DBUser:     c.DBUser,
-		DBPassword: c.DBPassword,
-		DBName:     "postgres",
-	}
-
-	dataSource := GetPostgresDataSource(dbConfig)
-
-	db, err := Connect(c.DBDriverName, dataSource)
+	db, err := CreateTestDB(
+		dbConfig,
+		c.DBDriverName,
+		NewTestDBName(t),
+		c.MigrationFiles,
+		c.DBMigrationVersion,
+	)
 	if err != nil {
-		fmt.Printf("Could not connect to database with %v %v", c.DBDriverName, dataSource)
+		return nil, err
+	}
+	return db, nil
+}
+
+// NewTestDB create new testy db. Returns a cleanup function and error.
+func CreateTestDB(
+	config *PostgresConnectionConfig,
+	driverName,
+	databaseName,
+	migrationFiles string,
+	DBMigrationVersion uint,
+) (*sql.DB, error) {
+	var db *sql.DB
+
+	dataSource := GetPostgresDataSource(config)
+
+	db, err := Connect(driverName, dataSource)
+	if err != nil {
+		fmt.Printf("Could not connect to database with driver: %s datasource: %s", driverName, dataSource)
 		panic(err)
 	}
 
@@ -100,19 +111,22 @@ func NewTestDB(c config.Config) (*sql.DB, error) {
 		return nil, err
 	}
 
-	if err := CreateDatabase(db, c.DBName, c.DBUser); err != nil {
+	if err := CreateDatabase(db, databaseName, config.DBUser); err != nil {
 		return nil, err
 	}
 	db.Close()
 
-	dataSource = GetPostgresDataSource(dbConfig)
-	db, err = Connect(c.DBDriverName, dataSource)
+	newDBConfig := *config
+	newDBConfig.DBName = databaseName
+	dataSource = GetPostgresDataSource(&newDBConfig)
+
+	db, err = Connect(driverName, dataSource)
 	if err != nil {
-		fmt.Printf("Could not connect to database with %v %v", c.DBDriverName, dataSource)
+		fmt.Printf("Could not connect to database with driver: %s datasource: %s", driverName, dataSource)
 		return nil, err
 	}
 
-	if err := RunMigrations(db, c.DBName, c.MigrationFiles, c.DBMigrationVersion); err != nil {
+	if err := RunMigrations(db, config.DBName, migrationFiles, DBMigrationVersion); err != nil {
 		fmt.Printf("Error while running migrations")
 		return nil, err
 	}
@@ -123,10 +137,16 @@ func NewTestDB(c config.Config) (*sql.DB, error) {
 // WithTestDB runs test with test DB and remove DB after test.
 func WithTestDB(t *testing.T, test func(db *sql.DB) error) error {
 	if c := config.Load(); c.Valid() == nil && c.TestWithDB {
-		rand.Seed(time.Now().UTC().UnixNano())
-		c.DBName = fmt.Sprintf("%v_%v_%d", c.DBName, strings.ToLower(t.Name()), rand.Int())
+		dbConfig := &PostgresConnectionConfig{}
+		dbConfig.Load(c)
 
-		if db, err := NewTestDB(c); err == nil {
+		if db, err := CreateTestDB(
+			dbConfig,
+			c.DBDriverName,
+			NewTestDBName(t),
+			c.MigrationFiles,
+			c.DBMigrationVersion,
+		); err == nil {
 			defer db.Close()
 			if assert.NoError(t, err) {
 				return test(db)

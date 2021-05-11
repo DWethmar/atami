@@ -6,7 +6,6 @@ package memstore
 import (
 	"fmt"
 	"github.com/dwethmar/atami/pkg/domain/entity"
-	"sort"
 	"sync"
 )
 
@@ -146,14 +145,6 @@ func (h *MessageStore) FromIndex(i int) (Message, bool) {
 		}
 	}
 	return Message{}, false
-}
-
-// Sort items in memory
-func (h *MessageStore) Sort(less func(i, j int) bool) {
-	h.writeMux.Lock()
-	defer h.writeMux.Unlock()
-
-	sort.SliceStable(h.ids, less)
 }
 
 // NewMessageStore returns a new in memory repository for Message records.

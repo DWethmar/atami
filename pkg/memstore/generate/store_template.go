@@ -7,7 +7,6 @@ package {{ .PackageName }};
 
 import (
 	"sync"
-	"sort"
 	"fmt"
 	"github.com/dwethmar/atami/pkg/domain/entity"
 )
@@ -148,14 +147,6 @@ func (h *{{ .Name }}Store) FromIndex(i int) ({{ .Name }}, bool) {
 		}
 	}
 	return {{ .Name }}{}, false
-}
-
-// Sort items in memory
-func (h *{{ .Name }}Store) Sort(less func(i, j int) bool) {
-	h.writeMux.Lock()
-	defer h.writeMux.Unlock()
-
-	sort.SliceStable(h.ids, less)
 }
 
 // New{{ .Name }}Store returns a new in memory repository for {{ .Name }} records.

@@ -3,6 +3,7 @@ package message
 import (
 	"errors"
 	"fmt"
+	"sort"
 
 	"github.com/dwethmar/atami/pkg/domain"
 	"github.com/dwethmar/atami/pkg/domain/entity"
@@ -11,14 +12,12 @@ import (
 
 type inMemoryRepo struct {
 	memStore *memstore.Memstore
-	newID    entity.ID
 }
 
 //NewInMemoryRepo create new repository
 func NewInMemoryRepo(memStore *memstore.Memstore) Repository {
 	return &inMemoryRepo{
 		memStore: memStore,
-		newID:    0,
 	}
 }
 
@@ -74,31 +73,39 @@ func (r *inMemoryRepo) List(limit, offset uint) ([]*Message, error) {
 	messages := r.memStore.GetMessages()
 	users := r.memStore.GetUsers()
 
-	if len := messages.Len(); len == 0 {
+	var low = offset
+	var high = offset + limit
+
+	l := messages.Len();
+
+	if  l == 0 {
 		return []*Message{}, nil
-	} else if offset > uint(len) {
-		return []*Message{}, nil
-	} else if offset+limit > uint(len) {
-		limit = uint(len)
 	}
 
-	paged, err := messages.Slice(offset, limit)
-	if err != nil {
-		return nil, err
+	if low > uint(l) {
+		return []*Message{}, nil
 	}
 
-	items := make([]*Message, len(paged))
+	if high > uint(l) {
+		high = uint(l)
+	}
 
-	for i, r := range paged {
+	all, _ := messages.All();
+	sort.Slice(all, func(i, j int) bool {
+		var a = all[i]
+		var b = all[j]
+		return a.ID > b.ID
+	})
+
+	items := make([]*Message, 0)
+	for _, r := range all[low:high]{
 		msg := messageFromMemoryMap(r)
-
 		if user, err := findUserInMemstore(users, msg.CreatedByUserID); err == nil {
 			msg.CreatedBy = *user
 		} else {
 			return nil, err
 		}
-
-		items[i] = msg
+		items = append(items, msg)
 	}
 
 	return items, nil
@@ -106,9 +113,13 @@ func (r *inMemoryRepo) List(limit, offset uint) ([]*Message, error) {
 
 func (r *inMemoryRepo) Update(message *Message) error {
 	messages := r.memStore.GetMessages()
+	if _, ok := messages.Get(message.ID); !ok {
+		return domain.ErrNotFound 
+	}
+
 	mapped := messageToMemoryMap(*message)
 	if messages.Delete(message.ID) && !messages.Put(message.ID, *mapped) {
-		return errors.New("Could not update message")
+		return domain.ErrCannotBeUpdated
 	}
 	return nil
 }
@@ -116,14 +127,11 @@ func (r *inMemoryRepo) Update(message *Message) error {
 func (r *inMemoryRepo) Create(message *Message) (entity.ID, error) {
 	messages := r.memStore.GetMessages()
 	users := r.memStore.GetUsers()
-
 	if _, ok := users.Get(message.CreatedByUserID); !ok {
 		return 0, errors.New("user not found")
 	}
 
-	r.newID++
-	message.ID = r.newID
-
+	message.ID = r.memStore.GetMessages().Len() + 1
 	mapped := messageToMemoryMap(*message)
 	messages.Put(message.ID, *mapped)
 
@@ -149,7 +157,7 @@ func findUserInMemstore(store *memstore.UserStore, userID entity.ID) (*User, err
 		user := userFromMemoryMap(r)
 		return user, nil
 	}
-	return nil, fmt.Errorf("Could not find user with ID %d in memory store", userID)
+	return nil, fmt.Errorf("could not find user with ID %d in memory store", userID)
 }
 
 func filterMessagesFromMemory(list []memstore.Message, filterFn func(*Message) bool) (*Message, error) {
@@ -161,3 +169,47 @@ func filterMessagesFromMemory(list []memstore.Message, filterFn func(*Message) b
 	}
 	return nil, domain.ErrNotFound
 }
+
+
+// MessageToMemoryMap maps a message to memory
+func messageToMemoryMap(m Message) *memstore.Message {
+	return &memstore.Message{
+		ID:              m.ID,
+		UID:             m.UID,
+		Text:            m.Text,
+		CreatedByUserID: m.CreatedByUserID,
+		CreatedAt:       m.CreatedAt,
+		UpdatedAt:       m.UpdatedAt,
+	}
+}
+
+// MessageFromMemoryMap maps a message from memory
+func messageFromMemoryMap(m memstore.Message) *Message {
+	return &Message{
+		ID:              m.ID,
+		UID:             m.UID,
+		Text:            m.Text,
+		CreatedByUserID: m.CreatedByUserID,
+		CreatedAt:       m.CreatedAt,
+		UpdatedAt:       m.UpdatedAt,
+	}
+}
+
+// UserFromMemoryMap maps a message from memory
+func userToMemoryMap(m User) *memstore.User {
+	return &memstore.User{
+		ID:       m.ID,
+		UID:      m.UID,
+		Username: m.Username,
+	}
+}
+
+// UserFromMemoryMap maps a message from memory
+func userFromMemoryMap(m memstore.User) *User {
+	return &User{
+		ID:       m.ID,
+		UID:      m.UID,
+		Username: m.Username,
+	}
+}
+

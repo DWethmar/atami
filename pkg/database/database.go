@@ -4,6 +4,8 @@ import (
 	"database/sql"
 	"fmt"
 	"strings"
+
+	"github.com/dwethmar/atami/pkg/config"
 )
 
 // Connect creates new DB
@@ -19,13 +21,20 @@ func Connect(driverName string, dataSourceName string) (*sql.DB, error) {
 	return db, nil
 }
 
-// PostgresConnectionConfig is used to connect to the database
 type PostgresConnectionConfig struct {
 	DBHost     string
 	DBPort     string
 	DBUser     string
 	DBPassword string
 	DBName     string
+}
+
+func (c *PostgresConnectionConfig) Load(config *config.Config) {
+	c.DBHost = config.DBHost
+	c.DBPort = config.DBPort
+	c.DBUser = config.DBUser
+	c.DBPassword = config.DBPassword
+	c.DBName = config.DBName
 }
 
 // GetPostgresDataSource return the connection info

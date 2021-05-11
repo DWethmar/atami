@@ -3,16 +3,19 @@ package message
 import (
 	"database/sql"
 	"fmt"
+	"sync"
 	"testing"
-	"time"
 
+	"github.com/dwethmar/atami/pkg/config"
 	"github.com/dwethmar/atami/pkg/database"
+	"github.com/dwethmar/atami/pkg/domain/entity"
 	"github.com/dwethmar/atami/pkg/domain/seed"
+	"github.com/stretchr/testify/assert"
 )
 
 func seedDatabase(db *sql.DB, deps repoTestDependencies) error {
+	fmt.Println("Seeding")
 	for _, user := range deps.users {
-		fmt.Println(user)
 		if _, err := seed.SeedUser(
 			db,
 			user.UID,
@@ -20,14 +23,13 @@ func seedDatabase(db *sql.DB, deps repoTestDependencies) error {
 			"password",
 			user.Username+"@test.nl",
 			"biography",
-			time.Now(),
-			time.Now(),
+			entity.Now(),
+			entity.Now(),
 		); err != nil {
 			return err
 		}
 	}
 	for _, message := range deps.messages {
-		fmt.Println(message)
 		if _, err := seed.SeedMessage(
 			db,
 			message.UID,
@@ -39,117 +41,204 @@ func seedDatabase(db *sql.DB, deps repoTestDependencies) error {
 			return err
 		}
 	}
-
+	fmt.Println("stopped Seeding")
 	return nil
 }
 
 func Test_PostgresRepo_Get(t *testing.T) {
-	database.WithTestDB(t, func(db *sql.DB) error {
-		deps := newRepoTestDependencies()
-		testRepositoryGet(
-			t,
-			deps,
-			func() Repository {
-				fmt.Println("Seeding")
-				if err := seedDatabase(db, deps); err != nil {
-					fmt.Print(err)
-					t.FailNow()
-				}
-				fmt.Println("stopped Seeding")
+	if c:= config.Load(); !c.TestWithDB {
+		t.Skip("Skip test")
+	}
+	mux := &sync.Mutex{}
+	dbs := []*sql.DB{}
+	defer func() {
+		for _, db := range dbs {
+			db.Close()
+		}
+	}()
+	deps := newRepoTestDependencies()
+	testRepositoryGet(
+		t,
+		deps,
+		func() Repository {
+			db, err := database.NewTestDB(t)
+			if err != nil {
+				assert.FailNow(t, err.Error())
+			}
+			mux.Lock()
+			dbs = append(dbs, db)
+			mux.Unlock()
 
-				return NewPostgresRepository(db)
-			},
-		)
-		return nil
-	})
+			if err := seedDatabase(db, deps); err != nil {
+				fmt.Print(err)
+				t.FailNow()
+			}
+			return NewPostgresRepository(db)
+		},
+	)
 }
 
-// func Test_PostgresRepo_GetByUID(t *testing.T) {
-// 	deps := newRepoTestDependencies()
-// 	testRepositoryGetByUID(
-// 		t,
-// 		deps,
-// 		func() Repository {
-// 			store := memstore.NewStore()
-// 			for _, user := range deps.users {
-// 				store.GetUsers().Put(user.ID, *userToMemoryMap(*user))
-// 			}
-// 			for _, message := range deps.messages {
-// 				store.GetMessages().Put(message.ID, *messageToMemoryMap(*message))
-// 			}
-// 			return NewInMemoryRepo(store)
-// 		},
-// 	)
-// }
+func Test_PostgresRepo_GetByUID(t *testing.T) {
+	if c:= config.Load(); !c.TestWithDB {
+		t.Skip("Skip test")
+	}
+	mux := &sync.Mutex{}
+	dbs := []*sql.DB{}
+	defer func() {
+		for _, db := range dbs {
+			db.Close()
+		}
+	}()
+	deps := newRepoTestDependencies()
+	testRepositoryGetByUID(
+		t,
+		deps,
+		func() Repository {
+			db, err := database.NewTestDB(t)
+			if err != nil {
+				assert.FailNow(t, err.Error())
+			}
+			mux.Lock()
+			dbs = append(dbs, db)
+			mux.Unlock()
 
-// func Test_PostgresRepo_List(t *testing.T) {
-// 	deps := newRepoTestDependencies()
-// 	testRepositoryList(
-// 		t,
-// 		deps,
-// 		func() Repository {
-// 			store := memstore.NewStore()
-// 			for _, user := range deps.users {
-// 				store.GetUsers().Put(user.ID, *userToMemoryMap(*user))
-// 			}
-// 			for _, message := range deps.messages {
-// 				store.GetMessages().Put(message.ID, *messageToMemoryMap(*message))
-// 			}
-// 			return NewInMemoryRepo(store)
-// 		},
-// 	)
-// }
+			if err := seedDatabase(db, deps); err != nil {
+				fmt.Print(err)
+				t.FailNow()
+			}
+			return NewPostgresRepository(db)
+		},
+	)
+}
 
-// func Test_PostgresRepo_Update(t *testing.T) {
-// 	deps := newRepoTestDependencies()
-// 	testRepositoryUpdate(
-// 		t,
-// 		deps,
-// 		func() Repository {
-// 			store := memstore.NewStore()
-// 			for _, user := range deps.users {
-// 				store.GetUsers().Put(user.ID, *userToMemoryMap(*user))
-// 			}
-// 			for _, message := range deps.messages {
-// 				store.GetMessages().Put(message.ID, *messageToMemoryMap(*message))
-// 			}
-// 			return NewInMemoryRepo(store)
-// 		},
-// 	)
-// }
+func Test_PostgresRepo_List(t *testing.T) {
+	if c:= config.Load(); !c.TestWithDB {
+		t.Skip("Skip test")
+	}
+	mux := &sync.Mutex{}
+	dbs := []*sql.DB{}
+	defer func() {
+		for _, db := range dbs {
+			db.Close()
+		}
+	}()
+	deps := newRepoTestDependencies()
+	testRepositoryList(
+		t,
+		deps,
+		func() Repository {
+			db, err := database.NewTestDB(t)
+			if err != nil {
+				assert.FailNow(t, err.Error())
+			}
+			mux.Lock()
+			dbs = append(dbs, db)
+			mux.Unlock()
 
-// func Test_PostgresRepo_Create(t *testing.T) {
-// 	deps := newRepoTestDependencies()
-// 	testRepositoryCreate(
-// 		t,
-// 		deps,
-// 		func() Repository {
-// 			store := memstore.NewStore()
-// 			for _, user := range deps.users {
-// 				store.GetUsers().Put(user.ID, *userToMemoryMap(*user))
-// 			}
-// 			for _, message := range deps.messages {
-// 				store.GetMessages().Put(message.ID, *messageToMemoryMap(*message))
-// 			}
-// 			return NewInMemoryRepo(store)
-// 		},
-// 	)
-// }
+			if err := seedDatabase(db, deps); err != nil {
+				fmt.Print(err)
+				t.FailNow()
+			}
+			return NewPostgresRepository(db)
+		},
+	)
+}
 
-// func Test_PostgresRepo_Delete(t *testing.T) {
-// 	deps := newRepoTestDependencies()
-// 	testRepositoryDelete(
-// 		t,
-// 		deps,
-// 		func() Repository {
-// 			store := memstore.NewStore()
-// 			for _, user := range deps.users {
-// 				store.GetUsers().Put(user.ID, *userToMemoryMap(*user))
-// 			}
-// 			for _, message := range deps.messages {
-// 				store.GetMessages().Put(message.ID, *messageToMemoryMap(*message))
-// 			}
-// 			return NewInMemoryRepo(store)
-// 		},
-// 	)
-// }
+func Test_PostgresRepo_Update(t *testing.T) {
+	if c:= config.Load(); !c.TestWithDB {
+		t.Skip("Skip test")
+	}
+	mux := &sync.Mutex{}
+	dbs := []*sql.DB{}
+	defer func() {
+		for _, db := range dbs {
+			db.Close()
+		}
+	}()
+	deps := newRepoTestDependencies()
+	testRepositoryUpdate(
+		t,
+		deps,
+		func() Repository {
+			db, err := database.NewTestDB(t)
+			if err != nil {
+				assert.FailNow(t, err.Error())
+			}
+			mux.Lock()
+			dbs = append(dbs, db)
+			mux.Unlock()
+
+			if err := seedDatabase(db, deps); err != nil {
+				fmt.Print(err)
+				t.FailNow()
+			}
+			return NewPostgresRepository(db)
+		},
+	)
+}
+
+func Test_PostgresRepo_Create(t *testing.T) {
+	if c:= config.Load(); !c.TestWithDB {
+		t.Skip("Skip test")
+	}
+	mux := &sync.Mutex{}
+	dbs := []*sql.DB{}
+	defer func() {
+		for _, db := range dbs {
+			db.Close()
+		}
+	}()
+	deps := newRepoTestDependencies()
+	testRepositoryCreate(
+		t,
+		deps,
+		func() Repository {
+			db, err := database.NewTestDB(t)
+			if err != nil {
+				assert.FailNow(t, err.Error())
+			}
+			mux.Lock()
+			dbs = append(dbs, db)
+			mux.Unlock()
+
+			if err := seedDatabase(db, deps); err != nil {
+				fmt.Print(err)
+				t.FailNow()
+			}
+			return NewPostgresRepository(db)
+		},
+	)
+}
+
+func Test_PostgresRepo_Delete(t *testing.T) {
+	if c:= config.Load(); !c.TestWithDB {
+		t.Skip("Skip test")
+	}
+	mux := &sync.Mutex{}
+	dbs := []*sql.DB{}
+	defer func() {
+		for _, db := range dbs {
+			db.Close()
+		}
+	}()
+	deps := newRepoTestDependencies()
+	testRepositoryDelete(
+		t,
+		deps,
+		func() Repository {
+			db, err := database.NewTestDB(t)
+			if err != nil {
+				assert.FailNow(t, err.Error())
+			}
+			mux.Lock()
+			dbs = append(dbs, db)
+			mux.Unlock()
+
+			if err := seedDatabase(db, deps); err != nil {
+				fmt.Print(err)
+				t.FailNow()
+			}
+			return NewPostgresRepository(db)
+		},
+	)
+}

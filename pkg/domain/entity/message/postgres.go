@@ -6,7 +6,6 @@ import (
 	"github.com/dwethmar/atami/pkg/database"
 	"github.com/dwethmar/atami/pkg/domain"
 	"github.com/dwethmar/atami/pkg/domain/entity"
-	"github.com/dwethmar/atami/pkg/domain/message"
 )
 
 type postgresRepo struct {
@@ -46,12 +45,23 @@ func (r *postgresRepo) List(limit, offset uint) ([]*Message, error) {
 	return querySelectMessages(r.db, limit, offset)
 }
 
-func (r *postgresRepo) Update(message *Message) error {
-	return nil
+func (r *postgresRepo) Update(m *Message) error {
+	result, err := execUpdateUser(r.db, m.ID, m.Text, m.UpdatedAt)
+	if err != nil {
+		return err
+	}
+
+	if a, err := result.RowsAffected(); err != nil {
+		return err
+	} else if a == 0 {
+		return domain.ErrCannotBeUpdated
+	}
+
+	return err
 }
 
 func (r *postgresRepo) Create(message *Message) (entity.ID, error) {
-	msg, err := queryRowInsertMessage(
+	ID, err := queryRowInsertMessage(
 		r.db,
 		message.UID,
 		message.Text,
@@ -62,7 +72,7 @@ func (r *postgresRepo) Create(message *Message) (entity.ID, error) {
 	if err != nil {
 		return 0, err
 	}
-	return msg, nil
+	return ID, nil
 }
 
 func (r *postgresRepo) Delete(ID entity.ID) error {
@@ -74,8 +84,40 @@ func (r *postgresRepo) Delete(ID entity.ID) error {
 	if a, err := result.RowsAffected(); err != nil {
 		return err
 	} else if a == 0 {
-		return message.ErrCouldNotDelete
+		return domain.ErrCannotBeDeleted
 	}
 
 	return nil
+}
+
+func insertRowMap(row Row) (entity.ID, error) {
+	var ID entity.ID
+	if err := row.Scan(
+		&ID,
+	); err != nil {
+		return 0, err
+	}
+	return ID, nil
+}
+
+func messageWithUserRowMap(row Row) (*Message, error) {
+	e := &Message{
+		CreatedBy: User{},
+	}
+	if err := row.Scan(
+		&e.ID,
+		&e.UID,
+		&e.Text,
+		&e.CreatedByUserID,
+		&e.CreatedAt,
+		&e.UpdatedAt,
+		&e.CreatedBy.ID,
+		&e.CreatedBy.UID,
+		&e.CreatedBy.Username,
+	); err != nil {
+		return nil, err
+	}
+	e.CreatedAt = entity.SetDefaultTimePrecision(e.CreatedAt)
+	e.UpdatedAt = entity.SetDefaultTimePrecision(e.UpdatedAt)
+	return e, nil
 }

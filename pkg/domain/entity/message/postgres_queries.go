@@ -45,10 +45,10 @@ func querySelectMessages(
 		limit,
 		offset,
 	)
-	defer rows.Close()
 	if err != nil {
 		return nil, err
 	}
+	defer rows.Close()
 	entries := make([]*Message, 0)
 	for rows.Next() {
 		if entry, err := messageWithUserRowMap(rows); err == nil {
@@ -161,4 +161,26 @@ func queryRowInsertMessage(
 		createdAt,
 		updatedAt,
 	))
+}
+
+// updateUser sql query
+var updateUserSQL = `UPDATE message
+SET
+	text = $2,
+	updated_at = $3
+WHERE message.id = $1
+RETURNING message.id, message.uid, message.text, message.created_by_user_id, message.created_at, message.updated_at`
+
+func execUpdateUser(
+	db database.Transaction,
+	ID entity.ID,
+	text string,
+	updatedAt time.Time,
+) (sql.Result, error) {
+	return db.Exec(
+		updateUserSQL,
+		ID,
+		text,
+		updatedAt,
+	)
 }

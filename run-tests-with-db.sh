@@ -42,5 +42,5 @@ MIGRATION_FILES=./migrations/\
 TEST_WITH_DB=true\
 TEST_SEED_FILE="./seed/init.sql"\
 
-go test -v ./...
+go test ./...
 

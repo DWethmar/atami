@@ -45,10 +45,10 @@ func querySelectMessages(
 		limit,
 		offset,
 	)
-	defer rows.Close()
 	if err != nil {
 		return nil, err
 	}
+	defer rows.Close()
 	entries := make([]*message.Message, 0)
 	for rows.Next() {
 		if entry, err := mapMessageWithUser(rows); err == nil {
