@@ -13,9 +13,8 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
-func seedDatabase(db *sql.DB, deps repoTestDependencies) error {
+func seedDatabase(db *sql.DB, deps *repoTestDependencies) error {
 	return database.WithTransaction(db, func(t database.Transaction) error {
-		fmt.Println("Seeding")
 		for _, user := range deps.users {
 			if _, err := seed.SeedUser(
 				db,

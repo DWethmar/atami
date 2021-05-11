@@ -55,14 +55,19 @@ func TestListMessages(t *testing.T) {
 	}
 
 	for i, msg := range messages {
-		m, _ := store.Message.Create(message.CreateMessage{
+		m, err := store.Message.Create(message.CreateMessage{
 			UID:             msg.UID,
 			Text:            msg.Text,
 			CreatedByUserID: msg.CreatedByUserID,
 			CreatedAt:       msg.CreatedAt,
 		})
-		messages[i].UID = m.UID
-		messages[i].CreatedAt = m.CreatedAt
+
+		if assert.NoError(t, err) {
+			messages[i].UID = m.UID
+			messages[i].CreatedAt = m.CreatedAt
+		} else {
+			return
+		}
 	}
 
 	req, err := http.NewRequest("GET", "/", nil)

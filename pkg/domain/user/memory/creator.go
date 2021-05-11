@@ -28,7 +28,6 @@ func (i *creatorRepository) Create(newUser user.CreateUser) (*user.User, error) 
 	if match, err := filterList(users, func(record user.User) bool {
 		return newUser.Username == record.Username || newUser.Email == record.Email
 	}); match != nil {
-
 		if match.Email == newUser.Email {
 			return nil, user.ErrEmailAlreadyTaken
 		}

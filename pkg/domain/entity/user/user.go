@@ -1,9 +1,17 @@
 package user
 
 import (
+	"errors"
 	"time"
 
 	"github.com/dwethmar/atami/pkg/domain/entity"
+)
+
+var (
+	// ErrUsernameAlreadyTaken error decloration
+	ErrUsernameAlreadyTaken = errors.New("username is unavailable")
+	// ErrEmailAlreadyTaken error decloration
+	ErrEmailAlreadyTaken = errors.New("email is unavailable")
 )
 
 // User struct declaration

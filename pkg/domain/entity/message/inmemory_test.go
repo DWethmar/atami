@@ -19,7 +19,7 @@ func Test_inMemoryRepo_Get(t *testing.T) {
 				store.GetUsers().Put(user.ID, *userToMemoryMap(*user))
 			}
 			for _, message := range deps.messages {
-				store.GetMessages().Put(message.ID, *messageToMemoryMap(*message))
+				store.GetMessages().Put(message.ID, *messageToMemoryMap(message))
 			}
 			return NewInMemoryRepo(store)
 		},
@@ -37,7 +37,7 @@ func Test_inMemoryRepo_GetByUID(t *testing.T) {
 				store.GetUsers().Put(user.ID, *userToMemoryMap(*user))
 			}
 			for _, message := range deps.messages {
-				store.GetMessages().Put(message.ID, *messageToMemoryMap(*message))
+				store.GetMessages().Put(message.ID, *messageToMemoryMap(message))
 			}
 			return NewInMemoryRepo(store)
 		},
@@ -55,7 +55,7 @@ func Test_inMemoryRepo_List(t *testing.T) {
 				store.GetUsers().Put(user.ID, *userToMemoryMap(*user))
 			}
 			for _, message := range deps.messages {
-				store.GetMessages().Put(message.ID, *messageToMemoryMap(*message))
+				store.GetMessages().Put(message.ID, *messageToMemoryMap(message))
 			}
 			return NewInMemoryRepo(store)
 		},
@@ -73,7 +73,7 @@ func Test_inMemoryRepo_Update(t *testing.T) {
 				store.GetUsers().Put(user.ID, *userToMemoryMap(*user))
 			}
 			for _, message := range deps.messages {
-				store.GetMessages().Put(message.ID, *messageToMemoryMap(*message))
+				store.GetMessages().Put(message.ID, *messageToMemoryMap(message))
 			}
 			return NewInMemoryRepo(store)
 		},
@@ -91,7 +91,7 @@ func Test_inMemoryRepo_Create(t *testing.T) {
 				store.GetUsers().Put(user.ID, *userToMemoryMap(*user))
 			}
 			for _, message := range deps.messages {
-				store.GetMessages().Put(message.ID, *messageToMemoryMap(*message))
+				store.GetMessages().Put(message.ID, *messageToMemoryMap(message))
 			}
 			return NewInMemoryRepo(store)
 		},
@@ -109,7 +109,7 @@ func Test_inMemoryRepo_Delete(t *testing.T) {
 				store.GetUsers().Put(user.ID, *userToMemoryMap(*user))
 			}
 			for _, message := range deps.messages {
-				store.GetMessages().Put(message.ID, *messageToMemoryMap(*message))
+				store.GetMessages().Put(message.ID, *messageToMemoryMap(message))
 			}
 			return NewInMemoryRepo(store)
 		},

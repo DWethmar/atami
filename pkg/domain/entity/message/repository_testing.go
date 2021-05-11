@@ -1,7 +1,6 @@
 package message
 
 import (
-	"fmt"
 	"reflect"
 	"testing"
 	"time"
@@ -17,7 +16,7 @@ type repoTestDependencies struct {
 	messages []*Message
 }
 
-func newRepoTestDependencies() repoTestDependencies {
+func newRepoTestDependencies() *repoTestDependencies {
 	users := []*User{
 		userFromMemoryMap(mapping.UserToMemoryMap(*userFixture.NewUserFixture(entity.ID(1)))),
 		userFromMemoryMap(mapping.UserToMemoryMap(*userFixture.NewUserFixture(entity.ID(2)))),
@@ -70,7 +69,7 @@ func newRepoTestDependencies() repoTestDependencies {
 		},
 	}
 
-	return repoTestDependencies{
+	return &repoTestDependencies{
 		users:    users,
 		messages: messages,
 	}
@@ -78,7 +77,7 @@ func newRepoTestDependencies() repoTestDependencies {
 
 type setupRepository = func() Repository
 
-func testRepositoryGet(t *testing.T, dependencies repoTestDependencies, setup setupRepository) {
+func testRepositoryGet(t *testing.T, dependencies *repoTestDependencies, setup setupRepository) {
 	testMessage := dependencies.messages[0]
 
 	type fields struct {
@@ -133,7 +132,7 @@ func testRepositoryGet(t *testing.T, dependencies repoTestDependencies, setup se
 	}
 }
 
-func testRepositoryGetByUID(t *testing.T, dependencies repoTestDependencies, setup setupRepository) {
+func testRepositoryGetByUID(t *testing.T, dependencies *repoTestDependencies, setup setupRepository) {
 	testMessage := dependencies.messages[0]
 
 	type fields struct {
@@ -186,9 +185,8 @@ func testRepositoryGetByUID(t *testing.T, dependencies repoTestDependencies, set
 	}
 }
 
-func testRepositoryList(t *testing.T, dependencies repoTestDependencies, setup setupRepository) {
+func testRepositoryList(t *testing.T, dependencies *repoTestDependencies, setup setupRepository) {
 	testMessages := dependencies.messages
-	fmt.Print()
 
 	type fields struct {
 		repo Repository
@@ -214,13 +212,12 @@ func testRepositoryList(t *testing.T, dependencies repoTestDependencies, setup s
 				offset: 0,
 			},
 			want: []*Message{
-				testMessages[len(testMessages) - 1],
-				testMessages[len(testMessages) - 2],
-				testMessages[len(testMessages) - 3],
-				testMessages[len(testMessages) - 4],
-				testMessages[len(testMessages) - 5],
-
-			},			
+				testMessages[len(testMessages)-1],
+				testMessages[len(testMessages)-2],
+				testMessages[len(testMessages)-3],
+				testMessages[len(testMessages)-4],
+				testMessages[len(testMessages)-5],
+			},
 			wantErr: false,
 		},
 		{
@@ -245,14 +242,14 @@ func testRepositoryList(t *testing.T, dependencies repoTestDependencies, setup s
 				offset: 0,
 			},
 			want: []*Message{
-				testMessages[len(testMessages) - 1],
-				testMessages[len(testMessages) - 2],
-				testMessages[len(testMessages) - 3],
-				testMessages[len(testMessages) - 4],
+				testMessages[len(testMessages)-1],
+				testMessages[len(testMessages)-2],
+				testMessages[len(testMessages)-3],
+				testMessages[len(testMessages)-4],
 			},
 			wantErr: false,
 		},
-				{
+		{
 			name: "Successfully get paged messages with offset",
 			fields: fields{
 				repo: setup(),
@@ -262,9 +259,9 @@ func testRepositoryList(t *testing.T, dependencies repoTestDependencies, setup s
 				offset: 1,
 			},
 			want: []*Message{
-				testMessages[len(testMessages) - 2],
-				testMessages[len(testMessages) - 3],
-				testMessages[len(testMessages) - 4],
+				testMessages[len(testMessages)-2],
+				testMessages[len(testMessages)-3],
+				testMessages[len(testMessages)-4],
 			},
 			wantErr: false,
 		},
@@ -289,14 +286,14 @@ func testRepositoryList(t *testing.T, dependencies repoTestDependencies, setup s
 	}
 }
 
-func testRepositoryUpdate(t *testing.T, dependencies repoTestDependencies, setup setupRepository) {
+func testRepositoryUpdate(t *testing.T, dependencies *repoTestDependencies, setup setupRepository) {
 	testMessage := dependencies.messages[0]
 
 	type fields struct {
 		repo Repository
 	}
 	type args struct {
-		ID entity.ID
+		ID     entity.ID
 		update Update
 	}
 	tests := []struct {
@@ -313,13 +310,13 @@ func testRepositoryUpdate(t *testing.T, dependencies repoTestDependencies, setup
 			args: args{
 				ID: testMessage.ID,
 				update: Update{
-					Text: "updated text",
+					Text:      "updated text",
 					UpdatedAt: entity.Now(),
 				},
 			},
 			wantErr: false,
 		},
-				{
+		{
 			name: "fail on nonexisting message",
 			fields: fields{
 				repo: setup(),
@@ -327,7 +324,7 @@ func testRepositoryUpdate(t *testing.T, dependencies repoTestDependencies, setup
 			args: args{
 				ID: entity.ID(9999999),
 				update: Update{
-					Text: "updated text",
+					Text:      "updated text",
 					UpdatedAt: entity.Now(),
 				},
 			},
@@ -342,7 +339,7 @@ func testRepositoryUpdate(t *testing.T, dependencies repoTestDependencies, setup
 			expectedMsg.ID = tt.args.ID
 			expectedMsg.Apply(tt.args.update)
 
-			err := repo.Update(&expectedMsg);
+			err := repo.Update(&expectedMsg)
 			if (err != nil) != tt.wantErr {
 				t.Errorf("Repository.Create() error = %v, wantErr %v", err, tt.wantErr)
 				return
@@ -350,7 +347,7 @@ func testRepositoryUpdate(t *testing.T, dependencies repoTestDependencies, setup
 
 			// Check if the update really was successful
 			if !tt.wantErr {
-				updatedMsg, err := repo.Get(expectedMsg.ID); 
+				updatedMsg, err := repo.Get(expectedMsg.ID)
 				if assert.NoError(t, err) {
 					return
 				}
@@ -362,12 +359,12 @@ func testRepositoryUpdate(t *testing.T, dependencies repoTestDependencies, setup
 	}
 }
 
-func testRepositoryCreate(t *testing.T, dependencies repoTestDependencies, setup setupRepository) {
+func testRepositoryCreate(t *testing.T, dependencies *repoTestDependencies, setup setupRepository) {
 	createdAt := time.Now().UTC()
 	testUser := dependencies.users[0]
 
 	type fields struct {
-		repo  Repository
+		repo Repository
 	}
 	type args struct {
 		message *Message
@@ -397,7 +394,7 @@ func testRepositoryCreate(t *testing.T, dependencies repoTestDependencies, setup
 					CreatedAt: createdAt,
 				},
 			},
-			want:    dependencies.messages[len(dependencies.messages) - 1].ID + 1,
+			want:    dependencies.messages[len(dependencies.messages)-1].ID + 1,
 			wantErr: false,
 		},
 		{
@@ -438,7 +435,7 @@ func testRepositoryCreate(t *testing.T, dependencies repoTestDependencies, setup
 	}
 }
 
-func testRepositoryDelete(t *testing.T, dependencies repoTestDependencies, setup setupRepository) {
+func testRepositoryDelete(t *testing.T, dependencies *repoTestDependencies, setup setupRepository) {
 	testMessage := dependencies.messages[0]
 
 	type fields struct {

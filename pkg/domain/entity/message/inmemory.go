@@ -26,7 +26,7 @@ func (r *inMemoryRepo) Get(ID entity.ID) (*Message, error) {
 	users := r.memStore.GetUsers()
 
 	if r, ok := messages.Get(ID); ok {
-		msg := messageFromMemoryMap(r)
+		msg := messageFromMemoryMap(&r)
 
 		if user, err := findUserInMemstore(users, msg.CreatedByUserID); err == nil {
 			msg.CreatedBy = *user
@@ -76,9 +76,9 @@ func (r *inMemoryRepo) List(limit, offset uint) ([]*Message, error) {
 	var low = offset
 	var high = offset + limit
 
-	l := messages.Len();
+	l := messages.Len()
 
-	if  l == 0 {
+	if l == 0 {
 		return []*Message{}, nil
 	}
 
@@ -90,7 +90,7 @@ func (r *inMemoryRepo) List(limit, offset uint) ([]*Message, error) {
 		high = uint(l)
 	}
 
-	all, _ := messages.All();
+	all, _ := messages.All()
 	sort.Slice(all, func(i, j int) bool {
 		var a = all[i]
 		var b = all[j]
@@ -98,8 +98,8 @@ func (r *inMemoryRepo) List(limit, offset uint) ([]*Message, error) {
 	})
 
 	items := make([]*Message, 0)
-	for _, r := range all[low:high]{
-		msg := messageFromMemoryMap(r)
+	for _, r := range all[low:high] {
+		msg := messageFromMemoryMap(&r)
 		if user, err := findUserInMemstore(users, msg.CreatedByUserID); err == nil {
 			msg.CreatedBy = *user
 		} else {
@@ -114,10 +114,10 @@ func (r *inMemoryRepo) List(limit, offset uint) ([]*Message, error) {
 func (r *inMemoryRepo) Update(message *Message) error {
 	messages := r.memStore.GetMessages()
 	if _, ok := messages.Get(message.ID); !ok {
-		return domain.ErrNotFound 
+		return domain.ErrNotFound
 	}
 
-	mapped := messageToMemoryMap(*message)
+	mapped := messageToMemoryMap(message)
 	if messages.Delete(message.ID) && !messages.Put(message.ID, *mapped) {
 		return domain.ErrCannotBeUpdated
 	}
@@ -127,16 +127,17 @@ func (r *inMemoryRepo) Update(message *Message) error {
 func (r *inMemoryRepo) Create(message *Message) (entity.ID, error) {
 	messages := r.memStore.GetMessages()
 	users := r.memStore.GetUsers()
+
 	if _, ok := users.Get(message.CreatedByUserID); !ok {
-		return 0, errors.New("user not found")
+		return 0, errors.New("user not found :(")
 	}
 
-	message.ID = r.memStore.GetMessages().Len() + 1
-	mapped := messageToMemoryMap(*message)
+	message.ID = messages.Len() + 1
+	mapped := messageToMemoryMap(message)
 	messages.Put(message.ID, *mapped)
 
 	if r, ok := messages.Get(message.ID); ok {
-		msg := messageFromMemoryMap(r)
+		msg := messageFromMemoryMap(&r)
 		return msg.ID, nil
 	}
 
@@ -162,7 +163,7 @@ func findUserInMemstore(store *memstore.UserStore, userID entity.ID) (*User, err
 
 func filterMessagesFromMemory(list []memstore.Message, filterFn func(*Message) bool) (*Message, error) {
 	for _, item := range list {
-		message := messageFromMemoryMap(item)
+		message := messageFromMemoryMap(&item)
 		if filterFn(message) {
 			return message, nil
 		}
@@ -170,9 +171,8 @@ func filterMessagesFromMemory(list []memstore.Message, filterFn func(*Message) b
 	return nil, domain.ErrNotFound
 }
 
-
 // MessageToMemoryMap maps a message to memory
-func messageToMemoryMap(m Message) *memstore.Message {
+func messageToMemoryMap(m *Message) *memstore.Message {
 	return &memstore.Message{
 		ID:              m.ID,
 		UID:             m.UID,
@@ -184,7 +184,7 @@ func messageToMemoryMap(m Message) *memstore.Message {
 }
 
 // MessageFromMemoryMap maps a message from memory
-func messageFromMemoryMap(m memstore.Message) *Message {
+func messageFromMemoryMap(m *memstore.Message) *Message {
 	return &Message{
 		ID:              m.ID,
 		UID:             m.UID,
@@ -212,4 +212,3 @@ func userFromMemoryMap(m memstore.User) *User {
 		Username: m.Username,
 	}
 }
-
