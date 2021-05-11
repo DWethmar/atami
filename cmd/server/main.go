@@ -39,8 +39,13 @@ func main() {
 		fmt.Println("running server in-memory mode")
 		store = domain.NewInMemoryStore(memstore.NewStore())
 	} else {
-		dataSource := database.GetPostgresConnectionString(c)
-
+		dataSource := database.GetPostgresDataSource(&database.PostgresConnectionConfig{
+			DBHost:     c.DBHost,
+			DBPort:     c.DBPort,
+			DBUser:     c.DBUser,
+			DBPassword: c.DBPassword,
+			DBName:     "postgres",
+		})
 		db, err := database.Connect(c.DBDriverName, dataSource)
 		die(err)
 		defer db.Close()

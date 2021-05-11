@@ -80,13 +80,15 @@ func NewTestDB(c config.Config) (*sql.DB, error) {
 		return nil, err
 	}
 
-	dataSource := GetPostgresDataSource(postgresDataSourceConfig{
+	dbConfig := &PostgresConnectionConfig{
 		DBHost:     c.DBHost,
 		DBPort:     c.DBPort,
 		DBUser:     c.DBUser,
 		DBPassword: c.DBPassword,
 		DBName:     "postgres",
-	})
+	}
+
+	dataSource := GetPostgresDataSource(dbConfig)
 
 	db, err := Connect(c.DBDriverName, dataSource)
 	if err != nil {
@@ -103,7 +105,7 @@ func NewTestDB(c config.Config) (*sql.DB, error) {
 	}
 	db.Close()
 
-	dataSource = GetPostgresDataSource(c)
+	dataSource = GetPostgresDataSource(dbConfig)
 	db, err = Connect(c.DBDriverName, dataSource)
 	if err != nil {
 		fmt.Printf("Could not connect to database with %v %v", c.DBDriverName, dataSource)
