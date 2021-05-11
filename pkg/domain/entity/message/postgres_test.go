@@ -14,39 +14,40 @@ import (
 )
 
 func seedDatabase(db *sql.DB, deps repoTestDependencies) error {
-	fmt.Println("Seeding")
-	for _, user := range deps.users {
-		if _, err := seed.SeedUser(
-			db,
-			user.UID,
-			user.Username,
-			"password",
-			user.Username+"@test.nl",
-			"biography",
-			entity.Now(),
-			entity.Now(),
-		); err != nil {
-			return err
+	return database.WithTransaction(db, func(t database.Transaction) error {
+		fmt.Println("Seeding")
+		for _, user := range deps.users {
+			if _, err := seed.SeedUser(
+				db,
+				user.UID,
+				user.Username,
+				"password",
+				user.Username+"@test.nl",
+				"biography",
+				entity.Now(),
+				entity.Now(),
+			); err != nil {
+				return err
+			}
 		}
-	}
-	for _, message := range deps.messages {
-		if _, err := seed.SeedMessage(
-			db,
-			message.UID,
-			message.Text,
-			message.CreatedByUserID,
-			message.CreatedAt,
-			message.UpdatedAt,
-		); err != nil {
-			return err
+		for _, message := range deps.messages {
+			if _, err := seed.SeedMessage(
+				db,
+				message.UID,
+				message.Text,
+				message.CreatedByUserID,
+				message.CreatedAt,
+				message.UpdatedAt,
+			); err != nil {
+				return err
+			}
 		}
-	}
-	fmt.Println("stopped Seeding")
-	return nil
+		return nil
+	})
 }
 
 func Test_PostgresRepo_Get(t *testing.T) {
-	if c:= config.Load(); !c.TestWithDB {
+	if c := config.Load(); !c.TestWithDB {
 		t.Skip("Skip test")
 	}
 	mux := &sync.Mutex{}
@@ -79,7 +80,7 @@ func Test_PostgresRepo_Get(t *testing.T) {
 }
 
 func Test_PostgresRepo_GetByUID(t *testing.T) {
-	if c:= config.Load(); !c.TestWithDB {
+	if c := config.Load(); !c.TestWithDB {
 		t.Skip("Skip test")
 	}
 	mux := &sync.Mutex{}
@@ -112,7 +113,7 @@ func Test_PostgresRepo_GetByUID(t *testing.T) {
 }
 
 func Test_PostgresRepo_List(t *testing.T) {
-	if c:= config.Load(); !c.TestWithDB {
+	if c := config.Load(); !c.TestWithDB {
 		t.Skip("Skip test")
 	}
 	mux := &sync.Mutex{}
@@ -145,7 +146,7 @@ func Test_PostgresRepo_List(t *testing.T) {
 }
 
 func Test_PostgresRepo_Update(t *testing.T) {
-	if c:= config.Load(); !c.TestWithDB {
+	if c := config.Load(); !c.TestWithDB {
 		t.Skip("Skip test")
 	}
 	mux := &sync.Mutex{}
@@ -178,7 +179,7 @@ func Test_PostgresRepo_Update(t *testing.T) {
 }
 
 func Test_PostgresRepo_Create(t *testing.T) {
-	if c:= config.Load(); !c.TestWithDB {
+	if c := config.Load(); !c.TestWithDB {
 		t.Skip("Skip test")
 	}
 	mux := &sync.Mutex{}
@@ -211,7 +212,7 @@ func Test_PostgresRepo_Create(t *testing.T) {
 }
 
 func Test_PostgresRepo_Delete(t *testing.T) {
-	if c:= config.Load(); !c.TestWithDB {
+	if c := config.Load(); !c.TestWithDB {
 		t.Skip("Skip test")
 	}
 	mux := &sync.Mutex{}
