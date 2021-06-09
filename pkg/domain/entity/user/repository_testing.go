@@ -290,9 +290,10 @@ func testRepositoryList(t *testing.T, dependencies *repoTestDependencies, setup 
 				return
 			}
 
-			for i, msg := range got {
-				if !assert.Equal(t, tt.want[i], msg) {
-					t.Errorf("Repository.List() = \n%v, want \n%v", msg, tt.want[i])
+			for i, usr := range got {
+				usr.Password = ""
+				if !assert.Equal(t, tt.want[i], usr) {
+					t.Errorf("Repository.List() = \n%v, want \n%v", usr, tt.want[i])
 					return
 				}
 			}
