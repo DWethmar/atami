@@ -343,7 +343,7 @@ func testRepositoryGetCredentials(t *testing.T, dependencies *repoTestDependenci
 			want: &UserCredentials{
 				Username:  "user1",
 				Email:     "user1@user.nl",
-				Password:  HashPassword([]byte("abdefABCDEF1234!@#$")),
+				Password:  testUser.Password,
 			},
 			wantErr: false,
 		},
@@ -365,11 +365,11 @@ func testRepositoryGetCredentials(t *testing.T, dependencies *repoTestDependenci
 
 			got, err := r.GetCredentials(tt.args.email)
 			if (err != nil) != tt.wantErr {
-				t.Errorf("GetByUsername() error = %v, wantErr %v", err, tt.wantErr)
+				t.Errorf("GetCredentials() error = %v, wantErr %v", err, tt.wantErr)
 				return
 			}
 			if !reflect.DeepEqual(got, tt.want) {
-				t.Errorf("GetByUsername() = %v, want %v", got, tt.want)
+				t.Errorf("GetCredentials() = %v, want %v", got, tt.want)
 			}
 		})
 	}
