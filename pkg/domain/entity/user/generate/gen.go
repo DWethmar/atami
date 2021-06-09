@@ -207,7 +207,7 @@ func main() {
 				SQL: qb.Select(
 					qb.SelectQuery{
 						From:       defaultFrom,
-						SelectCols: []string{usernameCol, emailCol, passwordCol},
+						SelectCols: []string{idCol, uidCol, usernameCol, emailCol, passwordCol},
 						Where: qb.NewWhere().And(
 							fmt.Sprintf("%s = $1", emailCol),
 						),

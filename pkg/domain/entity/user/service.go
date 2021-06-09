@@ -1,6 +1,8 @@
 package user
 
 import (
+	"errors"
+	"strconv"
 	"strings"
 	"time"
 
@@ -22,6 +24,12 @@ func (err errValidate) Error() string {
 		errors[i] = e.Error()
 	}
 	return strings.Join(errors, ". ")
+}
+
+// Authenticated result
+type Authenticated struct {
+	AccessToken string
+	RefreshToken string
 }
 
 //Service service interface
@@ -96,6 +104,46 @@ func (s *Service) Update(ID entity.ID, e *Update) error {
 	return s.repo.Update(user)
 }
 
+func (s *Service) Authenticate(email, password string) (*Authenticated, error) {
+	if email == "" {
+		return nil, ErrEmailRequired
+	}
+
+	if password == "" {
+		return nil, ErrPasswordRequired
+	}
+
+	credentials, err := s.repo.GetCredentials(email)
+	if err != nil {
+		if err != domain.ErrNotFound {
+			return nil, err
+		}
+		return nil, errors.New("could not authenticate")
+	}
+
+	if !ComparePasswords(password, []byte(credentials.Password)) {
+		return nil, errors.New("could not authenticate")
+	}
+
+	session := strconv.FormatInt(time.Now().UnixNano(), 10)
+
+	accessTokenDuration := time.Minute * 60
+	accessToken, err := CreateAccessToken(credentials.UID, session, time.Now().Add(accessTokenDuration).Unix())
+	if err != nil {
+		return nil, err
+	}
+
+	refreshTokenDuration := time.Hour * 730
+	refreshToken, err := CreateRefreshToken(credentials.UID, session, time.Now().Add(refreshTokenDuration).Unix())
+	if err != nil {
+		return nil, err
+	}
+
+	return &Authenticated{
+		AccessToken: accessToken,
+		RefreshToken: refreshToken,
+	}, nil
+}
 
 func (s *Service) ValidateCreate(c *Create) error {
 	err := errValidate{}

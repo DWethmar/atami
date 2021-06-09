@@ -90,6 +90,8 @@ func (r *inMemoryRepo) GetCredentials(email string) (*UserCredentials, error) {
 	}
 
 	return &UserCredentials{
+		ID: u.ID,
+		UID: u.UID,
 		Username: u.Username,
 		Email: u.Email,
 		Password: u.Password,

@@ -27,6 +27,8 @@ type User struct {
 }
 
 type UserCredentials struct {
+	ID        entity.ID
+	UID       entity.UID	
 	Username  string
 	Email     string
 	Password  string

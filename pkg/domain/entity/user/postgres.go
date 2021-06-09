@@ -144,6 +144,8 @@ func mapCredentials(row Row) (*UserCredentials, error) {
 	e := &UserCredentials{}
 
 	if err := row.Scan(
+		&e.ID,
+		&e.UID,
 		&e.Username,
 		&e.Email,
 		&e.Password,
