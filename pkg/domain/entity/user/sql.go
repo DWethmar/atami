@@ -189,6 +189,8 @@ func queryRowSelectUserByEmail(
 
 // selectUserCredentials sql query
 var selectUserCredentialsSQL = `SELECT
+	app_user.id,
+	app_user.uid,
 	app_user.username,
 	app_user.email,
 	app_user.password
