@@ -7,7 +7,7 @@ import (
 
 var (
 	// ErrCouldNotParse error declaration
-	ErrCouldNotParse = errors.New("Could not parse")
+	ErrCouldNotParse = errors.New("could not parse")
 )
 
 // Memstore contains the schema.

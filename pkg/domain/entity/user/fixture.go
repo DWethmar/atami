@@ -1,15 +1,14 @@
-package fixture
+package user
 
 import (
 	"fmt"
 
 	"github.com/dwethmar/atami/pkg/domain/entity"
-	"github.com/dwethmar/atami/pkg/domain/entity/user"
 )
 
 // NewUserFixture create new message fixture
-func NewUserFixture(ID entity.ID) *user.User {
-	return &user.User{
+func NewUserFixture(ID entity.ID) *User {
+	return &User{
 		ID:        ID,
 		UID:       entity.NewUID(),
 		Username:  fmt.Sprintf("user%d", ID),

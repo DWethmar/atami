@@ -15,11 +15,11 @@ type User struct {
 }
 
 // MessageUser user related data on message
-type MessageUser struct {
-	ID       int
-	UID      string
-	Username string
-}
+// type MessageUser struct {
+// 	ID       int
+// 	UID      string
+// 	Username string
+// }
 
 // The Message model
 type Message struct {

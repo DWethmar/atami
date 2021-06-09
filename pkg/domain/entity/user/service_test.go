@@ -171,6 +171,13 @@ func TestService_Create(t *testing.T) {
 }
 
 func TestService_Get(t *testing.T) {
+	setup := func() *memstore.Memstore {
+		s := memstore.NewStore()
+		s.GetUsers().Put(1, *toMemory(NewUserFixture(1)))
+		s.GetUsers().Put(2, *toMemory(NewUserFixture(2)))
+		return s
+	}
+
 	type fields struct {
 		repo Repository
 	}
@@ -184,7 +191,12 @@ func TestService_Get(t *testing.T) {
 		want    *User
 		wantErr bool
 	}{
-		// TODO: Add test cases.
+		{
+			name: "get user by ID",
+			fields: fields{
+				repo: NewInMemoryRepo(setup()),
+			},
+		},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
