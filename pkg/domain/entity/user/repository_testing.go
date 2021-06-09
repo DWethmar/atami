@@ -100,7 +100,7 @@ func testRepositoryGet(t *testing.T, dependencies *repoTestDependencies, setup s
 				UID:       testUser.UID,
 				Username:  testUser.Username,
 				Email:     testUser.Email,
-				Password:  testUser.Password,
+				Password:  "",
 				Biography: testUser.Biography,
 				CreatedAt: testUser.CreatedAt,
 				UpdatedAt: testUser.UpdatedAt,

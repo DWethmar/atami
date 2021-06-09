@@ -24,6 +24,7 @@ func (r *inMemoryRepo) Get(ID entity.ID) (*User, error) {
 
 	if r, ok := users.Get(ID); ok {
 		user := fromMemory(r)
+		user.Password = ""
 		return user, nil
 	}
 
