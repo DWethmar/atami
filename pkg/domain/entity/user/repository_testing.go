@@ -316,7 +316,6 @@ func testRepositoryGetByEmail(t *testing.T, dependencies *repoTestDependencies, 
 func testRepositoryGetCredentials(t *testing.T, dependencies *repoTestDependencies, setup setupRepository) {
 	c := *dependencies.users[0]
 	testUser := &c;
-	testUser.Password = ""
 	
 	type fields struct {
 		repo Repository
