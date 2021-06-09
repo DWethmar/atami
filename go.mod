@@ -8,6 +8,7 @@ require (
 	github.com/go-chi/cors v1.1.1
 	github.com/go-chi/httplog v0.1.6
 	github.com/golang-migrate/migrate/v4 v4.13.0
+	github.com/iancoleman/strcase v0.1.3 // indirect
 	github.com/joho/godotenv v1.3.0
 	github.com/lib/pq v1.3.0
 	github.com/segmentio/ksuid v1.0.3

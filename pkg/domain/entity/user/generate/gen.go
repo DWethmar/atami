@@ -3,11 +3,13 @@ package main
 import (
 	"fmt"
 	"strconv"
+	"strings"
 
 	"github.com/dwethmar/atami/pkg/database/querybuilder"
 	qb "github.com/dwethmar/atami/pkg/database/querybuilder"
 	qg "github.com/dwethmar/atami/pkg/database/querygenerator"
 	"github.com/dwethmar/atami/pkg/domain/user/postgres/schema"
+	"github.com/iancoleman/strcase"
 )
 
 var defaultCols = schema.SelectCols
@@ -24,7 +26,7 @@ var passwordCol = schema.WithTbl(schema.ColPassword)
 
 func main() {
 	qg.Generate(
-		"postgres_queries.go",
+		"sql.go",
 		"user",
 		[]string{
 			"time",
@@ -45,7 +47,7 @@ func main() {
 				QueryType: qg.QueryRow,
 				FuncArgs: []qg.FuncArg{
 					{
-						Name: "username",
+						Name: strings.ToUpper(schema.ColUsername),
 						Type: "string",
 					},
 				},
@@ -67,7 +69,7 @@ func main() {
 				QueryType: qg.QueryRow,
 				FuncArgs: []qg.FuncArg{
 					{
-						Name: "email",
+						Name: strings.ToUpper(schema.ColEmail),
 						Type: "string",
 					},
 				},
@@ -83,13 +85,14 @@ func main() {
 						InsertCols: []string{
 							schema.ColUID,
 							schema.ColUsername,
+							schema.ColBiography,
 							schema.ColEmail,
 							schema.ColPassword,
 							schema.ColCreatedAt,
 							schema.ColUpdatedAt,
 						},
 						Values: []interface{}{
-							"$1", "$2", "$3", "$4", "$5", "$6",
+							"$1", "$2", "$3", "$4", "$5", "$6", "$7",
 						},
 						Returning: schema.SelectCols,
 					},
@@ -97,27 +100,31 @@ func main() {
 				QueryType: qg.QueryRow,
 				FuncArgs: []qg.FuncArg{
 					{
-						Name: "UID",
+						Name: strings.ToUpper(schema.ColUID),
 						Type: "string",
 					},
 					{
-						Name: "username",
+						Name: strcase.ToLowerCamel(schema.ColUsername),
 						Type: "string",
 					},
 					{
-						Name: "email",
+						Name: strcase.ToLowerCamel(schema.ColBiography),
 						Type: "string",
 					},
 					{
-						Name: "password",
+						Name: strcase.ToLowerCamel(schema.ColEmail),
 						Type: "string",
 					},
 					{
-						Name: "createdAt",
+						Name: strcase.ToLowerCamel(schema.ColPassword),
+						Type: "string",
+					},
+					{
+						Name: strcase.ToLowerCamel(schema.ColCreatedAt),
 						Type: "time.Time",
 					},
 					{
-						Name: "updateddAt",
+						Name: strcase.ToLowerCamel(schema.ColUpdatedAt),
 						Type: "time.Time",
 					},
 				},
@@ -136,7 +143,7 @@ func main() {
 				QueryType: qg.Exec,
 				FuncArgs: []qg.FuncArg{
 					{
-						Name: "ID",
+						Name: strings.ToUpper(schema.ColID),
 						Type: "entity.ID",
 					},
 				},
@@ -159,11 +166,11 @@ func main() {
 				FuncArgs: []qg.FuncArg{
 					{
 						Name: "limit",
-						Type: "int",
+						Type: "uint",
 					},
 					{
 						Name: "offset",
-						Type: "int",
+						Type: "uint",
 					},
 				},
 				MapFunc:    "defaultMap",
@@ -185,7 +192,7 @@ func main() {
 				QueryType: qg.QueryRow,
 				FuncArgs: []qg.FuncArg{
 					{
-						Name: "ID",
+						Name: strings.ToUpper(schema.ColID),
 						Type: "entity.ID",
 					},
 				},
@@ -208,7 +215,7 @@ func main() {
 				QueryType: qg.QueryRow,
 				FuncArgs: []qg.FuncArg{
 					{
-						Name: "UID",
+						Name: strings.ToUpper(schema.ColUID),
 						Type: "entity.UID",
 					},
 				},
@@ -231,7 +238,7 @@ func main() {
 				QueryType: qg.QueryRow,
 				FuncArgs: []qg.FuncArg{
 					{
-						Name: "email",
+						Name: strcase.ToLowerCamel(schema.ColEmail),
 						Type: "string",
 					},
 				},
@@ -254,7 +261,7 @@ func main() {
 				QueryType: qg.QueryRow,
 				FuncArgs: []qg.FuncArg{
 					{
-						Name: "email",
+						Name: strcase.ToLowerCamel(schema.ColEmail),
 						Type: "string",
 					},
 				},
@@ -277,7 +284,7 @@ func main() {
 				QueryType: qg.QueryRow,
 				FuncArgs: []qg.FuncArg{
 					{
-						Name: "username",
+						Name: strcase.ToLowerCamel(schema.ColUsername),
 						Type: "string",
 					},
 				},
@@ -303,15 +310,15 @@ func main() {
 				QueryType: qg.QueryRow,
 				FuncArgs: []qg.FuncArg{
 					{
-						Name: "ID",
+						Name: strings.ToUpper(schema.ColID),
 						Type: "entity.ID",
 					},
 					{
-						Name: "biography",
+						Name: strcase.ToLowerCamel(schema.ColBiography),
 						Type: "string",
 					},
 					{
-						Name: "updatedAt",
+						Name: strcase.ToLowerCamel(schema.ColUpdatedAt),
 						Type: "time.Time",
 					},
 				},

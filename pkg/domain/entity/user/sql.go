@@ -27,11 +27,11 @@ LIMIT 1`
 
 func queryRowSelectUsernameUniqueCheck(
 	db database.Transaction,
-	username string,
+	USERNAME string,
 ) (bool, error) {
 	return mapIsUniqueCheck(db.QueryRow(
 		selectUsernameUniqueCheckSQL,
-		username,
+		USERNAME,
 	))
 }
 
@@ -44,11 +44,11 @@ LIMIT 1`
 
 func queryRowSelectEmailUniqueCheck(
 	db database.Transaction,
-	email string,
+	EMAIL string,
 ) (bool, error) {
 	return mapIsUniqueCheck(db.QueryRow(
 		selectEmailUniqueCheckSQL,
-		email,
+		EMAIL,
 	))
 }
 
@@ -57,6 +57,7 @@ var insertUserSQL = `INSERT INTO app_user
 (
 	uid,
 	username,
+	biography,
 	email,
 	password,
 	created_at,
@@ -68,7 +69,8 @@ VALUES (
 	$3,
 	$4,
 	$5,
-	$6
+	$6,
+	$7
 )
 RETURNING app_user.id, app_user.uid, app_user.username, app_user.email, app_user.biography, app_user.created_at, app_user.updated_at`
 
@@ -76,19 +78,21 @@ func queryRowInsertUser(
 	db database.Transaction,
 	UID string,
 	username string,
+	biography string,
 	email string,
 	password string,
 	createdAt time.Time,
-	updateddAt time.Time,
+	updatedAt time.Time,
 ) (*User, error) {
 	return defaultMap(db.QueryRow(
 		insertUserSQL,
 		UID,
 		username,
+		biography,
 		email,
 		password,
 		createdAt,
-		updateddAt,
+		updatedAt,
 	))
 }
 
@@ -122,8 +126,8 @@ OFFSET $2`
 
 func querySelectUsers(
 	db database.Transaction,
-	limit int,
-	offset int,
+	limit uint,
+	offset uint,
 ) ([]*User, error) {
 	rows, err := db.Query(
 		selectUsersSQL,

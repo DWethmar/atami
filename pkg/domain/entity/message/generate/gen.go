@@ -38,7 +38,7 @@ var defaultOrderBy = []string{fmt.Sprintf("%s DESC", schema.WithTbl(schema.ColCr
 
 func main() {
 	qg.Generate(
-		"postgres_queries.go",
+		"sql.go",
 		"message",
 		[]string{
 			"time",

@@ -2,6 +2,7 @@ package user
 
 import (
 	"database/sql"
+	"errors"
 
 	"github.com/dwethmar/atami/pkg/database"
 	"github.com/dwethmar/atami/pkg/domain/entity"
@@ -19,26 +20,43 @@ func NewPostgresRepository(db *sql.DB) Repository {
 }
 
 func (r *postgresRepo) GetByUID(UID entity.UID) (*User, error) {
-	return nil, nil
+	return queryRowSelectUserByUID(r.db, UID)
 }
 
 func (r *postgresRepo) Get(ID entity.ID) (*User, error) {
-	return nil, nil
+	return queryRowSelectUserByID(r.db, ID)
 }
 
 func (r *postgresRepo) List(limit, offset uint) ([]*User, error) {
-	return nil, nil
+	return querySelectUsers(r.db, limit, offset)
 }
 
 func (r *postgresRepo) Create(e *User) (entity.ID, error){
-	return 0, nil
+	user, err := queryRowInsertUser(r.db, e.UID, e.Username, e.Biography, e.Email, e.Password, e.CreatedAt, e.UpdatedAt)
+	if err != nil {
+		return 0, err
+	}
+	return user.ID, nil
 }
 
 func (r *postgresRepo) Update(e *User) error{
-	return nil
+	_, err := queryRowUpdateUser(r.db, e.ID, e.Biography, e.UpdatedAt)
+	return err
 }
 
 func (r *postgresRepo) Delete(ID entity.ID) error{
+	result, err := execDeleteUser(r.db, ID) 
+	if err != nil{
+		return err
+	}
+	if e, err := result.RowsAffected(); err == nil {
+		if e != 0 {
+			return errors.New("no rows affected")
+		} 
+	} else {
+		return err
+	}
+
 	return nil
 }
 
