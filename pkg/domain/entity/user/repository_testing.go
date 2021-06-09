@@ -339,6 +339,8 @@ func testRepositoryGetCredentials(t *testing.T, dependencies *repoTestDependenci
 				email: "user1@user.nl",
 			},
 			want: &UserCredentials{
+				ID:        testUser.ID,
+				UID:       testUser.UID,
 				Username:  "user1",
 				Email:     "user1@user.nl",
 				Password:  testUser.Password,
