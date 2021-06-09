@@ -37,6 +37,36 @@ func Test_inMemoryRepo_GetByUID(t *testing.T) {
 	)
 }
 
+func Test_inMemoryRepo_GetByUsername(t *testing.T) {
+	deps := newRepoTestDependencies()
+	testRepositoryGetByUsername(
+		t,
+		deps,
+		func() Repository {
+			store := memstore.NewStore()
+			for _, user := range deps.users {
+				store.GetUsers().Put(user.ID, *toMemory(user))
+			}
+			return NewInMemoryRepo(store)
+		},
+	)
+}
+
+func Test_inMemoryRepo_GetByEmail(t *testing.T) {
+	deps := newRepoTestDependencies()
+	testRepositoryGetByEmail(
+		t,
+		deps,
+		func() Repository {
+			store := memstore.NewStore()
+			for _, user := range deps.users {
+				store.GetUsers().Put(user.ID, *toMemory(user))
+			}
+			return NewInMemoryRepo(store)
+		},
+	)
+}
+
 func Test_inMemoryRepo_List(t *testing.T) {
 	deps := newRepoTestDependencies()
 	testRepositoryList(

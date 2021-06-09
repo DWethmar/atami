@@ -23,6 +23,14 @@ func (r *postgresRepo) GetByUID(UID entity.UID) (*User, error) {
 	return queryRowSelectUserByUID(r.db, UID)
 }
 
+func (r *postgresRepo) GetByEmail(email string) (*User, error) {
+	return queryRowSelectUserByEmail(r.db, email)
+}
+
+func (r *postgresRepo) GetByUsername(username string) (*User, error) {
+	return queryRowSelectUserByUsername(r.db, username)
+}
+
 func (r *postgresRepo) Get(ID entity.ID) (*User, error) {
 	return queryRowSelectUserByID(r.db, ID)
 }

@@ -34,50 +34,6 @@ func main() {
 		},
 		[]*qg.GenerateQuery{
 			{
-				Name: "selectUsernameUniqueCheck",
-				SQL: qb.Select(
-					qb.SelectQuery{
-						From:       defaultFrom,
-						SelectCols: []string{"1"},
-						Where: qb.NewWhere().
-							And(fmt.Sprintf("%s = $1", usernameCol)),
-						Limit: strconv.Itoa(1),
-					},
-				),
-				QueryType: qg.QueryRow,
-				FuncArgs: []qg.FuncArg{
-					{
-						Name: strings.ToUpper(schema.ColUsername),
-						Type: "string",
-					},
-				},
-				MapFunc:    "mapIsUniqueCheck",
-				ReturnType: "bool",
-			},
-
-			{
-				Name: "selectEmailUniqueCheck",
-				SQL: qb.Select(
-					qb.SelectQuery{
-						From:       defaultFrom,
-						SelectCols: []string{"1"},
-						Where: qb.NewWhere().
-							And(fmt.Sprintf("%s = $1", emailCol)),
-						Limit: strconv.Itoa(1),
-					},
-				),
-				QueryType: qg.QueryRow,
-				FuncArgs: []qg.FuncArg{
-					{
-						Name: strings.ToUpper(schema.ColEmail),
-						Type: "string",
-					},
-				},
-				MapFunc:    "mapIsUniqueCheck",
-				ReturnType: "bool",
-			},
-
-			{
 				Name: "insertUser",
 				SQL: qb.Insert(
 					qb.InsertQuery{
@@ -274,7 +230,7 @@ func main() {
 				SQL: qb.Select(
 					qb.SelectQuery{
 						From:       defaultFrom,
-						SelectCols: schema.SelectCols,
+						SelectCols: defaultCols,
 						Where: qb.NewWhere().And(
 							fmt.Sprintf("%s = $1", usernameCol),
 						),

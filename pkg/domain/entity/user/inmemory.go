@@ -48,6 +48,40 @@ func (r *inMemoryRepo) GetByUID(UID entity.UID) (*User, error) {
 	return nil, err
 }
 
+func (r *inMemoryRepo) GetByEmail(email string) (*User, error) {
+	users, err := r.memStore.GetUsers().All()
+	if err != nil {
+		return nil, err
+	}
+
+	u, err := filterList(users, func(record *User) bool {
+		return email == record.Email
+	})
+
+	if err == nil && u != nil {
+		u.Password = ""
+		return u, nil
+	}
+	return nil, err
+}
+
+func (r *inMemoryRepo) GetByUsername(username string) (*User, error) {
+	users, err := r.memStore.GetUsers().All()
+	if err != nil {
+		return nil, err
+	}
+
+	u, err := filterList(users, func(record *User) bool {
+		return username == record.Username
+	})
+	
+	if err == nil && u != nil {
+		u.Password = ""
+		return u, nil
+	}
+	return nil, err}
+
+
 func (r *inMemoryRepo) List(limit, offset uint) ([]*User, error) {
 	users := r.memStore.GetUsers()
 

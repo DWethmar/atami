@@ -21,14 +21,18 @@ func NewService(r Repository) *Service {
 //Create a message
 func (s *Service) Create(e Create) (entity.ID, error) {
 	return s.repo.Create(&User{
-		UID:             entity.NewUID(),
-		CreatedAt:       time.Now(),
+		UID:		entity.NewUID(),
+		Username: 	e.Username,
+		Email: 		e.Email,
+		Password: 	HashPassword([]byte(e.Password)),
+		CreatedAt:	entity.Now(),
+		UpdatedAt: 	entity.Now(),
 	})
 }
 
 //Get a message
-func (s *Service) Get(id entity.ID) (*User, error) {
-	return s.repo.Get(id)
+func (s *Service) Get(ID entity.ID) (*User, error) {
+	return s.repo.Get(ID)
 }
 
 //List messages

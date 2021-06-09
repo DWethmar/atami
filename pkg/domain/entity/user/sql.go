@@ -18,40 +18,6 @@ type Row interface {
 	Err() error
 }
 
-// selectUsernameUniqueCheck sql query
-var selectUsernameUniqueCheckSQL = `SELECT
-	1
-FROM app_user
-WHERE app_user.username = $1
-LIMIT 1`
-
-func queryRowSelectUsernameUniqueCheck(
-	db database.Transaction,
-	USERNAME string,
-) (bool, error) {
-	return mapIsUniqueCheck(db.QueryRow(
-		selectUsernameUniqueCheckSQL,
-		USERNAME,
-	))
-}
-
-// selectEmailUniqueCheck sql query
-var selectEmailUniqueCheckSQL = `SELECT
-	1
-FROM app_user
-WHERE app_user.email = $1
-LIMIT 1`
-
-func queryRowSelectEmailUniqueCheck(
-	db database.Transaction,
-	EMAIL string,
-) (bool, error) {
-	return mapIsUniqueCheck(db.QueryRow(
-		selectEmailUniqueCheckSQL,
-		EMAIL,
-	))
-}
-
 // insertUser sql query
 var insertUserSQL = `INSERT INTO app_user
 (
@@ -120,7 +86,7 @@ var selectUsersSQL = `SELECT
 	app_user.created_at,
 	app_user.updated_at
 FROM app_user
-ORDER BY app_user.created_at DESC
+ORDER BY app_user.created_at ASC
 LIMIT $1
 OFFSET $2`
 

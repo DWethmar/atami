@@ -199,6 +199,120 @@ func testRepositoryGetByUID(t *testing.T, dependencies *repoTestDependencies, se
 	}
 }
 
+func testRepositoryGetByUsername(t *testing.T, dependencies *repoTestDependencies, setup setupRepository) {
+	c := *dependencies.users[0]
+	testUser := &c;
+	testUser.Password = ""
+	
+	type fields struct {
+		repo Repository
+	}
+	type args struct {
+		username string
+	}
+	tests := []struct {
+		name    string
+		fields  fields
+		args    args
+		want    *User
+		wantErr bool
+	}{
+		{
+			name: "successfully get user by username",
+			fields: fields{
+				repo: setup(),
+			},
+			args: args{
+				username: "user1",
+			},
+			want: testUser,
+			wantErr: false,
+		},
+		{
+			name: "fail on user with username not found",
+			fields: fields{
+				repo: setup(),
+			},
+			args: args{
+				username: "user99999",
+			},
+			want: nil,
+			wantErr: true,
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			r := tt.fields.repo
+
+			got, err := r.GetByUsername(tt.args.username)
+			if (err != nil) != tt.wantErr {
+				t.Errorf("GetByUsername() error = %v, wantErr %v", err, tt.wantErr)
+				return
+			}
+			if !reflect.DeepEqual(got, tt.want) {
+				t.Errorf("GetByUsername() = %v, want %v", got, tt.want)
+			}
+		})
+	}
+}
+
+func testRepositoryGetByEmail(t *testing.T, dependencies *repoTestDependencies, setup setupRepository) {
+	c := *dependencies.users[0]
+	testUser := &c;
+	testUser.Password = ""
+
+	type fields struct {
+		repo Repository
+	}
+	type args struct {
+		email string
+	}
+	tests := []struct {
+		name    string
+		fields  fields
+		args    args
+		want    *User
+		wantErr bool
+	}{
+		{
+			name: "successfully get user by email",
+			fields: fields{
+				repo: setup(),
+			},
+			args: args{
+				email: "user1@user.nl",
+			},
+			want: testUser,
+			wantErr: false,
+		},
+		{
+			name: "fail on user with email not found",
+			fields: fields{
+				repo: setup(),
+			},
+			args: args{
+				email: "abc",
+			},
+			want: nil,
+			wantErr: true,
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			r := tt.fields.repo
+
+			got, err := r.GetByEmail(tt.args.email)
+			if (err != nil) != tt.wantErr {
+				t.Errorf("GetByEmail() error = %v, wantErr %v", err, tt.wantErr)
+				return
+			}
+			if !reflect.DeepEqual(got, tt.want) {
+				t.Errorf("GetByEmail() = %v, want %v", got, tt.want)
+			}
+		})
+	}
+}
+
 func testRepositoryList(t *testing.T, dependencies *repoTestDependencies, setup setupRepository) {
 	var testUsers []*User
 

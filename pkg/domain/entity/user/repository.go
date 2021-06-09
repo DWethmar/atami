@@ -5,6 +5,8 @@ import "github.com/dwethmar/atami/pkg/domain/entity"
 // Reader allows read operations
 type Reader interface {
 	GetByUID(UID entity.UID) (*User, error)
+	GetByEmail(email string) (*User, error)
+	GetByUsername(email string) (*User, error)
 	Get(ID entity.ID) (*User, error)
 	List(limit, offset uint) ([]*User, error)
 }
