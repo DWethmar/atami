@@ -200,7 +200,14 @@ func testRepositoryGetByUID(t *testing.T, dependencies *repoTestDependencies, se
 }
 
 func testRepositoryList(t *testing.T, dependencies *repoTestDependencies, setup setupRepository) {
-	testUsers := dependencies.users
+	var testUsers []*User
+
+	// Remove passwords
+	for _, u := range dependencies.users {
+		c := *u;
+		c.Password = ""
+		testUsers = append(testUsers, &c)
+	}
 
 	type fields struct {
 		repo Repository
@@ -290,8 +297,7 @@ func testRepositoryList(t *testing.T, dependencies *repoTestDependencies, setup 
 				return
 			}
 
-			for i, usr := range got {
-				usr.Password = ""
+			for i, usr := range got {		
 				if !assert.Equal(t, tt.want[i], usr) {
 					t.Errorf("Repository.List() = \n%v, want \n%v", usr, tt.want[i])
 					return

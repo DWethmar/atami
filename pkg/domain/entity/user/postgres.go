@@ -81,6 +81,9 @@ func defaultMap(row Row) (*User, error) {
 		e.Biography = biography.String
 	}
 
+	e.CreatedAt = entity.SetDefaultTimePrecision(e.CreatedAt)
+	e.UpdatedAt = entity.SetDefaultTimePrecision(e.CreatedAt)
+
 	return e, nil
 }
 
@@ -111,6 +114,9 @@ func mapWithPassword(row Row) (*User, error) {
 	if biography.Valid {
 		e.Biography = biography.String
 	}
+
+	e.CreatedAt = entity.SetDefaultTimePrecision(e.CreatedAt)
+	e.UpdatedAt = entity.SetDefaultTimePrecision(e.CreatedAt)
 
 	return e, nil
 }

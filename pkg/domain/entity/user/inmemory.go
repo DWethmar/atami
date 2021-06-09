@@ -77,7 +77,9 @@ func (r *inMemoryRepo) List(limit, offset uint) ([]*User, error) {
 
 	items := make([]*User, 0)
 	for _, r := range all[low:high] {
-		items = append(items, fromMemory(r))
+		usr := fromMemory(r)
+		usr.Password = ""
+		items = append(items, usr)
 	}
 
 	return items, nil
