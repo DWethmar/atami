@@ -140,6 +140,7 @@ func mapIsUniqueCheck(row Row) (bool, error) {
 	return i == 0, row.Err()
 }
 
+// mapCredentials creates a UserCredentials
 func mapCredentials(row Row) (*UserCredentials, error) {
 	e := &UserCredentials{}
 
