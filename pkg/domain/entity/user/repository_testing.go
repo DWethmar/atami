@@ -343,7 +343,7 @@ func testRepositoryGetCredentials(t *testing.T, dependencies *repoTestDependenci
 			want: &UserCredentials{
 				Username:  "user1",
 				Email:     "user1@user.nl",
-				Password:  testUser.Password,
+				Password:  HashPassword([]byte("abdefABCDEF1234!@#$")),
 			},
 			wantErr: false,
 		},
