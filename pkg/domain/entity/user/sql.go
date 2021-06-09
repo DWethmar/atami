@@ -120,7 +120,7 @@ var selectUsersSQL = `SELECT
 	app_user.created_at,
 	app_user.updated_at
 FROM app_user
-ORDER BY app_user.created_at ASC
+ORDER BY app_user.created_at DESC
 LIMIT $1
 OFFSET $2`
 
