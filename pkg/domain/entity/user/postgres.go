@@ -52,6 +52,17 @@ func (r *postgresRepo) GetByUsername(username string) (*User, error) {
 	return u, nil
 }
 
+func (r *postgresRepo) GetCredentials(email string) (*UserCredentials, error) {
+	u, err := queryRowSelectUserCredentials(r.db, email)
+	if err != nil {
+		if err == sql.ErrNoRows {
+			return nil, domain.ErrNotFound
+		}
+		return nil, err
+	}
+	return u, nil
+}
+
 func (r *postgresRepo) Get(ID entity.ID) (*User, error) {
 	u, err := queryRowSelectUserByID(r.db, ID)
 	if err != nil {
@@ -129,30 +140,16 @@ func mapIsUniqueCheck(row Row) (bool, error) {
 	return i == 0, row.Err()
 }
 
-func mapWithPassword(row Row) (*User, error) {
-	e := &User{}
-
-	var biography sql.NullString
+func mapCredentials(row Row) (*UserCredentials, error) {
+	e := &UserCredentials{}
 
 	if err := row.Scan(
-		&e.ID,
-		&e.UID,
 		&e.Username,
 		&e.Email,
-		&biography,
-		&e.CreatedAt,
-		&e.UpdatedAt,
 		&e.Password,
 	); err != nil {
 		return nil, err
 	}
-
-	if biography.Valid {
-		e.Biography = biography.String
-	}
-
-	e.CreatedAt = entity.SetDefaultTimePrecision(e.CreatedAt)
-	e.UpdatedAt = entity.SetDefaultTimePrecision(e.UpdatedAt)
-
+	
 	return e, nil
 }

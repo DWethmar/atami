@@ -67,6 +67,21 @@ func Test_inMemoryRepo_GetByEmail(t *testing.T) {
 	)
 }
 
+func Test_inMemoryRepo_GetCredentials(t *testing.T) {
+	deps := newRepoTestDependencies()
+	testRepositoryGetByUsername(
+		t,
+		deps,
+		func() Repository {
+			store := memstore.NewStore()
+			for _, user := range deps.users {
+				store.GetUsers().Put(user.ID, *toMemory(user))
+			}
+			return NewInMemoryRepo(store)
+		},
+	)
+}
+
 func Test_inMemoryRepo_List(t *testing.T) {
 	deps := newRepoTestDependencies()
 	testRepositoryList(
@@ -113,7 +128,18 @@ func Test_inMemoryRepo_Create(t *testing.T) {
 }
 
 func Test_inMemoryRepo_Delete(t *testing.T) {
-
+	deps := newRepoTestDependencies()
+	testRepositoryDelete(
+		t,
+		deps,
+		func() Repository {
+			store := memstore.NewStore()
+			for _, user := range deps.users {
+				store.GetUsers().Put(user.ID, *toMemory(user))
+			}
+			return NewInMemoryRepo(store)
+		},
+	)
 }
 
 func Test_toMemory(t *testing.T) {
@@ -194,7 +220,7 @@ func Test_mapWithPassword(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			got, err := mapWithPassword(tt.args.row)
+			got, err := mapCredentials(tt.args.row)
 			if (err != nil) != tt.wantErr {
 				t.Errorf("mapWithPassword() error = %v, wantErr %v", err, tt.wantErr)
 				return

@@ -203,11 +203,11 @@ func main() {
 			},
 
 			{
-				Name: "selectUserByEmailWithPassword",
+				Name: "selectUserCredentials",
 				SQL: qb.Select(
 					qb.SelectQuery{
 						From:       defaultFrom,
-						SelectCols: append(schema.SelectCols, passwordCol),
+						SelectCols: []string{usernameCol, emailCol, passwordCol},
 						Where: qb.NewWhere().And(
 							fmt.Sprintf("%s = $1", emailCol),
 						),
@@ -221,8 +221,8 @@ func main() {
 						Type: "string",
 					},
 				},
-				MapFunc:    "mapWithPassword",
-				ReturnType: "*User",
+				MapFunc:    "mapCredentials",
+				ReturnType: "*UserCredentials",
 			},
 
 			{

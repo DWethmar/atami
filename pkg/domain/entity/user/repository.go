@@ -8,6 +8,7 @@ type Reader interface {
 	GetByEmail(email string) (*User, error)
 	GetByUsername(email string) (*User, error)
 	Get(ID entity.ID) (*User, error)
+	GetCredentials(email string) (*UserCredentials, error)
 	List(limit, offset uint) ([]*User, error)
 }
 

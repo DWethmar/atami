@@ -164,6 +164,39 @@ func Test_PostgresRepo_GetByEmail(t *testing.T) {
 	)
 }
 
+func Test_PostgresRepo_GetCredentials(t *testing.T) {
+	if c := config.Load(); !c.TestWithDB {
+		t.Skip("Skip test")
+	}
+	mux := &sync.Mutex{}
+	dbs := []*sql.DB{}
+	defer func() {
+		for _, db := range dbs {
+			db.Close()
+		}
+	}()
+	deps := newRepoTestDependencies()
+	testRepositoryGetCredentials(
+		t,
+		deps,
+		func() Repository {
+			db, err := database.NewTestDB(t)
+			if err != nil {
+				assert.FailNow(t, err.Error())
+			}
+			mux.Lock()
+			dbs = append(dbs, db)
+			mux.Unlock()
+
+			if err := seedDatabase(db, deps); err != nil {
+				fmt.Print(err)
+				t.FailNow()
+			}
+			return NewPostgresRepository(db)
+		},
+	)
+}
+
 func Test_PostgresRepo_List(t *testing.T) {
 	if c := config.Load(); !c.TestWithDB {
 		t.Skip("Skip test")

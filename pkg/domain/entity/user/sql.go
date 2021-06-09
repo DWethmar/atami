@@ -187,26 +187,21 @@ func queryRowSelectUserByEmail(
 	))
 }
 
-// selectUserByEmailWithPassword sql query
-var selectUserByEmailWithPasswordSQL = `SELECT
-	app_user.id,
-	app_user.uid,
+// selectUserCredentials sql query
+var selectUserCredentialsSQL = `SELECT
 	app_user.username,
 	app_user.email,
-	app_user.biography,
-	app_user.created_at,
-	app_user.updated_at,
 	app_user.password
 FROM app_user
 WHERE app_user.email = $1
 LIMIT 1`
 
-func queryRowSelectUserByEmailWithPassword(
+func queryRowSelectUserCredentials(
 	db database.Transaction,
 	email string,
-) (*User, error) {
-	return mapWithPassword(db.QueryRow(
-		selectUserByEmailWithPasswordSQL,
+) (*UserCredentials, error) {
+	return mapCredentials(db.QueryRow(
+		selectUserCredentialsSQL,
 		email,
 	))
 }

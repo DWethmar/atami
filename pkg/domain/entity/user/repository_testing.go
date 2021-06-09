@@ -20,7 +20,7 @@ func newRepoTestDependencies() *repoTestDependencies {
 				UID:       entity.NewUID(),
 				Username:  "user1",
 				Email:     "user1@user.nl",
-				Password:  "abdefABCDEF1234!@#$",
+				Password:  HashPassword([]byte("abdefABCDEF1234!@#$")),
 				Biography: "biography text",
 				CreatedAt: entity.Now(),
 				UpdatedAt: entity.Now(),
@@ -30,7 +30,7 @@ func newRepoTestDependencies() *repoTestDependencies {
 				UID:       entity.NewUID(),
 				Username:  "user2",
 				Email:     "user2@user.nl",
-				Password:  "abdefABCDEF1234!@#$2",
+				Password:  HashPassword([]byte("abdefABCDEF1234!@#$")),
 				Biography: "biography text",
 				CreatedAt: entity.Now(),
 				UpdatedAt: entity.Now(),
@@ -40,7 +40,7 @@ func newRepoTestDependencies() *repoTestDependencies {
 				UID:       entity.NewUID(),
 				Username:  "user3",
 				Email:     "user3@user.nl",
-				Password:  "abdefABCDEF1234!@#$2",
+				Password:  HashPassword([]byte("abdefABCDEF1234!@#$")),
 				Biography: "biography text",
 				CreatedAt: entity.Now(),
 				UpdatedAt: entity.Now(),
@@ -50,7 +50,7 @@ func newRepoTestDependencies() *repoTestDependencies {
 				UID:       entity.NewUID(),
 				Username:  "user4",
 				Email:     "user4@user.nl",
-				Password:  "abdefABCDEF1234!@#$2",
+				Password:  HashPassword([]byte("abdefABCDEF1234!@#$")),
 				Biography: "biography text",
 				CreatedAt: entity.Now(),
 				UpdatedAt: entity.Now(),
@@ -60,7 +60,7 @@ func newRepoTestDependencies() *repoTestDependencies {
 				UID:       entity.NewUID(),
 				Username:  "user5",
 				Email:     "user5@user.nl",
-				Password:  "abdefABCDEF1234!@#$2",
+				Password:  HashPassword([]byte("abdefABCDEF1234!@#$")),
 				Biography: "biography text",
 				CreatedAt: entity.Now(),
 				UpdatedAt: entity.Now(),
@@ -308,6 +308,68 @@ func testRepositoryGetByEmail(t *testing.T, dependencies *repoTestDependencies, 
 			}
 			if !reflect.DeepEqual(got, tt.want) {
 				t.Errorf("GetByEmail() = %v, want %v", got, tt.want)
+			}
+		})
+	}
+}
+
+
+func testRepositoryGetCredentials(t *testing.T, dependencies *repoTestDependencies, setup setupRepository) {
+	c := *dependencies.users[0]
+	testUser := &c;
+	testUser.Password = ""
+	
+	type fields struct {
+		repo Repository
+	}
+	type args struct {
+		email string
+	}
+	tests := []struct {
+		name    string
+		fields  fields
+		args    args
+		want    *UserCredentials
+		wantErr bool
+	}{
+		{
+			name: "successfully get user credentials",
+			fields: fields{
+				repo: setup(),
+			},
+			args: args{
+				email: "user1@user.nl",
+			},
+			want: &UserCredentials{
+				Username:  "user1",
+				Email:     "user1@user.nl",
+				Password:  HashPassword([]byte("abdefABCDEF1234!@#$")),
+			},
+			wantErr: false,
+		},
+		{
+			name: "fail on user with username not found",
+			fields: fields{
+				repo: setup(),
+			},
+			args: args{
+				email: "user99999@test.nl",
+			},
+			want: nil,
+			wantErr: true,
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			r := tt.fields.repo
+
+			got, err := r.GetCredentials(tt.args.email)
+			if (err != nil) != tt.wantErr {
+				t.Errorf("GetByUsername() error = %v, wantErr %v", err, tt.wantErr)
+				return
+			}
+			if !reflect.DeepEqual(got, tt.want) {
+				t.Errorf("GetByUsername() = %v, want %v", got, tt.want)
 			}
 		})
 	}

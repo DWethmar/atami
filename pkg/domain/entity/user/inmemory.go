@@ -83,6 +83,19 @@ func (r *inMemoryRepo) GetByUsername(username string) (*User, error) {
 	return nil, err
 }
 
+func (r *inMemoryRepo) GetCredentials(email string) (*UserCredentials, error) {
+	u, err := r.GetByEmail(email)
+	if err != nil {
+		return nil, err
+	}
+
+	return &UserCredentials{
+		Username: u.Username,
+		Email: u.Email,
+		Password: u.Password,
+	}, err
+}
+
 func (r *inMemoryRepo) List(limit, offset uint) ([]*User, error) {
 	users := r.memStore.GetUsers()
 

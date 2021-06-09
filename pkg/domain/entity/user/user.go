@@ -26,6 +26,12 @@ type User struct {
 	UpdatedAt time.Time
 }
 
+type UserCredentials struct {
+	Username  string
+	Email     string
+	Password  string
+}
+
 // Create struct declaration
 type Create struct {
 	UID       entity.UID
