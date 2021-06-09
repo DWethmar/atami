@@ -82,7 +82,7 @@ func defaultMap(row Row) (*User, error) {
 	}
 
 	e.CreatedAt = entity.SetDefaultTimePrecision(e.CreatedAt)
-	e.UpdatedAt = entity.SetDefaultTimePrecision(e.CreatedAt)
+	e.UpdatedAt = entity.SetDefaultTimePrecision(e.UpdatedAt)
 
 	return e, nil
 }
@@ -116,7 +116,7 @@ func mapWithPassword(row Row) (*User, error) {
 	}
 
 	e.CreatedAt = entity.SetDefaultTimePrecision(e.CreatedAt)
-	e.UpdatedAt = entity.SetDefaultTimePrecision(e.CreatedAt)
+	e.UpdatedAt = entity.SetDefaultTimePrecision(e.UpdatedAt)
 
 	return e, nil
 }
