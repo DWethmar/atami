@@ -79,8 +79,9 @@ func (r *inMemoryRepo) GetByUsername(username string) (*User, error) {
 		u.Password = ""
 		return u, nil
 	}
-	return nil, err}
-
+	
+	return nil, err
+}
 
 func (r *inMemoryRepo) List(limit, offset uint) ([]*User, error) {
 	users := r.memStore.GetUsers()

@@ -2,9 +2,9 @@ package user
 
 import (
 	"database/sql"
-	"errors"
 
 	"github.com/dwethmar/atami/pkg/database"
+	"github.com/dwethmar/atami/pkg/domain"
 	"github.com/dwethmar/atami/pkg/domain/entity"
 )
 
@@ -20,19 +20,47 @@ func NewPostgresRepository(db *sql.DB) Repository {
 }
 
 func (r *postgresRepo) GetByUID(UID entity.UID) (*User, error) {
-	return queryRowSelectUserByUID(r.db, UID)
+	u, err := queryRowSelectUserByUID(r.db, UID)
+	if err != nil {
+		if err == sql.ErrNoRows {
+			return nil, domain.ErrNotFound
+		}
+		return nil, err
+	}
+	return u, nil
 }
 
 func (r *postgresRepo) GetByEmail(email string) (*User, error) {
-	return queryRowSelectUserByEmail(r.db, email)
+	u, err := queryRowSelectUserByEmail(r.db, email)
+	if err != nil {
+		if err == sql.ErrNoRows {
+			return nil, domain.ErrNotFound
+		}
+		return nil, err
+	}
+	return u, nil
 }
 
 func (r *postgresRepo) GetByUsername(username string) (*User, error) {
-	return queryRowSelectUserByUsername(r.db, username)
+	u, err := queryRowSelectUserByUsername(r.db, username)
+	if err != nil {
+		if err == sql.ErrNoRows {
+			return nil, domain.ErrNotFound
+		}
+		return nil, err
+	}
+	return u, nil
 }
 
 func (r *postgresRepo) Get(ID entity.ID) (*User, error) {
-	return queryRowSelectUserByID(r.db, ID)
+	u, err := queryRowSelectUserByID(r.db, ID)
+	if err != nil {
+		if err == sql.ErrNoRows {
+			return nil, domain.ErrNotFound
+		}
+		return nil, err
+	}
+	return u, nil
 }
 
 func (r *postgresRepo) List(limit, offset uint) ([]*User, error) {
@@ -59,7 +87,7 @@ func (r *postgresRepo) Delete(ID entity.ID) error{
 	}
 	if e, err := result.RowsAffected(); err == nil {
 		if e != 0 {
-			return errors.New("no rows affected")
+			return domain.ErrCannotBeDeleted
 		} 
 	} else {
 		return err

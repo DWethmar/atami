@@ -32,6 +32,7 @@ type Create struct {
 	Username  string
 	Email     string
 	Password  string
+	Biography string	
 	CreatedAt time.Time
 	UpdatedAt time.Time
 }
