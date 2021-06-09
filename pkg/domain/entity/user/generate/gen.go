@@ -113,7 +113,7 @@ func main() {
 					qb.SelectQuery{
 						SelectCols: defaultCols,
 						From:       defaultFrom,
-						OrderBy:    []string{fmt.Sprintf("%s ASC", createdAtCol)},
+						OrderBy:    []string{fmt.Sprintf("%s DESC", createdAtCol)},
 						Limit:      "$1",
 						Offset:     "$2",
 					},
