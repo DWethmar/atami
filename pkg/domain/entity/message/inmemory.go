@@ -155,7 +155,7 @@ func (r *inMemoryRepo) Delete(ID entity.ID) error {
 // findUserInMemstore finds user and parses it to User
 func findUserInMemstore(store *memstore.UserStore, userID entity.ID) (*User, error) {
 	if r, ok := store.Get(userID); ok {
-		user := userFromMemoryMap(r)
+		user := mapUserFromMemory(r)
 		return user, nil
 	}
 	return nil, fmt.Errorf("could not find user with ID %d in memory store", userID)
@@ -205,7 +205,7 @@ func userToMemoryMap(m User) *memstore.User {
 }
 
 // UserFromMemoryMap maps a message from memory
-func userFromMemoryMap(m memstore.User) *User {
+func mapUserFromMemory(m memstore.User) *User {
 	return &User{
 		ID:       m.ID,
 		UID:      m.UID,

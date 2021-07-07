@@ -44,7 +44,7 @@ func NewService(r Repository) *Service {
 	}
 }
 
-//Create a message
+//Create a user
 func (s *Service) Create(e *Create) (entity.ID, error) {
 
 	if err := s.ValidateCreate(e); err != nil {
@@ -74,26 +74,26 @@ func (s *Service) Create(e *Create) (entity.ID, error) {
 	})
 }
 
-//Get a message
+//Get a user
 func (s *Service) Get(ID entity.ID) (*User, error) {
 	return s.repo.Get(ID)
 }
 
-//List messages
+//List users
 func (s *Service) List(limit, offset uint) ([]*User, error) {
 	return s.repo.List(limit, offset)
 }
 
-//Delete a message
-func (s *Service) Delete(id entity.ID) error {
-	_, err := s.Get(id)
+//Delete a user
+func (s *Service) Delete(ID entity.ID) error {
+	_, err := s.Get(ID)
 	if err != nil {
 		return err
 	}
-	return s.repo.Delete(id)
+	return s.repo.Delete(ID)
 }
 
-//Update a message
+//Update a user
 func (s *Service) Update(ID entity.ID, e *Update) error {
 	user, err := s.Get(ID)
 	if err != nil {
@@ -104,7 +104,7 @@ func (s *Service) Update(ID entity.ID, e *Update) error {
 	return s.repo.Update(user)
 }
 
-func (s *Service) Authenticate(email, password string) (*Authenticated, error) {
+func (s *Service) Authenticate(email, password string, issuedAt time.Time) (*Authenticated, error) {
 	if email == "" {
 		return nil, ErrEmailRequired
 	}
@@ -125,16 +125,16 @@ func (s *Service) Authenticate(email, password string) (*Authenticated, error) {
 		return nil, errors.New("could not authenticate")
 	}
 
-	session := strconv.FormatInt(time.Now().UnixNano(), 10)
+	session := strconv.FormatInt(issuedAt.UnixNano(), 10)
 
 	accessTokenDuration := time.Minute * 60
-	accessToken, err := CreateAccessToken(credentials.UID, session, time.Now().Add(accessTokenDuration).Unix())
+	accessToken, err := CreateAccessToken(credentials.UID, session,  issuedAt, issuedAt.Add(accessTokenDuration))
 	if err != nil {
 		return nil, err
 	}
 
 	refreshTokenDuration := time.Hour * 730
-	refreshToken, err := CreateRefreshToken(credentials.UID, session, time.Now().Add(refreshTokenDuration).Unix())
+	refreshToken, err := CreateRefreshToken(credentials.UID, session, issuedAt, issuedAt.Add(refreshTokenDuration))
 	if err != nil {
 		return nil, err
 	}

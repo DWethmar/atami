@@ -57,7 +57,7 @@ func Test_PostgresRepo_Get(t *testing.T) {
 		}
 	}()
 	deps := newRepoTestDependencies()
-	testRepositoryGet(
+	testRepository_Get(
 		t,
 		deps,
 		func() Repository {
@@ -90,7 +90,7 @@ func Test_PostgresRepo_GetByUID(t *testing.T) {
 		}
 	}()
 	deps := newRepoTestDependencies()
-	testRepositoryGetByUID(
+	testRepository_GetByUID(
 		t,
 		deps,
 		func() Repository {
@@ -123,7 +123,7 @@ func Test_PostgresRepo_List(t *testing.T) {
 		}
 	}()
 	deps := newRepoTestDependencies()
-	testRepositoryList(
+	testRepository_List(
 		t,
 		deps,
 		func() Repository {
@@ -156,7 +156,7 @@ func Test_PostgresRepo_Update(t *testing.T) {
 		}
 	}()
 	deps := newRepoTestDependencies()
-	testRepositoryUpdate(
+	testRepository_Update(
 		t,
 		deps,
 		func() Repository {
@@ -189,7 +189,7 @@ func Test_PostgresRepo_Create(t *testing.T) {
 		}
 	}()
 	deps := newRepoTestDependencies()
-	testRepositoryCreate(
+	testRepository_Create(
 		t,
 		deps,
 		func() Repository {
@@ -222,7 +222,7 @@ func Test_PostgresRepo_Delete(t *testing.T) {
 		}
 	}()
 	deps := newRepoTestDependencies()
-	testRepositoryDelete(
+	testRepository_Delete(
 		t,
 		deps,
 		func() Repository {

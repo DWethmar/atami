@@ -6,8 +6,7 @@ import (
 	"time"
 
 	"github.com/dwethmar/atami/pkg/domain/entity"
-	"github.com/dwethmar/atami/pkg/domain/entity/message/mapping"
-	userFixture "github.com/dwethmar/atami/pkg/domain/entity/user/fixture"
+	"github.com/dwethmar/atami/pkg/memstore"
 	"github.com/stretchr/testify/assert"
 )
 
@@ -18,8 +17,26 @@ type repoTestDependencies struct {
 
 func newRepoTestDependencies() *repoTestDependencies {
 	users := []*User{
-		userFromMemoryMap(mapping.UserToMemoryMap(*userFixture.NewUserFixture(entity.ID(1)))),
-		userFromMemoryMap(mapping.UserToMemoryMap(*userFixture.NewUserFixture(entity.ID(2)))),
+		mapUserFromMemory(memstore.User{
+			ID:        1,
+			UID:       entity.NewUID(),
+			Username:  "user1",
+			Email:     "user1@test.nl",
+			Password:  "hashedpassword",
+			Biography: "bio",
+			CreatedAt: entity.Now(),
+			UpdatedAt: entity.Now(),
+		}),
+		mapUserFromMemory(memstore.User{
+			ID:        2,
+			UID:       entity.NewUID(),
+			Username:  "user2",
+			Email:     "user2@test.nl",
+			Password:  "hashedpassword",
+			Biography: "bio",
+			CreatedAt: entity.Now(),
+			UpdatedAt: entity.Now(),
+		}),	
 	}
 	messages := []*Message{
 		{
@@ -77,7 +94,7 @@ func newRepoTestDependencies() *repoTestDependencies {
 
 type setupRepository = func() Repository
 
-func testRepositoryGet(t *testing.T, dependencies *repoTestDependencies, setup setupRepository) {
+func testRepository_Get(t *testing.T, dependencies *repoTestDependencies, setup setupRepository) {
 	testMessage := dependencies.messages[0]
 
 	type fields struct {
@@ -132,7 +149,7 @@ func testRepositoryGet(t *testing.T, dependencies *repoTestDependencies, setup s
 	}
 }
 
-func testRepositoryGetByUID(t *testing.T, dependencies *repoTestDependencies, setup setupRepository) {
+func testRepository_GetByUID(t *testing.T, dependencies *repoTestDependencies, setup setupRepository) {
 	testMessage := dependencies.messages[0]
 
 	type fields struct {
@@ -185,7 +202,7 @@ func testRepositoryGetByUID(t *testing.T, dependencies *repoTestDependencies, se
 	}
 }
 
-func testRepositoryList(t *testing.T, dependencies *repoTestDependencies, setup setupRepository) {
+func testRepository_List(t *testing.T, dependencies *repoTestDependencies, setup setupRepository) {
 	testMessages := dependencies.messages
 
 	type fields struct {
@@ -286,7 +303,7 @@ func testRepositoryList(t *testing.T, dependencies *repoTestDependencies, setup 
 	}
 }
 
-func testRepositoryUpdate(t *testing.T, dependencies *repoTestDependencies, setup setupRepository) {
+func testRepository_Update(t *testing.T, dependencies *repoTestDependencies, setup setupRepository) {
 	testMessage := dependencies.messages[0]
 
 	type fields struct {
@@ -359,7 +376,7 @@ func testRepositoryUpdate(t *testing.T, dependencies *repoTestDependencies, setu
 	}
 }
 
-func testRepositoryCreate(t *testing.T, dependencies *repoTestDependencies, setup setupRepository) {
+func testRepository_Create(t *testing.T, dependencies *repoTestDependencies, setup setupRepository) {
 	createdAt := time.Now().UTC()
 	testUser := dependencies.users[0]
 
@@ -435,7 +452,7 @@ func testRepositoryCreate(t *testing.T, dependencies *repoTestDependencies, setu
 	}
 }
 
-func testRepositoryDelete(t *testing.T, dependencies *repoTestDependencies, setup setupRepository) {
+func testRepository_Delete(t *testing.T, dependencies *repoTestDependencies, setup setupRepository) {
 	testMessage := dependencies.messages[0]
 
 	type fields struct {

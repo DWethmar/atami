@@ -9,8 +9,8 @@ import (
 )
 
 func TestAccessToken(t *testing.T) {
-	expiresAt := time.Now().Add(time.Hour * 10).Unix()
-	accessToken, err := CreateAccessToken("abc123", "abcdefgh", expiresAt)
+	expiresAt := time.Now().Add(time.Hour * 10)
+	accessToken, err := CreateAccessToken("abc123", "abcdefgh", time.Now(), expiresAt)
 	assert.NoError(t, err)
 
 	if token, err := VerifyAccessToken(accessToken); err != nil || !token.Valid {
@@ -19,7 +19,8 @@ func TestAccessToken(t *testing.T) {
 }
 
 func TestInvalidAccessToken(t *testing.T) {
-	accessToken, err := CreateAccessToken("abc123", "abcdefgh", 1605036741)
+	expiresAt := time.Now().Add(-(time.Hour * 10))
+	accessToken, err := CreateAccessToken("abc123", "abcdefgh", time.Now(), expiresAt)
 	assert.NoError(t, err)
 
 	if _, err := VerifyAccessToken(accessToken); err == nil {
@@ -30,7 +31,8 @@ func TestInvalidAccessToken(t *testing.T) {
 }
 
 func TestExpiredAccessToken(t *testing.T) {
-	refreshToken, err := CreateRefreshToken("abc123", "abcdefgh", 667224000)
+	expiresAt := time.Now().Add(-(time.Hour * 10))
+	refreshToken, err := CreateRefreshToken("abc123", "abcdefgh", time.Now(), expiresAt)
 	assert.NoError(t, err)
 
 	if _, err := VerifyAccessToken(refreshToken); err == nil {
@@ -41,8 +43,8 @@ func TestExpiredAccessToken(t *testing.T) {
 }
 
 func TestRefreshToken(t *testing.T) {
-	expiresAt := time.Now().Add(time.Hour * 10).Unix()
-	refreshToken, err := CreateRefreshToken("abc123", "abcdefgh", expiresAt)
+	expiresAt := time.Now().Add(time.Hour * 10)
+	refreshToken, err := CreateRefreshToken("abc123", "abcdefgh", time.Now(), expiresAt)
 	assert.NoError(t, err)
 
 	if token, err := VerifyRefreshToken(refreshToken); err != nil || !token.Valid {
@@ -51,7 +53,8 @@ func TestRefreshToken(t *testing.T) {
 }
 
 func TestInvalidRefreshToken(t *testing.T) {
-	refreshToken, err := CreateRefreshToken("abc123", "abcdefgh", 1605036741)
+	expiresAt := time.Now().Add(-(time.Hour * 10))
+	refreshToken, err := CreateRefreshToken("abc123", "abcdefgh", time.Now(), expiresAt)
 	assert.NoError(t, err)
 
 	if _, err := VerifyRefreshToken(refreshToken); err == nil {
@@ -62,7 +65,8 @@ func TestInvalidRefreshToken(t *testing.T) {
 }
 
 func TestExpiredRefreshToken(t *testing.T) {
-	refreshToken, err := CreateRefreshToken("abc123", "abcdefgh", 667224000)
+	expiresAt := time.Now().Add(-(time.Hour * 10))
+	refreshToken, err := CreateRefreshToken("abc123", "abcdefgh", time.Now(), expiresAt)
 	assert.NoError(t, err)
 
 	if _, err := VerifyRefreshToken(refreshToken); err == nil {

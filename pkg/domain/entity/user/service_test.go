@@ -3,10 +3,13 @@ package user
 import (
 	"errors"
 	"reflect"
+	"strconv"
 	"testing"
+	"time"
 
 	"github.com/dwethmar/atami/pkg/domain/entity"
 	"github.com/dwethmar/atami/pkg/memstore"
+	"github.com/stretchr/testify/assert"
 )
 
 func Test_errValidate_Valid(t *testing.T) {
@@ -39,7 +42,7 @@ func Test_errValidate_Valid(t *testing.T) {
 				Errors: tt.fields.Errors,
 			}
 			if got := err.Valid(); got != tt.want {
-				t.Errorf("errValidate.Valid() = %v, want %v", got, tt.want)
+				t.Errorf("user errValidate.Valid() = %v, want %v", got, tt.want)
 			}
 		})
 	}
@@ -75,7 +78,7 @@ func Test_errValidate_Error(t *testing.T) {
 				Errors: tt.fields.Errors,
 			}
 			if got := err.Error(); got != tt.want {
-				t.Errorf("errValidate.Error() = %v, want %v", got, tt.want)
+				t.Errorf("user errValidate.Error() = %v, want %v", got, tt.want)
 			}
 		})
 	}
@@ -102,16 +105,16 @@ func TestService_Create(t *testing.T) {
 			},
 			args: args{
 				e: &Create{
-					UID       : entity.NewUID(),
-					Username  : "username",
-					Email     :"test@test.nl",
-					Password  :"lkasjDSlsjk*(&^*&(jhggjkh11",
-					Biography :"bio"	,
-					CreatedAt :entity.Now(),
-					UpdatedAt :entity.Now(),
+					UID:       entity.NewUID(),
+					Username:  "username",
+					Email:     "test@test.nl",
+					Password:  "lkasjDSlsjk*(&^*&(jhggjkh11",
+					Biography: "bio",
+					CreatedAt: entity.Now(),
+					UpdatedAt: entity.Now(),
 				},
 			},
-			want: 1,
+			want:    1,
 			wantErr: false,
 		},
 		{
@@ -121,16 +124,16 @@ func TestService_Create(t *testing.T) {
 			},
 			args: args{
 				e: &Create{
-					UID       : entity.NewUID(),
-					Username  : "kipsate",
-					Email     :"test@test.nl",
-					Password  :"12",
-					Biography :"bio"	,
-					CreatedAt :entity.Now(),
-					UpdatedAt :entity.Now(),
+					UID:       entity.NewUID(),
+					Username:  "kipsate",
+					Email:     "test@test.nl",
+					Password:  "12",
+					Biography: "bio",
+					CreatedAt: entity.Now(),
+					UpdatedAt: entity.Now(),
 				},
 			},
-			want: 0,
+			want:    0,
 			wantErr: true,
 		},
 		{
@@ -140,16 +143,16 @@ func TestService_Create(t *testing.T) {
 			},
 			args: args{
 				e: &Create{
-					UID       : entity.NewUID(),
-					Username  : "a@",
-					Email     :"test@test.nl",
-					Password  :"lkasjDSlsjk*(&^*&(jhggjkh11",
-					Biography :"bio"	,
-					CreatedAt :entity.Now(),
-					UpdatedAt :entity.Now(),
+					UID:       entity.NewUID(),
+					Username:  "a@",
+					Email:     "test@test.nl",
+					Password:  "lkasjDSlsjk*(&^*&(jhggjkh11",
+					Biography: "bio",
+					CreatedAt: entity.Now(),
+					UpdatedAt: entity.Now(),
 				},
 			},
-			want: 0,
+			want:    0,
 			wantErr: true,
 		},
 	}
@@ -160,21 +163,23 @@ func TestService_Create(t *testing.T) {
 			}
 			got, err := s.Create(tt.args.e)
 			if (err != nil) != tt.wantErr {
-				t.Errorf("Service.Create() error = %v, wantErr %v", err, tt.wantErr)
+				t.Errorf("user Service.Create() error = %v, wantErr %v", err, tt.wantErr)
 				return
 			}
 			if !reflect.DeepEqual(got, tt.want) {
-				t.Errorf("Service.Create() = %v, want %v", got, tt.want)
+				t.Errorf("user Service.Create() = %v, want %v", got, tt.want)
 			}
 		})
 	}
 }
 
 func TestService_Get(t *testing.T) {
+	fixtures := newTestFixtures()
 	setup := func() *memstore.Memstore {
 		s := memstore.NewStore()
-		s.GetUsers().Put(1, *toMemory(NewUserFixture(1)))
-		s.GetUsers().Put(2, *toMemory(NewUserFixture(2)))
+		for _, u := range fixtures.users {
+			s.GetUsers().Put(u.ID, *toMemory(u))
+		}
 		return s
 	}
 
@@ -196,6 +201,15 @@ func TestService_Get(t *testing.T) {
 			fields: fields{
 				repo: NewInMemoryRepo(setup()),
 			},
+			args: args{
+				ID: 1,
+			},
+			want: func() *User {
+				f := fixtures.users[0]
+				f.Password = ""
+				return f
+			}(),
+			wantErr: false,
 		},
 	}
 	for _, tt := range tests {
@@ -205,17 +219,37 @@ func TestService_Get(t *testing.T) {
 			}
 			got, err := s.Get(tt.args.ID)
 			if (err != nil) != tt.wantErr {
-				t.Errorf("Service.Get() error = %v, wantErr %v", err, tt.wantErr)
+				t.Errorf("user Service.Get() error = %v, wantErr %v", err, tt.wantErr)
 				return
 			}
 			if !reflect.DeepEqual(got, tt.want) {
-				t.Errorf("Service.Get() = %v, want %v", got, tt.want)
+				t.Errorf("user Service.Get() = %v, want %v", got, tt.want)
 			}
 		})
 	}
 }
 
 func TestService_List(t *testing.T) {
+	fixtures := newTestFixtures()
+	setup := func() *memstore.Memstore {
+		s := memstore.NewStore()
+		for _, u := range fixtures.users {
+			s.GetUsers().Put(u.ID, *toMemory(u))
+		}
+		return s
+	}
+
+	// remove password from fixtures
+	prepareUsers := func() []*User {
+		rr := make([]*User, len(fixtures.users))
+		for i, u := range fixtures.users {
+			p := *u
+			p.Password = ""
+			rr[i] = &p
+		}
+		return rr
+	}
+
 	type fields struct {
 		repo Repository
 	}
@@ -230,7 +264,39 @@ func TestService_List(t *testing.T) {
 		want    []*User
 		wantErr bool
 	}{
-		// TODO: Add test cases.
+		{
+			name: "List users",
+			fields: fields{
+				repo: NewInMemoryRepo(setup()),
+			},
+			args: args{
+				limit:  10,
+				offset: 0,
+			},
+			want: func() []*User {
+				u := prepareUsers()
+				return []*User{
+					u[4],
+					u[3],
+					u[2],
+					u[1],
+					u[0],
+				}
+			}(),
+			wantErr: false,
+		},
+		{
+			name: "No error on no users",
+			fields: fields{
+				repo: NewInMemoryRepo(memstore.NewStore()),
+			},
+			args: args{
+				limit:  10,
+				offset: 0,
+			},
+			want:    []*User{},
+			wantErr: false,
+		},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
@@ -242,19 +308,31 @@ func TestService_List(t *testing.T) {
 				t.Errorf("Service.List() error = %v, wantErr %v", err, tt.wantErr)
 				return
 			}
-			if !reflect.DeepEqual(got, tt.want) {
-				t.Errorf("Service.List() = %v, want %v", got, tt.want)
+
+			for i, u := range got {
+				if !assert.Equal(t, u, tt.want[i]) {
+					t.Errorf("Service.List() = %v, want %v", got, tt.want)
+				}
 			}
 		})
 	}
 }
 
 func TestService_Delete(t *testing.T) {
+	fixtures := newTestFixtures()
+	setup := func() *memstore.Memstore {
+		s := memstore.NewStore()
+		for _, u := range fixtures.users {
+			s.GetUsers().Put(u.ID, *toMemory(u))
+		}
+		return s
+	}
+
 	type fields struct {
 		repo Repository
 	}
 	type args struct {
-		id entity.ID
+		ID entity.ID
 	}
 	tests := []struct {
 		name    string
@@ -262,14 +340,33 @@ func TestService_Delete(t *testing.T) {
 		args    args
 		wantErr bool
 	}{
-		// TODO: Add test cases.
+		{
+			name: "successfully delete user",
+			fields: fields{
+				repo: NewInMemoryRepo(setup()),
+			},
+			args: args{
+				ID: 1,
+			},
+			wantErr: false,
+		},
+		{
+			name: "error on none existing user",
+			fields: fields{
+				repo: NewInMemoryRepo(setup()),
+			},
+			args: args{
+				ID: 999,
+			},
+			wantErr: true,
+		},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			s := &Service{
 				repo: tt.fields.repo,
 			}
-			if err := s.Delete(tt.args.id); (err != nil) != tt.wantErr {
+			if err := s.Delete(tt.args.ID); (err != nil) != tt.wantErr {
 				t.Errorf("Service.Delete() error = %v, wantErr %v", err, tt.wantErr)
 			}
 		})
@@ -277,6 +374,15 @@ func TestService_Delete(t *testing.T) {
 }
 
 func TestService_Update(t *testing.T) {
+	fixtures := newTestFixtures()
+	setup := func() *memstore.Memstore {
+		s := memstore.NewStore()
+		for _, u := range fixtures.users {
+			s.GetUsers().Put(u.ID, *toMemory(u))
+		}
+		return s
+	}
+
 	type fields struct {
 		repo Repository
 	}
@@ -290,7 +396,32 @@ func TestService_Update(t *testing.T) {
 		args    args
 		wantErr bool
 	}{
-		// TODO: Add test cases.
+		{
+			name: "successfully update user",
+			fields: fields{
+				repo: NewInMemoryRepo(setup()),
+			},
+			args: args{
+				ID: 1,
+				e: &Update{
+					Biography: "updated biography",
+				},
+			},
+			wantErr: false,
+		},
+		{
+			name: "error on none existing user",
+			fields: fields{
+				repo: NewInMemoryRepo(setup()),
+			},
+			args: args{
+				ID: 999,
+				e: &Update{
+					Biography: "updated biography",
+				},
+			},
+			wantErr: true,
+		},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
@@ -305,12 +436,25 @@ func TestService_Update(t *testing.T) {
 }
 
 func TestService_Authenticate(t *testing.T) {
+	fixtures := newTestFixtures()
+	setup := func() *memstore.Memstore {
+		s := memstore.NewStore()
+		for _, u := range fixtures.users {
+			s.GetUsers().Put(u.ID, *toMemory(u))
+		}
+		return s
+	}
+
+	now := time.Now()
+	testUser := fixtures.users[0]
+
 	type fields struct {
 		repo Repository
 	}
 	type args struct {
 		email    string
 		password string
+		issuedAt time.Time
 	}
 	tests := []struct {
 		name    string
@@ -319,14 +463,36 @@ func TestService_Authenticate(t *testing.T) {
 		want    *Authenticated
 		wantErr bool
 	}{
-		// TODO: Add test cases.
+		{
+			name: "Successfully authenticate",
+			fields: fields{
+				repo: NewInMemoryRepo(setup()),
+			},
+			args: args{
+				email:    testUser.Email,
+				password: "abdefABCDEF1234!@#$",
+				issuedAt: now,
+			},
+			want: &Authenticated{
+				AccessToken: func() string {
+					token, err := CreateAccessToken(testUser.UID, strconv.FormatInt(now.UnixNano(), 10), now, now.Add(time.Minute*60))
+					assert.NoError(t, err)
+					return token
+				}(),
+				RefreshToken: func() string {
+					token, err := CreateRefreshToken(testUser.UID, strconv.FormatInt(now.UnixNano(), 10), now, now.Add(time.Hour*730))
+					assert.NoError(t, err)
+					return token
+				}(),
+			},
+		},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			s := &Service{
 				repo: tt.fields.repo,
 			}
-			got, err := s.Authenticate(tt.args.email, tt.args.password)
+			got, err := s.Authenticate(tt.args.email, tt.args.password, now)
 			if (err != nil) != tt.wantErr {
 				t.Errorf("Service.Authenticate() error = %v, wantErr %v", err, tt.wantErr)
 				return
@@ -339,6 +505,15 @@ func TestService_Authenticate(t *testing.T) {
 }
 
 func TestService_ValidateCreate(t *testing.T) {
+	fixtures := newTestFixtures()
+	setup := func() *memstore.Memstore {
+		s := memstore.NewStore()
+		for _, u := range fixtures.users {
+			s.GetUsers().Put(u.ID, *toMemory(u))
+		}
+		return s
+	}
+
 	type fields struct {
 		repo Repository
 	}
@@ -351,7 +526,42 @@ func TestService_ValidateCreate(t *testing.T) {
 		args    args
 		wantErr bool
 	}{
-		// TODO: Add test cases.
+		{
+			name: "Successfully validate valid user create",
+			fields: fields{
+				repo: NewInMemoryRepo(setup()),
+			},
+			args: args{
+				c: &Create{
+					UID:       entity.NewUID(),
+					Username:  "username",
+					Email:     "test@test.nl",
+					Password:  "aQAc!@#skk111",
+					Biography: "bio",
+					CreatedAt: entity.Now(),
+					UpdatedAt: entity.Now(),
+				},
+			},
+			wantErr: false,
+		},
+		{
+			name: "Error on invalid user create",
+			fields: fields{
+				repo: NewInMemoryRepo(setup()),
+			},
+			args: args{
+				c: &Create{
+					UID:       entity.NewUID(),
+					Username:  "",
+					Email:     "test@test.nl",
+					Password:  "a",
+					Biography: "bio",
+					CreatedAt: entity.Now(),
+					UpdatedAt: entity.Now(),
+				},
+			},
+			wantErr: true,
+		},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
@@ -366,6 +576,15 @@ func TestService_ValidateCreate(t *testing.T) {
 }
 
 func TestService_ValidateUpdate(t *testing.T) {
+	fixtures := newTestFixtures()
+	setup := func() *memstore.Memstore {
+		s := memstore.NewStore()
+		for _, u := range fixtures.users {
+			s.GetUsers().Put(u.ID, *toMemory(u))
+		}
+		return s
+	}
+
 	type fields struct {
 		repo Repository
 	}
@@ -378,7 +597,18 @@ func TestService_ValidateUpdate(t *testing.T) {
 		args    args
 		wantErr bool
 	}{
-		// TODO: Add test cases.
+		{
+			name: "Successfully validate valid user create",
+			fields: fields{
+				repo: NewInMemoryRepo(setup()),
+			},
+			args: args{
+				u: &Update{
+					Biography: "updated Biography",
+				},
+			},
+			wantErr: false,
+		},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {

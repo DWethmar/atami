@@ -8,8 +8,8 @@ import (
 )
 
 func Test_inMemoryRepo_Get(t *testing.T) {
-	deps := newRepoTestDependencies()
-	testRepositoryGet(
+	deps := newTestFixtures()
+	testRepository_Get(
 		t,
 		deps,
 		func() Repository {
@@ -23,8 +23,8 @@ func Test_inMemoryRepo_Get(t *testing.T) {
 }
 
 func Test_inMemoryRepo_GetByUID(t *testing.T) {
-	deps := newRepoTestDependencies()
-	testRepositoryGetByUID(
+	deps := newTestFixtures()
+	testRepository_GetByUID(
 		t,
 		deps,
 		func() Repository {
@@ -38,8 +38,8 @@ func Test_inMemoryRepo_GetByUID(t *testing.T) {
 }
 
 func Test_inMemoryRepo_GetByUsername(t *testing.T) {
-	deps := newRepoTestDependencies()
-	testRepositoryGetByUsername(
+	deps := newTestFixtures()
+	testRepository_GetByUsername(
 		t,
 		deps,
 		func() Repository {
@@ -53,8 +53,8 @@ func Test_inMemoryRepo_GetByUsername(t *testing.T) {
 }
 
 func Test_inMemoryRepo_GetByEmail(t *testing.T) {
-	deps := newRepoTestDependencies()
-	testRepositoryGetByEmail(
+	deps := newTestFixtures()
+	testRepository_GetByEmail(
 		t,
 		deps,
 		func() Repository {
@@ -68,8 +68,8 @@ func Test_inMemoryRepo_GetByEmail(t *testing.T) {
 }
 
 func Test_inMemoryRepo_GetCredentials(t *testing.T) {
-	deps := newRepoTestDependencies()
-	testRepositoryGetByUsername(
+	deps := newTestFixtures()
+	testRepository_GetByUsername(
 		t,
 		deps,
 		func() Repository {
@@ -83,8 +83,8 @@ func Test_inMemoryRepo_GetCredentials(t *testing.T) {
 }
 
 func Test_inMemoryRepo_List(t *testing.T) {
-	deps := newRepoTestDependencies()
-	testRepositoryList(
+	deps := newTestFixtures()
+	testRepository_List(
 		t,
 		deps,
 		func() Repository {
@@ -98,8 +98,8 @@ func Test_inMemoryRepo_List(t *testing.T) {
 }
 
 func Test_inMemoryRepo_Update(t *testing.T) {
-	deps := newRepoTestDependencies()
-	testRepositoryUpdate(
+	deps := newTestFixtures()
+	testRepository_Update(
 		t,
 		deps,
 		func() Repository {
@@ -113,8 +113,8 @@ func Test_inMemoryRepo_Update(t *testing.T) {
 }
 
 func Test_inMemoryRepo_Create(t *testing.T) {
-	deps := newRepoTestDependencies()
-	testRepositoryCreate(
+	deps := newTestFixtures()
+	testRepository_Create(
 		t,
 		deps,
 		func() Repository {
@@ -128,8 +128,8 @@ func Test_inMemoryRepo_Create(t *testing.T) {
 }
 
 func Test_inMemoryRepo_Delete(t *testing.T) {
-	deps := newRepoTestDependencies()
-	testRepositoryDelete(
+	deps := newTestFixtures()
+	testRepository_Delete(
 		t,
 		deps,
 		func() Repository {

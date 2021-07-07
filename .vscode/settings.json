@@ -4,5 +4,6 @@
         "Registrator"
     ],
     "editor.formatOnPaste": true,
-    "editor.formatOnSave": true
+    "editor.formatOnSave": true,
+    "editor.defaultFormatter": "golang.go"
 }

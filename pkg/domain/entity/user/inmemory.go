@@ -1,6 +1,7 @@
 package user
 
 import (
+	"errors"
 	"sort"
 
 	"github.com/dwethmar/atami/pkg/domain"
@@ -149,11 +150,11 @@ func (r *inMemoryRepo) Update(user *User) error {
 	if match, err := filterList(users, func(record *User) bool {
 		return user.Username == record.Username || user.Email == record.Email
 	}); match != nil {
-		if match.Email == user.Email {
-			return ErrEmailAlreadyTaken
+		if match.Email != user.Email {
+			return errors.New("email doesn't match")
 		}
-		if match.Username == user.Username {
-			return ErrUsernameAlreadyTaken
+		if match.Username != user.Username {
+			return errors.New("username doesn't match")
 		}
 		return err
 	} else if err != nil && err != domain.ErrNotFound {

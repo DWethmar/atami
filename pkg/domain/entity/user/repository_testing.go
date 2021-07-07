@@ -8,12 +8,12 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
-type repoTestDependencies struct {
+type testFixtures struct {
 	users []*User
 }
 
-func newRepoTestDependencies() *repoTestDependencies {
-	return &repoTestDependencies{
+func newTestFixtures() *testFixtures {
+	return &testFixtures{
 		users: []*User{
 			{
 				ID:        entity.ID(1),
@@ -71,7 +71,7 @@ func newRepoTestDependencies() *repoTestDependencies {
 
 type setupRepository = func() Repository
 
-func testRepositoryGet(t *testing.T, dependencies *repoTestDependencies, setup setupRepository) {
+func testRepository_Get(t *testing.T, dependencies *testFixtures, setup setupRepository) {
 	testUser := dependencies.users[0]
 
 	type fields struct {
@@ -125,17 +125,17 @@ func testRepositoryGet(t *testing.T, dependencies *repoTestDependencies, setup s
 
 			got, err := r.Get(tt.args.ID)
 			if (err != nil) != tt.wantErr {
-				t.Errorf("RepositoryGet() error = %v, wantErr %v", err, tt.wantErr)
+				t.Errorf("User Repository.Get() error = %v, wantErr %v", err, tt.wantErr)
 				return
 			}
 			if !reflect.DeepEqual(got, tt.want) {
-				t.Errorf("RepositoryGet() = %v, want %v", got, tt.want)
+				t.Errorf("User Repository.Get() = %v, want %v", got, tt.want)
 			}
 		})
 	}
 }
 
-func testRepositoryGetByUID(t *testing.T, dependencies *repoTestDependencies, setup setupRepository) {
+func testRepository_GetByUID(t *testing.T, dependencies *testFixtures, setup setupRepository) {
 	testUser := dependencies.users[0]
 
 	type fields struct {
@@ -189,17 +189,17 @@ func testRepositoryGetByUID(t *testing.T, dependencies *repoTestDependencies, se
 
 			got, err := r.GetByUID(tt.args.UID)
 			if (err != nil) != tt.wantErr {
-				t.Errorf("RepositoryGet() error = %v, wantErr %v", err, tt.wantErr)
+				t.Errorf("user RepositoryGet() error = %v, wantErr %v", err, tt.wantErr)
 				return
 			}
 			if !reflect.DeepEqual(got, tt.want) {
-				t.Errorf("RepositoryGet() = %v, want %v", got, tt.want)
+				t.Errorf("user RepositoryGet() = %v, want %v", got, tt.want)
 			}
 		})
 	}
 }
 
-func testRepositoryGetByUsername(t *testing.T, dependencies *repoTestDependencies, setup setupRepository) {
+func testRepository_GetByUsername(t *testing.T, dependencies *testFixtures, setup setupRepository) {
 	c := *dependencies.users[0]
 	testUser := &c;
 	testUser.Password = ""
@@ -246,17 +246,17 @@ func testRepositoryGetByUsername(t *testing.T, dependencies *repoTestDependencie
 
 			got, err := r.GetByUsername(tt.args.username)
 			if (err != nil) != tt.wantErr {
-				t.Errorf("GetByUsername() error = %v, wantErr %v", err, tt.wantErr)
+				t.Errorf("user GetByUsername() error = %v, wantErr %v", err, tt.wantErr)
 				return
 			}
 			if !reflect.DeepEqual(got, tt.want) {
-				t.Errorf("GetByUsername() = %v, want %v", got, tt.want)
+				t.Errorf("user GetByUsername() = %v, want %v", got, tt.want)
 			}
 		})
 	}
 }
 
-func testRepositoryGetByEmail(t *testing.T, dependencies *repoTestDependencies, setup setupRepository) {
+func testRepository_GetByEmail(t *testing.T, dependencies *testFixtures, setup setupRepository) {
 	c := *dependencies.users[0]
 	testUser := &c;
 	testUser.Password = ""
@@ -303,17 +303,17 @@ func testRepositoryGetByEmail(t *testing.T, dependencies *repoTestDependencies, 
 
 			got, err := r.GetByEmail(tt.args.email)
 			if (err != nil) != tt.wantErr {
-				t.Errorf("GetByEmail() error = %v, wantErr %v", err, tt.wantErr)
+				t.Errorf("user GetByEmail() error = %v, wantErr %v", err, tt.wantErr)
 				return
 			}
 			if !reflect.DeepEqual(got, tt.want) {
-				t.Errorf("GetByEmail() = %v, want %v", got, tt.want)
+				t.Errorf("user GetByEmail() = %v, want %v", got, tt.want)
 			}
 		})
 	}
 }
 
-func testRepositoryGetCredentials(t *testing.T, dependencies *repoTestDependencies, setup setupRepository) {
+func testRepository_GetCredentials(t *testing.T, dependencies *testFixtures, setup setupRepository) {
 	c := *dependencies.users[0]
 	testUser := &c;
 	
@@ -365,17 +365,17 @@ func testRepositoryGetCredentials(t *testing.T, dependencies *repoTestDependenci
 
 			got, err := r.GetCredentials(tt.args.email)
 			if (err != nil) != tt.wantErr {
-				t.Errorf("GetCredentials() error = %v, wantErr %v", err, tt.wantErr)
+				t.Errorf("user GetCredentials() error = %v, wantErr %v", err, tt.wantErr)
 				return
 			}
 			if !reflect.DeepEqual(got, tt.want) {
-				t.Errorf("GetCredentials() = %v, want %v", got, tt.want)
+				t.Errorf("user GetCredentials() = %v, want %v", got, tt.want)
 			}
 		})
 	}
 }
 
-func testRepositoryList(t *testing.T, dependencies *repoTestDependencies, setup setupRepository) {
+func testRepository_List(t *testing.T, dependencies *testFixtures, setup setupRepository) {
 	var testUsers []*User
 
 	// Remove passwords
@@ -469,13 +469,13 @@ func testRepositoryList(t *testing.T, dependencies *repoTestDependencies, setup 
 			got, err := repo.List(tt.args.limit, tt.args.offset)
 
 			if (err != nil) != tt.wantErr {
-				t.Errorf("Repository.List() error = %v, wantErr %v", err, tt.wantErr)
+				t.Errorf("user Repository.List() error = %v, wantErr %v", err, tt.wantErr)
 				return
 			}
 
 			for i, usr := range got {		
 				if !assert.Equal(t, tt.want[i], usr) {
-					t.Errorf("Repository.List() = \n%v, want \n%v", usr, tt.want[i])
+					t.Errorf("user Repository.List() = \n%v, want \n%v", usr, tt.want[i])
 					return
 				}
 			}
@@ -483,7 +483,7 @@ func testRepositoryList(t *testing.T, dependencies *repoTestDependencies, setup 
 	}
 }
 
-func testRepositoryCreate(t *testing.T, dependencies *repoTestDependencies, setup setupRepository) {
+func testRepository_Create(t *testing.T, dependencies *testFixtures, setup setupRepository) {
 	type fields struct {
 		repo Repository
 	}
@@ -562,17 +562,17 @@ func testRepositoryCreate(t *testing.T, dependencies *repoTestDependencies, setu
 
 			got, err := r.Create(tt.args.e)
 			if (err != nil) != tt.wantErr {
-				t.Errorf("Repository.Create() error = %v, wantErr %v", err, tt.wantErr)
+				t.Errorf("user Repository.Create() error = %v, wantErr %v", err, tt.wantErr)
 				return
 			}
 			if !reflect.DeepEqual(got, tt.want) {
-				t.Errorf("Repository.Create() = %v, want %v", got, tt.want)
+				t.Errorf("user Repository.Create() = %v, want %v", got, tt.want)
 			}
 		})
 	}
 }
 
-func testRepositoryUpdate(t *testing.T, dependencies *repoTestDependencies, setup setupRepository) {
+func testRepository_Update(t *testing.T, dependencies *testFixtures, setup setupRepository) {
 	type fields struct {
 		repo Repository
 	}
@@ -594,8 +594,8 @@ func testRepositoryUpdate(t *testing.T, dependencies *repoTestDependencies, setu
 				e: &User{
 					ID:        dependencies.users[len(dependencies.users)-1].ID,
 					UID:       "abcdefg12334",
-					Username:  "updated_sername12",
-					Email:     "uupdated_sername12@test.nl",
+					Username:  "updated_username12",
+					Email:     "updated_username12@test.nl",
 					Password:  "updated_password",
 					Biography: "updated biography",
 					CreatedAt: entity.Now(),
@@ -665,13 +665,13 @@ func testRepositoryUpdate(t *testing.T, dependencies *repoTestDependencies, setu
 			r := tt.fields.repo
 
 			if err := r.Update(tt.args.e); (err != nil) != tt.wantErr {
-				t.Errorf("Repository.Update() error = %v, wantErr %v", err, tt.wantErr)
+				t.Errorf("user Repository.Update() error = %v, wantErr %v", err, tt.wantErr)
 			}
 		})
 	}
 }
 
-func testRepositoryDelete(t *testing.T, dependencies *repoTestDependencies, setup setupRepository) {
+func testRepository_Delete(t *testing.T, dependencies *testFixtures, setup setupRepository) {
 	type fields struct {
 		repo Repository
 	}
@@ -684,7 +684,26 @@ func testRepositoryDelete(t *testing.T, dependencies *repoTestDependencies, setu
 		args    args
 		wantErr bool
 	}{
-		// TODO: Add test cases.
+		{
+			name: "successfully delete user",
+			fields: fields{
+				repo: setup(),
+			},
+			args: args{
+				ID: 1,
+			},
+			wantErr: false,
+		},
+		{
+			name: "get error on user not exist",
+			fields: fields{
+				repo: setup(),
+			},
+			args: args{
+				ID: 999,
+			},
+			wantErr: true,
+		},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {

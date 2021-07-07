@@ -12,7 +12,7 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
-func seedDatabase(db *sql.DB, deps *repoTestDependencies) error {
+func seedDatabase(db *sql.DB, deps *testFixtures) error {
 	return database.WithTransaction(db, func(t database.Transaction) error {
 		for _, user := range deps.users {
 			if _, err := seed.SeedUser(
@@ -43,8 +43,8 @@ func Test_PostgresRepo_Get(t *testing.T) {
 			db.Close()
 		}
 	}()
-	deps := newRepoTestDependencies()
-	testRepositoryGet(
+	deps := newTestFixtures()
+	testRepository_Get(
 		t,
 		deps,
 		func() Repository {
@@ -76,8 +76,8 @@ func Test_PostgresRepo_GetByUID(t *testing.T) {
 			db.Close()
 		}
 	}()
-	deps := newRepoTestDependencies()
-	testRepositoryGetByUID(
+	deps := newTestFixtures()
+	testRepository_GetByUID(
 		t,
 		deps,
 		func() Repository {
@@ -109,8 +109,8 @@ func Test_PostgresRepo_GetByUsername(t *testing.T) {
 			db.Close()
 		}
 	}()
-	deps := newRepoTestDependencies()
-	testRepositoryGetByUsername(
+	deps := newTestFixtures()
+	testRepository_GetByUsername(
 		t,
 		deps,
 		func() Repository {
@@ -142,8 +142,8 @@ func Test_PostgresRepo_GetByEmail(t *testing.T) {
 			db.Close()
 		}
 	}()
-	deps := newRepoTestDependencies()
-	testRepositoryGetByEmail(
+	deps := newTestFixtures()
+	testRepository_GetByEmail(
 		t,
 		deps,
 		func() Repository {
@@ -175,8 +175,8 @@ func Test_PostgresRepo_GetCredentials(t *testing.T) {
 			db.Close()
 		}
 	}()
-	deps := newRepoTestDependencies()
-	testRepositoryGetCredentials(
+	deps := newTestFixtures()
+	testRepository_GetCredentials(
 		t,
 		deps,
 		func() Repository {
@@ -208,8 +208,8 @@ func Test_PostgresRepo_List(t *testing.T) {
 			db.Close()
 		}
 	}()
-	deps := newRepoTestDependencies()
-	testRepositoryList(
+	deps := newTestFixtures()
+	testRepository_List(
 		t,
 		deps,
 		func() Repository {
@@ -241,8 +241,8 @@ func Test_PostgresRepo_Update(t *testing.T) {
 			db.Close()
 		}
 	}()
-	deps := newRepoTestDependencies()
-	testRepositoryUpdate(
+	deps := newTestFixtures()
+	testRepository_Update(
 		t,
 		deps,
 		func() Repository {
@@ -274,8 +274,8 @@ func Test_PostgresRepo_Create(t *testing.T) {
 			db.Close()
 		}
 	}()
-	deps := newRepoTestDependencies()
-	testRepositoryCreate(
+	deps := newTestFixtures()
+	testRepository_Create(
 		t,
 		deps,
 		func() Repository {
@@ -307,8 +307,8 @@ func Test_PostgresRepo_Delete(t *testing.T) {
 			db.Close()
 		}
 	}()
-	deps := newRepoTestDependencies()
-	testRepositoryDelete(
+	deps := newTestFixtures()
+	testRepository_Delete(
 		t,
 		deps,
 		func() Repository {

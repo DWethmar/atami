@@ -30,7 +30,7 @@ func getAccessSecret() ([]byte, error) {
 }
 
 // CreateAccessToken creates a new authentication token
-func CreateAccessToken(userUID string, session string, expiresOn int64) (string, error) {
+func CreateAccessToken(userUID string, session string, issuedAt time.Time, expiresOn time.Time) (string, error) {
 	var err error
 
 	accessSecret, err := getAccessSecret()
@@ -45,8 +45,8 @@ func CreateAccessToken(userUID string, session string, expiresOn int64) (string,
 
 	claims.StandardClaims = jwt.StandardClaims{
 		Subject:   userUID,
-		ExpiresAt: expiresOn,
-		IssuedAt:  time.Now().Unix(),
+		ExpiresAt: expiresOn.Unix(),
+		IssuedAt:  issuedAt.Unix(),
 	}
 
 	at := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)
@@ -54,7 +54,7 @@ func CreateAccessToken(userUID string, session string, expiresOn int64) (string,
 }
 
 // CreateRefreshToken creates a new authentication token
-func CreateRefreshToken(UID string, session string, expiresOn int64) (string, error) {
+func CreateRefreshToken(UID string, session string, issuedAt time.Time, expiresOn time.Time) (string, error) {
 	var err error
 
 	accessSecret, err := getAccessSecret()
@@ -69,8 +69,8 @@ func CreateRefreshToken(UID string, session string, expiresOn int64) (string, er
 
 	claims.StandardClaims = jwt.StandardClaims{
 		Subject:   UID,
-		ExpiresAt: expiresOn,
-		IssuedAt:  time.Now().Unix(),
+		ExpiresAt: expiresOn.Unix(),
+		IssuedAt:  issuedAt.Unix(),
 	}
 
 	at := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)
