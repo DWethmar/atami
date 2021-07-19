@@ -9,7 +9,7 @@ import (
 )
 
 func Test_inMemoryRepo_Get(t *testing.T) {
-	deps := newRepoTestDependencies()
+	deps := newTestFixtures()
 	testRepository_Get(
 		t,
 		deps,
@@ -27,7 +27,7 @@ func Test_inMemoryRepo_Get(t *testing.T) {
 }
 
 func Test_inMemoryRepo_GetByUID(t *testing.T) {
-	deps := newRepoTestDependencies()
+	deps := newTestFixtures()
 	testRepository_GetByUID(
 		t,
 		deps,
@@ -45,7 +45,7 @@ func Test_inMemoryRepo_GetByUID(t *testing.T) {
 }
 
 func Test_inMemoryRepo_List(t *testing.T) {
-	deps := newRepoTestDependencies()
+	deps := newTestFixtures()
 	testRepository_List(
 		t,
 		deps,
@@ -63,7 +63,7 @@ func Test_inMemoryRepo_List(t *testing.T) {
 }
 
 func Test_inMemoryRepo_Update(t *testing.T) {
-	deps := newRepoTestDependencies()
+	deps := newTestFixtures()
 	testRepository_Update(
 		t,
 		deps,
@@ -81,7 +81,7 @@ func Test_inMemoryRepo_Update(t *testing.T) {
 }
 
 func Test_inMemoryRepo_Create(t *testing.T) {
-	deps := newRepoTestDependencies()
+	deps := newTestFixtures()
 	testRepository_Create(
 		t,
 		deps,
@@ -99,7 +99,7 @@ func Test_inMemoryRepo_Create(t *testing.T) {
 }
 
 func Test_inMemoryRepo_Delete(t *testing.T) {
-	deps := newRepoTestDependencies()
+	deps := newTestFixtures()
 	testRepository_Delete(
 		t,
 		deps,

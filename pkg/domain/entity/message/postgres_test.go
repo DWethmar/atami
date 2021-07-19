@@ -13,7 +13,7 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
-func seedDatabase(db *sql.DB, deps *repoTestDependencies) error {
+func seedDatabase(db *sql.DB, deps *testFixtures) error {
 	return database.WithTransaction(db, func(t database.Transaction) error {
 		for _, user := range deps.users {
 			if _, err := seed.SeedUser(
@@ -56,7 +56,7 @@ func Test_PostgresRepo_Get(t *testing.T) {
 			db.Close()
 		}
 	}()
-	deps := newRepoTestDependencies()
+	deps := newTestFixtures()
 	testRepository_Get(
 		t,
 		deps,
@@ -89,7 +89,7 @@ func Test_PostgresRepo_GetByUID(t *testing.T) {
 			db.Close()
 		}
 	}()
-	deps := newRepoTestDependencies()
+	deps := newTestFixtures()
 	testRepository_GetByUID(
 		t,
 		deps,
@@ -122,7 +122,7 @@ func Test_PostgresRepo_List(t *testing.T) {
 			db.Close()
 		}
 	}()
-	deps := newRepoTestDependencies()
+	deps := newTestFixtures()
 	testRepository_List(
 		t,
 		deps,
@@ -155,7 +155,7 @@ func Test_PostgresRepo_Update(t *testing.T) {
 			db.Close()
 		}
 	}()
-	deps := newRepoTestDependencies()
+	deps := newTestFixtures()
 	testRepository_Update(
 		t,
 		deps,
@@ -188,7 +188,7 @@ func Test_PostgresRepo_Create(t *testing.T) {
 			db.Close()
 		}
 	}()
-	deps := newRepoTestDependencies()
+	deps := newTestFixtures()
 	testRepository_Create(
 		t,
 		deps,
@@ -221,7 +221,7 @@ func Test_PostgresRepo_Delete(t *testing.T) {
 			db.Close()
 		}
 	}()
-	deps := newRepoTestDependencies()
+	deps := newTestFixtures()
 	testRepository_Delete(
 		t,
 		deps,
