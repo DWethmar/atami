@@ -84,6 +84,36 @@ func TestService_Create(t *testing.T) {
 					CreatedByUserID: 1,
 				},
 			},
+			want:    1,
+			wantErr: false,
+		},
+		{
+			name: "fail if 'created by user id' is empty",
+			fields: fields{
+				repo: createNewRepo(),
+			},
+			args: args{
+				e: &Create{
+					UID:  entity.NewUID(),
+					Text: "lorum ipsum",
+				},
+			},
+			want:    0,
+			wantErr: true,
+		},
+		{
+			name: "fail if text is to long",
+			fields: fields{
+				repo: createNewRepo(),
+			},
+			args: args{
+				e: &Create{
+					UID:  entity.NewUID(),
+					Text: "lorum ipsum lorum ipsum lorum ipsum lorum ipsum lorum ipsum lorum ipsum lorum ipsum lorum ipsum lorum ipsum lorum ipsum lorum ipsum lorum ipsum lorum ipsum lorum ipsum lorum ipsum lorum ipsum lorum ipsum lorum ipsum lorum ipsum lorum ipsum lorum ipsum lorum ipsum lorum ipsum lorum ipsum lorum ipsum lorum ipsum lorum ipsum ",
+				},
+			},
+			want:    0,
+			wantErr: true,
 		},
 	}
 	for _, tt := range tests {
