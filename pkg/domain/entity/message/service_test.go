@@ -6,6 +6,7 @@ import (
 	"testing"
 
 	"github.com/dwethmar/atami/pkg/domain/entity"
+	"github.com/dwethmar/atami/pkg/memstore"
 )
 
 func Test_errValidate_Valid(t *testing.T) {
@@ -45,6 +46,19 @@ func Test_errValidate_Valid(t *testing.T) {
 }
 
 func TestService_Create(t *testing.T) {
+
+	createNewRepo := func() Repository {
+		store := memstore.NewStore()
+		for _, u := range newTestFixtures().users {
+			store.GetUsers().Put(u.ID, memstore.User{
+				UID:      u.UID,
+				ID:       u.ID,
+				Username: u.Username,
+			})
+		}
+		return NewInMemoryRepo(store)
+	}
+
 	type fields struct {
 		repo Repository
 	}
@@ -58,7 +72,19 @@ func TestService_Create(t *testing.T) {
 		want    entity.ID
 		wantErr bool
 	}{
-		// TODO: Add test cases.
+		{
+			name: "successfully create message",
+			fields: fields{
+				repo: createNewRepo(),
+			},
+			args: args{
+				e: &Create{
+					UID:             entity.NewUID(),
+					Text:            "lorum ipsum",
+					CreatedByUserID: 1,
+				},
+			},
+		},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {

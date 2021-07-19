@@ -201,9 +201,9 @@ func testRepository_GetByUID(t *testing.T, dependencies *testFixtures, setup set
 
 func testRepository_GetByUsername(t *testing.T, dependencies *testFixtures, setup setupRepository) {
 	c := *dependencies.users[0]
-	testUser := &c;
+	testUser := &c
 	testUser.Password = ""
-	
+
 	type fields struct {
 		repo Repository
 	}
@@ -225,7 +225,7 @@ func testRepository_GetByUsername(t *testing.T, dependencies *testFixtures, setu
 			args: args{
 				username: "user1",
 			},
-			want: testUser,
+			want:    testUser,
 			wantErr: false,
 		},
 		{
@@ -236,7 +236,7 @@ func testRepository_GetByUsername(t *testing.T, dependencies *testFixtures, setu
 			args: args{
 				username: "user99999",
 			},
-			want: nil,
+			want:    nil,
 			wantErr: true,
 		},
 	}
@@ -258,7 +258,7 @@ func testRepository_GetByUsername(t *testing.T, dependencies *testFixtures, setu
 
 func testRepository_GetByEmail(t *testing.T, dependencies *testFixtures, setup setupRepository) {
 	c := *dependencies.users[0]
-	testUser := &c;
+	testUser := &c
 	testUser.Password = ""
 
 	type fields struct {
@@ -282,7 +282,7 @@ func testRepository_GetByEmail(t *testing.T, dependencies *testFixtures, setup s
 			args: args{
 				email: "user1@user.nl",
 			},
-			want: testUser,
+			want:    testUser,
 			wantErr: false,
 		},
 		{
@@ -293,7 +293,7 @@ func testRepository_GetByEmail(t *testing.T, dependencies *testFixtures, setup s
 			args: args{
 				email: "abc",
 			},
-			want: nil,
+			want:    nil,
 			wantErr: true,
 		},
 	}
@@ -315,8 +315,8 @@ func testRepository_GetByEmail(t *testing.T, dependencies *testFixtures, setup s
 
 func testRepository_GetCredentials(t *testing.T, dependencies *testFixtures, setup setupRepository) {
 	c := *dependencies.users[0]
-	testUser := &c;
-	
+	testUser := &c
+
 	type fields struct {
 		repo Repository
 	}
@@ -339,11 +339,11 @@ func testRepository_GetCredentials(t *testing.T, dependencies *testFixtures, set
 				email: "user1@user.nl",
 			},
 			want: &UserCredentials{
-				ID:        testUser.ID,
-				UID:       testUser.UID,
-				Username:  "user1",
-				Email:     "user1@user.nl",
-				Password:  testUser.Password,
+				ID:       testUser.ID,
+				UID:      testUser.UID,
+				Username: "user1",
+				Email:    "user1@user.nl",
+				Password: testUser.Password,
 			},
 			wantErr: false,
 		},
@@ -355,7 +355,7 @@ func testRepository_GetCredentials(t *testing.T, dependencies *testFixtures, set
 			args: args{
 				email: "user99999@test.nl",
 			},
-			want: nil,
+			want:    nil,
 			wantErr: true,
 		},
 	}
@@ -380,7 +380,7 @@ func testRepository_List(t *testing.T, dependencies *testFixtures, setup setupRe
 
 	// Remove passwords
 	for _, u := range dependencies.users {
-		c := *u;
+		c := *u
 		c.Password = ""
 		testUsers = append(testUsers, &c)
 	}
@@ -473,7 +473,7 @@ func testRepository_List(t *testing.T, dependencies *testFixtures, setup setupRe
 				return
 			}
 
-			for i, usr := range got {		
+			for i, usr := range got {
 				if !assert.Equal(t, tt.want[i], usr) {
 					t.Errorf("user Repository.List() = \n%v, want \n%v", usr, tt.want[i])
 					return

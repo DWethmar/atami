@@ -81,9 +81,9 @@ func (r *postgresRepo) Delete(ID entity.ID) error {
 		return err
 	}
 
-	if a, err := result.RowsAffected(); err != nil {
+	if affected, err := result.RowsAffected(); err != nil {
 		return err
-	} else if a == 0 {
+	} else if affected == 0 {
 		return domain.ErrCannotBeDeleted
 	}
 

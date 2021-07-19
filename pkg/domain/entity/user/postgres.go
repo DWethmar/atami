@@ -78,7 +78,7 @@ func (r *postgresRepo) List(limit, offset uint) ([]*User, error) {
 	return querySelectUsers(r.db, limit, offset)
 }
 
-func (r *postgresRepo) Create(e *User) (entity.ID, error){
+func (r *postgresRepo) Create(e *User) (entity.ID, error) {
 	user, err := queryRowInsertUser(r.db, e.UID, e.Username, e.Biography, e.Email, e.Password, e.CreatedAt, e.UpdatedAt)
 	if err != nil {
 		return 0, err
@@ -86,22 +86,20 @@ func (r *postgresRepo) Create(e *User) (entity.ID, error){
 	return user.ID, nil
 }
 
-func (r *postgresRepo) Update(e *User) error{
+func (r *postgresRepo) Update(e *User) error {
 	_, err := queryRowUpdateUser(r.db, e.ID, e.Biography, e.UpdatedAt)
 	return err
 }
 
-func (r *postgresRepo) Delete(ID entity.ID) error{
-	result, err := execDeleteUser(r.db, ID) 
-	if err != nil{
+func (r *postgresRepo) Delete(ID entity.ID) error {
+	result, err := execDeleteUser(r.db, ID)
+	if err != nil {
 		return err
 	}
-	if e, err := result.RowsAffected(); err == nil {
-		if e != 0 {
-			return domain.ErrCannotBeDeleted
-		} 
-	} else {
+	if affected, err := result.RowsAffected(); err != nil {
 		return err
+	} else if affected == 0 {
+		return domain.ErrCannotBeDeleted
 	}
 
 	return nil
@@ -153,6 +151,6 @@ func mapCredentials(row Row) (*UserCredentials, error) {
 	); err != nil {
 		return nil, err
 	}
-	
+
 	return e, nil
 }
