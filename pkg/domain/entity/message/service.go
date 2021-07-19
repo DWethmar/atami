@@ -2,7 +2,6 @@ package message
 
 import (
 	"strings"
-	"time"
 
 	"github.com/dwethmar/atami/pkg/domain/entity"
 )
@@ -40,19 +39,19 @@ func (s *Service) Create(e *Create) (entity.ID, error) {
 	if err := s.ValidateCreate(e); err != nil {
 		return 0, err
 	}
-	
+
 	return s.repo.Create(&Message{
 		UID:             entity.NewUID(),
 		Text:            e.Text,
 		CreatedByUserID: e.CreatedByUserID,
 		CreatedAt:       entity.Now(),
-		UpdatedAt: 	     entity.Now(),
+		UpdatedAt:       entity.Now(),
 	})
 }
 
 //Get a message
-func (s *Service) Get(id entity.ID) (*Message, error) {
-	return s.repo.Get(id)
+func (s *Service) Get(ID entity.ID) (*Message, error) {
+	return s.repo.Get(ID)
 }
 
 //List messages
@@ -61,12 +60,12 @@ func (s *Service) List(limit, offset uint) ([]*Message, error) {
 }
 
 //Delete a message
-func (s *Service) Delete(id entity.ID) error {
-	_, err := s.Get(id)
+func (s *Service) Delete(ID entity.ID) error {
+	_, err := s.Get(ID)
 	if err != nil {
 		return err
 	}
-	return s.repo.Delete(id)
+	return s.repo.Delete(ID)
 }
 
 //Update a message
@@ -80,7 +79,7 @@ func (s *Service) Update(ID entity.ID, e *Update) error {
 		return err
 	}
 	message.Text = e.Text
-	message.UpdatedAt = time.Now()
+	message.UpdatedAt = entity.Now()
 	return s.repo.Update(message)
 }
 
@@ -111,4 +110,3 @@ func (s *Service) ValidateUpdate(u *Update) error {
 
 	return err
 }
-

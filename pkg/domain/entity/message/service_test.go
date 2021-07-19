@@ -9,6 +9,29 @@ import (
 	"github.com/dwethmar/atami/pkg/memstore"
 )
 
+func createNewTestRepo() Repository {
+	store := memstore.NewStore()
+	f := newTestFixtures()
+	for _, u := range f.users {
+		store.GetUsers().Put(u.ID, memstore.User{
+			UID:      u.UID,
+			ID:       u.ID,
+			Username: u.Username,
+		})
+	}
+	for _, m := range f.messages {
+		store.GetMessages().Put(m.ID, memstore.Message{
+			UID:             m.UID,
+			ID:              m.ID,
+			Text:            m.Text,
+			CreatedByUserID: m.CreatedByUserID,
+			CreatedAt:       m.CreatedAt,
+			UpdatedAt:       m.UpdatedAt,
+		})
+	}
+	return NewInMemoryRepo(store)
+}
+
 func Test_errValidate_Valid(t *testing.T) {
 	type fields struct {
 		Errors []error
@@ -46,19 +69,6 @@ func Test_errValidate_Valid(t *testing.T) {
 }
 
 func TestService_Create(t *testing.T) {
-
-	createNewRepo := func() Repository {
-		store := memstore.NewStore()
-		for _, u := range newTestFixtures().users {
-			store.GetUsers().Put(u.ID, memstore.User{
-				UID:      u.UID,
-				ID:       u.ID,
-				Username: u.Username,
-			})
-		}
-		return NewInMemoryRepo(store)
-	}
-
 	type fields struct {
 		repo Repository
 	}
@@ -75,7 +85,7 @@ func TestService_Create(t *testing.T) {
 		{
 			name: "successfully create message",
 			fields: fields{
-				repo: createNewRepo(),
+				repo: createNewTestRepo(),
 			},
 			args: args{
 				e: &Create{
@@ -84,13 +94,13 @@ func TestService_Create(t *testing.T) {
 					CreatedByUserID: 1,
 				},
 			},
-			want:    1,
+			want:    6, // This offcourse depends on the amount of messages.
 			wantErr: false,
 		},
 		{
 			name: "fail if 'created by user id' is empty",
 			fields: fields{
-				repo: createNewRepo(),
+				repo: createNewTestRepo(),
 			},
 			args: args{
 				e: &Create{
@@ -104,7 +114,7 @@ func TestService_Create(t *testing.T) {
 		{
 			name: "fail if text is to long",
 			fields: fields{
-				repo: createNewRepo(),
+				repo: createNewTestRepo(),
 			},
 			args: args{
 				e: &Create{
@@ -134,11 +144,13 @@ func TestService_Create(t *testing.T) {
 }
 
 func TestService_Get(t *testing.T) {
+	message := newTestFixtures().messages[0]
+
 	type fields struct {
 		repo Repository
 	}
 	type args struct {
-		id entity.ID
+		ID entity.ID
 	}
 	tests := []struct {
 		name    string
@@ -147,14 +159,23 @@ func TestService_Get(t *testing.T) {
 		want    *Message
 		wantErr bool
 	}{
-		// TODO: Add test cases.
+		{
+			name: "successfully get message by ID",
+			fields: fields{
+				repo: createNewTestRepo(),
+			},
+			args: args{
+				ID: 1,
+			},
+			want: message,
+		},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			s := &Service{
 				repo: tt.fields.repo,
 			}
-			got, err := s.Get(tt.args.id)
+			got, err := s.Get(tt.args.ID)
 			if (err != nil) != tt.wantErr {
 				t.Errorf("Service.Get() error = %v, wantErr %v", err, tt.wantErr)
 				return
